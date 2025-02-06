@@ -1,0 +1,3 @@
+[submodule "dding_template"]
+	path = dding_template
+	url = https://gitlab.com/dding_friends/dding_template.git
