@@ -20,7 +20,7 @@ compilation:
       - ./$LATEX_FILENAME.pdf
 
 # deploy pdf to gitlab pages
-deploy:
+pages:
   image: alpine:latest
   stage: deploy
   only: 
