@@ -25,7 +25,7 @@ deploy:
   stage: deploy
   only: 
     refs:
-      - master
+      - main
   script:
     - mv ./$LATEX_FILENAME.pdf ./public/$LATEX_FILENAME.pdf
   artifacts:
