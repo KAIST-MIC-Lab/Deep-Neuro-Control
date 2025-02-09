@@ -14,7 +14,7 @@ FIGURE_SAVE_FLAG = 1;
 %% SIMULATION SETTING
 T = 10;                 % simulation time
 ctrl_dt = 1e-4;         % controller sampling time
-dt = ctrl_dt * 1;     % simulation sampling time
+dt = ctrl_dt * 1;       % simulation sampling time
 rpt_dt = 1;             % report time (on console)
 t = 0:dt:T;             % time vector
 
