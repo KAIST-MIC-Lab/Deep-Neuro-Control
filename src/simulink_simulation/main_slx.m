@@ -1,11 +1,11 @@
 clear
 
 slx_name = "main.slx";
-T = .96;
+T = .48*10;
 seed = 1; rng(seed);
 
 RUN_FLAG = 1;
-SAVE_FLAG = 1;
+SAVE_FLAG = 0;
 
 %% SYSTEM PARAMETERS LOAD
 % data_path = 'machine_pmsm_mtpx.mat';
