@@ -1,0 +1,67 @@
+stages:
+  - compilation
+  - deploy
+  - archive
+  - backup
+
+variables:
+  LATEX_FILENAME: "manuscript" # filename without file-extension  
+
+# Compile latex 
+compilation:
+  image: texlive/texlive:latest
+  stage: compilation
+  variables:
+    GIT_SUBMODULE_STRATEGY: normal
+  script:
+    - latexmk -pdf $LATEX_FILENAME.tex
+  artifacts:
+    paths:
+      - ./$LATEX_FILENAME.pdf
+
+# deploy pdf to gitlab pages
+pages:
+  image: alpine:latest
+  stage: deploy
+  only: 
+    refs:
+      - master
+  script:
+    - mv ./$LATEX_FILENAME.pdf ./public/$LATEX_FILENAME.pdf
+  artifacts:
+    paths:
+      - public
+
+# Save all when tagged and manual triggered
+save_archive:
+  image: texlive/texlive:latest
+  stage: archive
+  variables:
+    GIT_SUBMODULE_STRATEGY: normal
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: manual
+  script:
+    - latexmk -pdf $LATEX_FILENAME.tex
+  artifacts:
+    untracked: true
+    paths:
+    - ./
+    exclude:
+    - .git/**/*
+    - .git
+    expire_in: 1000 day
+
+backup_archive_to_NAS:
+  stage: backup
+  tags:
+    - windows
+  rules:
+    - if: $CI_COMMIT_TAG
+  dependencies:
+    - save_archive
+  script:
+    - Remove-Item .git -recurse -force
+    - mkdir \\LMRES-NAS\backupGitArchives\$CI_PROJECT_NAME -force
+    - Compress-Archive -Path '.\*' -DestinationPath \\LMRES-NAS\backupGitArchives\$CI_PROJECT_NAME\$CI_COMMIT_REF_NAME.zip
+    
