@@ -1,3 +1,10 @@
+% ********************************************
+%
+% Change the name of the controller to the one you want to plot. (ctrl_name)
+%
+% ********************************************
+
+%% FASTEN YOUR SEATBELT
 clear
 
 %% FIGURE SETTING
@@ -41,8 +48,8 @@ figure(1); clf;
 hF = gcf; 
 hF.Position(3:4) = [fig_width, fig_height];
 
-plot(r1.Time, r1.Data, "Color", "blue", "LineWidth", line_width, "LineStyle", "-"); hold on
-plot(x1.Time, x1.Data, "Color", "red", "LineWidth", line_width, "LineStyle", "-"); hold on
+plot(r1.Time, r1.Data, "Color", "red", "LineWidth", line_width, "LineStyle", "-"); hold on
+plot(x1.Time, x1.Data, "Color", "blue", "LineWidth", line_width, "LineStyle", "-"); hold on
 
 grid on; grid minor;
 xlabel('Time / s', 'FontSize', font_size, 'Interpreter', 'latex');
@@ -63,8 +70,8 @@ figure(2); clf;
 hF = gcf; 
 hF.Position(3:4) = [fig_width, fig_height];
 
-plot(r2.Time, r2.Data, "Color", "blue", "LineWidth", line_width, "LineStyle", "-"); hold on
-plot(x2.Time, x2.Data, "Color", "red", "LineWidth", line_width, "LineStyle", "-"); hold on
+plot(r2.Time, r2.Data, "Color", "red", "LineWidth", line_width, "LineStyle", "-"); hold on
+plot(x2.Time, x2.Data, "Color", "blue", "LineWidth", line_width, "LineStyle", "-"); hold on
 
 grid on; grid minor;
 xlabel('Time / s', 'FontSize', font_size, 'Interpreter', 'latex');
