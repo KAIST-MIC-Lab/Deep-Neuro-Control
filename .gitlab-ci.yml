@@ -35,14 +35,15 @@ compilation:
 # deploy html to gitlab pages with sphinx
 pages:
   stage: deploy
+  image: python:3.6
   script:
   - pip install -U sphinx
   - sphinx-build -b html docs/source/ public
   artifacts:
     paths:
     - public
-  # only:
-  # - main
+  only:
+  - master
 
 # # Save all when tagged and manual triggered
 # save_archive:
