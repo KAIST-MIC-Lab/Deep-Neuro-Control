@@ -46,6 +46,7 @@ compilation:
 #   - master
 
 deploy-pages:
+  stage: deploy
   image: python:3.6
   script:
   - pip install -U sphinx
