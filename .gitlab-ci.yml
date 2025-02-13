@@ -5,7 +5,7 @@ stages:
   # - backup
 
 variables:
-  LATEX_FILENAME: "conference_template" # filename without file-extension  
+  LATEX_FILENAME: "manuscript" # filename without file-extension  
 
 # Compile latex 
 compilation:

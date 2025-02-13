@@ -1,4 +1,8 @@
-
+% ********************************************
+%
+% This script is called by main.m to plot the simulation results.
+%
+% ********************************************
 
 %% FIGURE SETTING
 POSITION_FLAG = 1; % it will plot fiugures in the same position
@@ -6,13 +10,13 @@ POSITION_FLAG = 1; % it will plot fiugures in the same position
 font_size = 16;
 line_width = 2;
 lgd_size = 16;
+fig_height = 200; 
+fig_width = 450;
+
+% For papers
 % font_size = 32;
 % line_width = 2;
 % lgd_size = 28;
-
-fig_height = 200; 
-fig_width = 450;
-% For papers
 % fig_height = 300; 
 % fig_width = 800;
 
