@@ -33,7 +33,7 @@ compilation:
 #       - public
 
 # deploy html to gitlab pages with sphinx
-pages:
+sphinx:
   stage: deploy
   image: python:3.6
   script:
