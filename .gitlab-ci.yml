@@ -38,7 +38,7 @@ pages:
   image: python:3.6
   script:
     - pip install -U sphinx
-    - sphinx-build -b html . public
+    - sphinx-build -M html docs/source/ ./public/
   artifacts:
     paths:
       - public
