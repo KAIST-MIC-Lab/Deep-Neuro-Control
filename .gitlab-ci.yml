@@ -19,18 +19,18 @@ compilation:
     paths:
       - ./$LATEX_FILENAME.pdf
 
-# # deploy pdf to gitlab pages
-# pages:
-#   image: alpine:latest
-#   stage: deploy
-#   only: 
-#     refs:
-#       - main
-#   script:
-#     - mv ./$LATEX_FILENAME.pdf ./public/$LATEX_FILENAME.pdf
-#   artifacts:
-#     paths:
-#       - public
+# deploy pdf to gitlab pages
+pages:
+  image: alpine:latest
+  stage: deploy
+  only: 
+    refs:
+      - main
+  script:
+    - mv ./$LATEX_FILENAME.pdf ./public/$LATEX_FILENAME.pdf
+  artifacts:
+    paths:
+      - public
 
 # deploy html to gitlab pages with sphinx
 # pages:
@@ -45,18 +45,18 @@ compilation:
 #   only:
 #   - master
 
-deploy-pages:
-  stage: deploy
-  image: python:3.6
-  script:
-  - pip install -U sphinx
-  - sphinx-build -b html docs/source/ public
-  pages: true  # specifies that this is a Pages job
-  artifacts:
-    paths:
-      - public
-  rules:
-    - if: '$CI_COMMIT_REF_NAME == "pages"'
+# pages:
+#   image: python:3.6
+#   stage: deploy
+#   script:
+#   - pip install -U sphinx
+#   - sphinx-build -b html docs/source/ public
+#   # pages: true  # specifies that this is a Pages job
+#   artifacts:
+#     paths:
+#       - public
+#   rules:
+#     - if: '$CI_COMMIT_REF_NAME == "pages"'
 
 # # Save all when tagged and manual triggered
 # save_archive:
