@@ -19,15 +19,26 @@ compilation:
     paths:
       - ./$LATEX_FILENAME.pdf
 
-# deploy pdf to gitlab pages
+# # deploy pdf to gitlab pages
+# pages:
+#   image: alpine:latest
+#   stage: deploy
+#   only: 
+#     refs:
+#       - main
+#   script:
+#     - mv ./$LATEX_FILENAME.pdf ./public/$LATEX_FILENAME.pdf
+#   artifacts:
+#     paths:
+#       - public
+
+# deploy html to gitlab pages with sphinx
 pages:
-  image: alpine:latest
   stage: deploy
-  only: 
-    refs:
-      - main
+  image: python:3.6
   script:
-    - mv ./$LATEX_FILENAME.pdf ./public/$LATEX_FILENAME.pdf
+    - pip install -U sphinx
+    - sphinx-build -b html . public
   artifacts:
     paths:
       - public
