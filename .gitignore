@@ -39,15 +39,11 @@
 *.tmp
 *.toc
 *.tps
-/*.tikz.pdf
+# /*.tikz.pdf
 **/_old_files/
 **/.idea/*
 **/slprj
 **/slprj/*
-/*.pdf
+# /*.pdf
 *.sav
 *-checkpoint.ipynb
-
-% TEX files
-LMRES_PathDefinitions_Template.tex
-LMRES_Table_of_Symbols.tex
