@@ -4,7 +4,7 @@ This project is highly inspired by the work of LMRES Lab, Hochschule München.
 Thank you very much my dear friend, Niklas Monzen, for your kind sharing and support.
 
 ## Description
-
+ 
 The objectives of this research template are as follows:
 - Save time to start numerical validation and writing.
 - Every author in our lab uses same notations and symbols. (defined in [Template](https://gitlab.com/dding_friends/dding_template).)
