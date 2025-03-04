@@ -1,31 +1,15 @@
-% ********************************************
-%
-%   Hallo?,
-% 
-%   I understand that this may not be familiar to you at first.
-%   But I’m sure you’ll get used to it soon.
-% 
-%   Run this script first, then explore plotter.m to see how the results are plotted.
-%   Enjoy!
-%
-%                               Myeongseok Ryu
-%  	    				dding_98@gm.gist.ac.kr
-%                                  09.Feb.2025
-%
-% ********************************************
-
 %% FASTEN YOUR SEATBELT
 clear
 
-RESULT_SAVE_FLAG = 1;   % save the result as a .mat file in the results folder
+RESULT_SAVE_FLAG = 0;   % save the result as a .mat file in the results folder
 FIGURE_PLOT_FLAG = 1;   % plot the result
-FIGURE_SAVE_FLAG = 1;   % save the figure as .png and .eps
+FIGURE_SAVE_FLAG = 0;   % save the figure as .png and .eps
 
 %% SIMULATION SETTING
-T = 10;                 % simulation time
-ctrl_dt = 1e-4;         % controller sampling time
-dt = ctrl_dt * 1;       % simulation sampling time
-rpt_dt = 1;             % report time (on console)
+T = 1;                 % simulation time
+ctrl_dt = 1e-6;         % controller sampling time
+dt = ctrl_dt * 1e0;       % simulation sampling time
+rpt_dt = .1;             % report time (on console)
 t = 0:dt:T;             % time vector
 
 %% REPORT SETTING
@@ -42,14 +26,15 @@ fprintf("FIGURE_SAVE_FLAG : %d\n", FIGURE_SAVE_FLAG)
 fprintf("\n")
 
 %% SYSTEM AND REFERENCE DEFINITION
-x = [0;0];              % initial state
-u = [0;0];              % initial input 
+x = [0;2.5];              % initial state 
+u = 0;              % initial input
+Delta = [0;0];          % initial fin deflection 
+mu_z = 0;               % initial normal force coefficient
 
 grad = @system_grad;    % system gradient
 
 ref = @(t) [            % reference function
-    sin(t);
-    cos(t);
+    sin(t)+2.5;
 ];
 
 num_x = length(x);      % number of states
@@ -57,20 +42,22 @@ num_u = length(u);      % number of inputs
 num_t = length(t);      % number of time steps
 
 %% CONTROLLER LOAD
-K = diag([2; 3]);       % controller gain
+K = 1e3;       % controller gain
 
 %% RECORDER SETTING
 x_hist = zeros(num_x, num_t);   % state history 
+                                % [pitch rate; angle of attack]
 u_hist = zeros(num_u, num_t);   % input history
 r_hist = zeros(num_x, num_t);   % reference history
-
+Del_hist = zeros(num_x, num_t); % fin deflection history
+mu_hist = zeros(1, num_t);      % normal force coefficient history
 %% MAIN LOOP
 fprintf("SIMULATION RUNNING...\n")
 
 for t_idx = 1:1:num_t
     % Error Calculation
     r = ref(t(t_idx));
-    e = x - r;
+    e = x(2) - r;
 
     % Control Decision
     u = -K'*e;
@@ -79,9 +66,11 @@ for t_idx = 1:1:num_t
     x_hist(:, t_idx) = x;
     u_hist(:, t_idx) = u;
     r_hist(:, t_idx) = r;
+    Del_hist(:, t_idx) = Delta;
+    mu_hist(t_idx) = mu_z;
 
     % Step forward
-    x = x + grad(x, u) * dt;
+    [x,Delta,mu_z] = system_step(dt, x, u, Delta);
 
     % Report
     if mod(t_idx, rpt_dt/dt) == 0
@@ -133,9 +122,52 @@ end
 beep()
 
 %% LOCAL FUNCTIONS
-function grad = system_grad(x, u)
-    A = [0 1; -2 -3];      % system matrix
-    B = eye(2);            % input matrix
+function [x,Delta,mu_z] = system_step(dt, x, u, Delta)
+    q = x(1);                  % pitch rate [deg/s]      
+    alp = x(2);                % angle of attack [deg]
 
-    grad = A*x + B*u;
+    % assert(alp < 20 && alp > -20, "Angle of Attack is out of range")
+
+    %% FIN DYNAMICS
+    delta_c = u;            % commanded fin deflection [deg]
+    omega_a = 150;          % actuator bandwidth [rad/s]
+
+    Delta_grad = ([0 1; 0 -1.4*omega_a]*Delta + omega_a^2*[-1; delta_c]);
+    Delta = Delta + Delta_grad * dt;
+    delta = Delta(1);       % fin deflection [deg]
+
+    %% SYSTEM PARAMETERS
+    d = .75;                % reference diameter [ft]
+    f = 180/pi;             % radians-to-degrees conversion
+    g = 32.2;               % acceleration due to gravity [ft/s^2]
+    Iyy = 182.5;            % pitch moment of inertia [slug-ft^2]
+    Q = 6132.8;             % dynamic pressure [lb/ft^2]
+    S = .44;                % reference area [ft^2]
+    V = 3109.3;             % velocity [ft/s]
+    W = 450;                % weight [lb]
+
+    %% FORCE CALCULATE
+    phi_z = 103e-6*alp^3 - 945e-5*alp*abs(alp) -.170*alp;
+    phi_m = 215e-6*alp^3 -195e-4*alp*abs(alp) +.051*alp;
+
+    bm = -.206; bz = -.034;
+
+    Cz = phi_z + bz*delta;
+    % Cm = phi_m + bm*delta;
+
+    Z = Cz*Q*S;            % normal force [lb]
+    % m = Cm*Q*S*d;           % pitch moment [ft-lb]
+
+    mu_z = Z/W;             % normal force coefficient
+
+    %%
+    grad_tmp = [
+        f*g*Q*S*cos(alp/f)/W/V;
+        f*Q*S*d/Iyy
+    ];
+    grad = grad_tmp .* [phi_z; phi_m] ...
+        + [0 1;0 0] * [alp; q] + grad_tmp .* [bz; bm] * delta;
+    
+    x = x + grad * dt;
+
 end

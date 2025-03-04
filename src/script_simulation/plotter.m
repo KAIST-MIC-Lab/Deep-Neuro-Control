@@ -30,7 +30,7 @@ hF = gcf;
 hF.Position(3:4) = [fig_width, fig_height];
 
 plot(t, x_hist(1,:), "Color", "blue", "LineWidth", line_width, "LineStyle", "-"); hold on
-plot(t, r_hist(1,:), "Color", "red", "LineWidth", line_width, "LineStyle", "-"); hold on
+% plot(t, r_hist(1,:), "Color", "red", "LineWidth", line_width, "LineStyle", "-"); hold on
 
 grid on; grid minor;
 xlabel('Time / s', 'FontSize', font_size, 'Interpreter', 'latex');
@@ -52,7 +52,7 @@ hF = gcf;
 hF.Position(3:4) = [fig_width, fig_height];
 
 plot(t, x_hist(2,:), "Color", "blue", "LineWidth", line_width, "LineStyle", "-"); hold on
-plot(t, r_hist(2,:), "Color", "red", "LineWidth", line_width, "LineStyle", "-"); hold on
+plot(t, r_hist(1,:), "Color", "red", "LineWidth", line_width, "LineStyle", "-"); hold on
 
 grid on; grid minor;
 xlabel('Time / s', 'FontSize', font_size, 'Interpreter', 'latex');
@@ -90,20 +90,20 @@ ax.FontName = 'Times New Roman';
 % ============================================
 %        Fig. 4: Control Input 2
 % ============================================
-figure(4);clf
-hF = gcf;
-hF.Position(3:4) = [fig_width, fig_height];
+% figure(4);clf
+% hF = gcf;
+% hF.Position(3:4) = [fig_width, fig_height];
 
-plot(t, u_hist(2,:), "Color", "blue", "LineWidth", line_width, "LineStyle", "-"); hold on
+% plot(t, u_hist(2,:), "Color", "blue", "LineWidth", line_width, "LineStyle", "-"); hold on
 
-grid on; grid minor;
-xlabel('Time / s', 'FontSize', font_size, 'Interpreter', 'latex');
-ylabel('$u_2$', 'FontSize', font_size, 'Interpreter', 'latex');
-maxVal = max(u_hist(2,:)); minVal = min(u_hist(2,:)); 
-len = maxVal-minVal; ratio = .1;
-ylim([minVal-len*ratio maxVal+len*ratio]);
-xlim([0 T])
+% grid on; grid minor;
+% xlabel('Time / s', 'FontSize', font_size, 'Interpreter', 'latex');
+% ylabel('$u_2$', 'FontSize', font_size, 'Interpreter', 'latex');
+% maxVal = max(u_hist(2,:)); minVal = min(u_hist(2,:)); 
+% len = maxVal-minVal; ratio = .1;
+% ylim([minVal-len*ratio maxVal+len*ratio]);
+% xlim([0 T])
 
-ax = gca;
-ax.FontSize = font_size; 
-ax.FontName = 'Times New Roman';
+% ax = gca;
+% ax.FontSize = font_size; 
+% ax.FontName = 'Times New Roman';
