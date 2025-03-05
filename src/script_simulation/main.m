@@ -26,15 +26,16 @@ fprintf("FIGURE_SAVE_FLAG : %d\n", FIGURE_SAVE_FLAG)
 fprintf("\n")
 
 %% SYSTEM AND REFERENCE DEFINITION
-x = [0;2.5];              % initial state 
+x = [2.5;0];              % initial state 
 u = 0;              % initial input
-Delta = [0;0];          % initial fin deflection 
+Delta = [2.5;0];          % initial fin deflection 
 mu_z = 0;               % initial normal force coefficient
 
 grad = @system_grad;    % system gradient
 
 ref = @(t) [            % reference function
     sin(t)+2.5;
+    % 10
 ];
 
 num_x = length(x);      % number of states
@@ -42,7 +43,7 @@ num_u = length(u);      % number of inputs
 num_t = length(t);      % number of time steps
 
 %% CONTROLLER LOAD
-K = 1e3;       % controller gain
+K = 1;       % controller gain
 
 %% RECORDER SETTING
 x_hist = zeros(num_x, num_t);   % state history 
@@ -57,7 +58,7 @@ fprintf("SIMULATION RUNNING...\n")
 for t_idx = 1:1:num_t
     % Error Calculation
     r = ref(t(t_idx));
-    e = x(2) - r;
+    e = x(1) - r;
 
     % Control Decision
     u = -K'*e;
@@ -123,8 +124,8 @@ beep()
 
 %% LOCAL FUNCTIONS
 function [x,Delta,mu_z] = system_step(dt, x, u, Delta)
-    q = x(1);                  % pitch rate [deg/s]      
-    alp = x(2);                % angle of attack [deg]
+    alp = x(1);                % angle of attack [deg]
+    q = x(2);                  % pitch rate [deg/s]      
 
     % assert(alp < 20 && alp > -20, "Angle of Attack is out of range")
 
@@ -132,9 +133,10 @@ function [x,Delta,mu_z] = system_step(dt, x, u, Delta)
     delta_c = u;            % commanded fin deflection [deg]
     omega_a = 150;          % actuator bandwidth [rad/s]
 
-    Delta_grad = ([0 1; 0 -1.4*omega_a]*Delta + omega_a^2*[-1; delta_c]);
+    Delta_grad = ([0 1; -omega_a^2 -1.4*omega_a]*Delta + [0; omega_a^2*delta_c]);
     Delta = Delta + Delta_grad * dt;
     delta = Delta(1);       % fin deflection [deg]
+    % delta = delta_c;
 
     %% SYSTEM PARAMETERS
     d = .75;                % reference diameter [ft]
