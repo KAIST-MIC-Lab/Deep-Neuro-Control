@@ -6,6 +6,7 @@ stages:
 
 variables:
   LATEX_FILENAME: "manuscript" # filename without file-extension  
+  LATEX_FILENAME_DOC: "main" # filename without file-extension  
 
 # Compile latex 
 compilation:
@@ -15,9 +16,11 @@ compilation:
     GIT_SUBMODULE_STRATEGY: normal
   script:
     - latexmk -pdf $LATEX_FILENAME.tex
+    - latexmk -pdf doc/$LATEX_FILENAME_DOC.tex
   artifacts:
     paths:
       - ./$LATEX_FILENAME.pdf
+      - ./$LATEX_FILENAME_DOC.pdf
 
 # deploy pdf to gitlab pages
 pages:
@@ -28,6 +31,7 @@ pages:
       - main
   script:
     - mv ./$LATEX_FILENAME.pdf ./public/$LATEX_FILENAME.pdf
+    - mv ./$LATEX_FILENAME_DOC.pdf ./public/$LATEX_FILENAME_DOC.pdf
   artifacts:
     paths:
       - public
