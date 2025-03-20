@@ -32,7 +32,7 @@ pages:
       - main
   script:
     - mv ./$LATEX_FILENAME.pdf ./public/$LATEX_FILENAME.pdf
-    - mv ./$LATEX_FILENAME_DOC.pdf ./public/$LATEX_FILENAME_DOC.pdf
+    - mv ./doc/$LATEX_FILENAME_DOC.pdf ./public/$LATEX_FILENAME_DOC.pdf
   artifacts:
     paths:
       - public
