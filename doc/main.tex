@@ -16,6 +16,20 @@
 \input{\template/tex_macros/tex_macros_general.tex}
 \usepackage{appendix}
 
+% Definition of \maketitle
+\makeatletter         
+\def\@maketitle{
+    \raggedleft
+    \includegraphics[width = 20mm]{GIST_Logo.jpg}\\[5ex]
+    \begin{center}
+        {\Huge \bfseries \@title }\\[4ex] 
+        {\Large  \@author}\\[4ex] 
+        \@date\\[8ex]
+    \end{center}
+}
+\makeatother
+
+
 \dottedcontents{section}[2em]{\bfseries}{1.5em}{1pc}
 \dottedcontents{subsection}[3em]{}{1.7em}{1pc}
 
@@ -44,7 +58,19 @@
 \title{
     Deep-Neuro Control with Contraction Theory
 }
-\author{Myenogseok Ryu, Sesun You}
+
+\author{
+    Myeongseok Ryu
+    \thanks{Myeongseok Ryu and Kyunghwan Choi are with the School of Mechanical and Robotics Engineering, Gwangju Institute of Science and Technology, 61005 Gwangju, Republic of Korea {\tt\small dding\_98@gm.gist.ac.kr, khchoi@gist.ac.kr}}%
+    ,
+    Sesun You
+    \thanks{Sesun You is 
+        {\tt\small ..}}
+    ,
+    Kyunghwan Choi
+    \footnotemark[1]
+}
+
 \date{20\textsuperscript{th} March 2025}
 
 \begin{document}
