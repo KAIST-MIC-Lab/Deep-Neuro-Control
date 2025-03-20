@@ -1,6 +1,6 @@
 
 import numpy as np
-from Env import Env
+from EnvPMSM import Env
 import matplotlib.pyplot as plt
 
 # ============================================
@@ -22,7 +22,7 @@ t = np.arange(0, T, dt)
 def ref_gen(t, x):
     r = np.array([
         np.sin(t),
-        np.cos(t)
+        -np.cos(t)
     ]).reshape(-1, 1)
 
     return r
@@ -32,16 +32,21 @@ def ref_gen(t, x):
 # ============================================
 if __name__ == "__main__":
     env = Env(dt)
-    x = np.array([[10], [0]])
+    x = np.array([
+        0.0, # angle
+        0.0, # angular velocity
+        0.0, # current (alpha)
+        0.0, # current (beta)
+    ], dtype="f").reshape(4,1);
     env.reset(x)
 
     x_hist = []
     u_hist = []
     r_hist = []
 
-    K = np.array([
+    K = np.diag([
         10, 15
-    ]).reshape(1, -1)
+    ])
     
     print("Simulation Start")
 
@@ -50,7 +55,8 @@ if __name__ == "__main__":
         if (t_idx % (ctrl_dt / dt)) == 0:
             x = env.x
             xd = ref_gen(t[t_idx], env.x)
-            e = x - xd
+
+            e = x[2:3] - xd
             u = -np.dot(K, e)
 
         env.step(u)
@@ -65,6 +71,10 @@ if __name__ == "__main__":
     print("Simulation Done")
 
     if FIGURE_PLOT:
+
+        # =================================
+        #         PLOT CONFIGURATION
+        # =================================
         font_size = 16;
         font_size_ticl = 12;
         lgd_size = 12;
@@ -80,30 +90,74 @@ if __name__ == "__main__":
         plt.rcParams['font.family'] = 'Times New Roman'
         plt.rcParams['font.size'] = font_size_ticl 
 
+        # =================================
+        #    FIG 1: Position
+        # =================================
         plt.figure(1, figsize=(fig_width, fig_height))
-        plt.plot(t, [x[0] for x in x_hist], label="$x_1$", color="blue", linewidth=line_width)
-        plt.plot(t, [xd[0] for xd in r_hist], label="$r_1$", color="red", linewidth=line_width)
-        plt.title("Tracking Result of $x_1$", fontdict=fontdict)
+        plt.plot(t, [x[0] for x in x_hist], label="$\\theta$", color="blue", linewidth=line_width)
+        # plt.plot(t, [xd[0] for xd in r_hist], label="$r_1$", color="red", linewidth=line_width)
+        plt.title("Tracking Result of $\\theta$", fontdict=fontdict)
         plt.grid(True)
         plt.legend(fontsize=lgd_size)
         plt.xlabel('Time / s', fontdict=fontdict);
-        plt.ylabel('$x_1$',  fontdict=fontdict);
+        plt.ylabel('$\\theta$ / rad',  fontdict=fontdict);
 
+        # =================================
+        #    FIG 2: Velocity
+        # =================================
         plt.figure(2, figsize=(fig_width, fig_height))
-        plt.plot(t, [x[1] for x in x_hist], label="$x_2$", color="blue", linewidth=line_width)
-        plt.plot(t, [xd[1] for xd in r_hist], label="$r_2$", color="red", linewidth=line_width)
-        plt.title("Tracking Result of $x_2$", fontdict=fontdict)
+        plt.plot(t, [x[1] for x in x_hist], label="$\omega$", color="blue", linewidth=line_width)
+        # plt.plot(t, [xd[0] for xd in r_hist], label="$r_1$", color="red", linewidth=line_width)
+        plt.title("Tracking Result of $\omega$", fontdict=fontdict)
         plt.grid(True)
         plt.legend(fontsize=lgd_size)
         plt.xlabel('Time / s', fontdict=fontdict);
-        plt.ylabel('$x_2$',  fontdict=fontdict);
+        plt.ylabel('$\omega$ / rad/s',  fontdict=fontdict);
 
+        # =================================
+        #    FIG 3: Current (Alpha)
+        # =================================
         plt.figure(3, figsize=(fig_width, fig_height))
-        plt.plot(t, [u[0] for u in u_hist], label="$u$", color="blue", linewidth=line_width)
+        plt.plot(t, [x[2] for x in x_hist], label="$i_{\\alpha}$", color="blue", linewidth=line_width)
+        plt.plot(t, [xd[0] for xd in r_hist], label="$i_{\\alpha}^*$", color="red", linewidth=line_width)
+        plt.title("Tracking Result of $i_{\\alpha}$", fontdict=fontdict)
+        plt.grid(True)
+        plt.legend(fontsize=lgd_size)
+        plt.xlabel('Time / s', fontdict=fontdict);
+        plt.ylabel('$i_{\\alpha}$ / A',  fontdict=fontdict);
+
+        # =================================
+        #    FIG 4: Current (Beta)
+        # =================================
+        plt.figure(4, figsize=(fig_width, fig_height))
+        plt.plot(t, [x[3] for x in x_hist], label="$i_{\\beta}$", color="blue", linewidth=line_width)
+        plt.plot(t, [xd[1] for xd in r_hist], label="$i_{\\beta}^*$", color="red", linewidth=line_width)
+        plt.title("Tracking Result of $i_{\\beta}$", fontdict=fontdict)
+        plt.grid(True)
+        plt.legend(fontsize=lgd_size)
+        plt.xlabel('Time / s', fontdict=fontdict);
+        plt.ylabel('$i_{\\beta}$ / A',  fontdict=fontdict);
+
+        # =================================
+        #    FIG 5: Voltage (Alpha)
+        # =================================
+        plt.figure(5, figsize=(fig_width, fig_height))
+        plt.plot(t, [u[0] for u in u_hist], label="$v_\\alpha$", color="blue", linewidth=line_width)
         plt.title("Control Input", fontdict=fontdict)
         plt.grid(True)
         plt.legend(fontsize=lgd_size)
         plt.xlabel('Time / s', fontdict=fontdict);
-        plt.ylabel('$u$',  fontdict=fontdict);
+        plt.ylabel('$v_\\alpha$ / V',  fontdict=fontdict);
         
+        # =================================
+        #    FIG 5: Voltage (Alpha)
+        # =================================
+        plt.figure(6, figsize=(fig_width, fig_height))
+        plt.plot(t, [u[1] for u in u_hist], label="$v_\\beta$", color="blue", linewidth=line_width)
+        plt.title("Control Input", fontdict=fontdict)
+        plt.grid(True)
+        plt.legend(fontsize=lgd_size)
+        plt.xlabel('Time / s', fontdict=fontdict);
+        plt.ylabel('$v_\\beta$ / V',  fontdict=fontdict);
+
         plt.show()
