@@ -16,7 +16,8 @@ compilation:
     GIT_SUBMODULE_STRATEGY: normal
   script:
     - latexmk -pdf $LATEX_FILENAME.tex
-    - latexmk -pdf doc/$LATEX_FILENAME_DOC.tex
+    - cd doc
+    - latexmk -pdf $LATEX_FILENAME_DOC.tex
   artifacts:
     paths:
       - ./$LATEX_FILENAME.pdf
