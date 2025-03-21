@@ -6,6 +6,8 @@
 *.backup
 *.bak
 *.bat
+*.bcf
+*.run.xml
 *.bbl
 *.blg
 *.dpth
