@@ -1,0 +1,35 @@
+
+\section{Notations and Preliminaries}
+
+The following notations are used throughout this document:
+\begin{itemize}
+    \item $:=$ denotes \textit{defined as}.
+    \item $(\cdot)^\top$ denotes the transpose of a matrix or a vector.
+    \item $\bdx:=[x_i]_{i\in\{1,\cdots,n\}}\in\R^n$ denotes the state vector.
+    \item $\mm A:=[a_{ij}]_{i,j\in\{1,\cdots,n\}}\in\R^{n\times n}$ denotes a matrix.
+    \item $\lambda_{i}(\mm A),\ i\in\{\max,\min\}$ denotes the maximum and minimum singular value of $\mm A$, respectively.
+    \item $\mm I_n$ denotes the identity matrix of size $n$ and $\mm 0_{n\times m}$ denotes the zero matrix of size $n\times m$.
+    \item $\sym$ denotes the symmetric part of a matrix, \ie $\sym(\mm A):=\mm A+\mm A^\top$ \cite{Tsukamoto:2021ac}.
+\end{itemize}
+
+We introduce the following lemmas.
+
+\begin{lem}[Comparison Lemma]
+	Suppose that a continuously differentiable function $f:\R^n\to\R$ satisfies the following inequality:
+	\begin{equation}
+		\ddtt f(t)\le -a f(t)+ b, \quad \forall t\in\R_{\ge 0}
+		,
+	\end{equation}
+	where $a,b>0$.
+	Then, the following inequality holds:
+	\begin{equation}
+		f(t)\le -af(0)e^{-at} + \tfrac{b}{a}(1-e^{-at}), \quad \forall t\in\R_{\ge 0}
+	\end{equation}
+	and remains in a compact set $f(t)\in\{\norm{f(t)} \mid \norm{f(0)}\le \tfrac{b}{a}\}$.
+	\label{lem:comparison}
+\end{lem}
+
+\begin{proof}
+	This is a simple special case of the comparison lemma \cite[pp. 102-103]{Khalil:2002aa}.
+	See \cite[pp. 659-660]{Khalil:2002aa}.
+\end{proof}
