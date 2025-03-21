@@ -1,39 +1,31 @@
-# Research Template for MIC Lab
-
-This project is highly inspired by the work of LMRES Lab, Hochschule München.
-Thank you very much my dear friend, Niklas Monzen, for your kind sharing and support.
+# Deep-Neuro Control with Contraction Theory
 
 ## Description
  
-The objectives of this research template are as follows:
-- Save time to start numerical validation and writing.
-- Every author in our lab uses same notations and symbols. (defined in [Template](https://gitlab.com/dding_friends/dding_template).)
-- 
+The objectives of this research are as follows:
+- Mathematical stability analysis of the controller and estimator with deep neural networks using the contraction theory.
+- Development of the controller and estimator with deep neural networks using the contraction theory.
 
 ## Tables of Contents
 
+You can find draft [./manuscript.pdf](./manuscript.pdf) and [./doc/document.pdf](./doc/main.pdf).
+
 ```
-. (may differ;)
 ├── README.md                   // you are here
-├── conference_template.tex     // template of conf.
+├── manuscript.tex              // template of manuscript
 ├── dding_template              // pre-defined template
-│   ├── tex_macros                 see below 
-│   ├── tex_packages            
-│   └── tex_symbol              
 ├── figures                     // general figures
 ├── public                      // do not touch
-├── references.bib              // bibtex file
+├── localRefs.bib               // bibtex file
+├── docs                        // documentation
 └── src                         // source code
     ├── script_simulation       // script sim. example
-    │   ├── figures             // simulation figures
-    │   └── main.m              // main function example
+    │   ├── figures             //             figures
+    │   └── results             //             results
     └── simulink_simulation     // simulink sim. example
-        ├── figures             // simulation figures
-        ├── main.slx            // main simulink example
-        ├── main_slx.m          // main script example
-        └── sim_result          // simulation results
+        ├── figures             //               figures
+        └── results             //               results
 ```
-
 
 ## How to start
 
@@ -103,16 +95,11 @@ Then the simulation results are plotted like below.
 <img src="src/script_simulation/figures/9-Feb-2025_22-32-23/Fig3.png" width="350">
 <img src="src/script_simulation/figures/9-Feb-2025_22-32-23/Fig4.png" width="350">
 
-## Contribution guidelines
-
-Please, keep in mind the objectives of this template written in this document.
-If what you want to add or adjust is on personal purpose, please, modify in your repository not in this template directly.
-Please contact the author before your contribution.
-All contributions are welcome.
-
 ## Authors
 
 - Ryu Myeongseok [@DDingR](https://gitlab.com/DDingR)
+- You Sesun [@yousesun95](https://gitlab.com/yousesun95)
+- Choi Kyunhhwan 
 
 ## License
 
