@@ -55,11 +55,9 @@
 % The packages are pre-defined in the submodule "Template".
 % If you need more packages, please add them after using pre-defined packages.
 
-\input{dding_template/tex_packages/tex_packages_general.tex}
-\input{dding_template/tex_macros/tex_macros_general.tex}
-% \input{dding_template/tex_symbol/symbols_motor.tex}
-% \input{LMRES_PathDefinitions_Template} % define local path to LMRES Templates
-% \input{\LMRESTEMPLATESPATH/include_preambles/LMRES_Preamble}
+\def\pub{false} % true for publication, false for draft
+\newcommand*{\template}{dding_template}
+\input{\template/preamble/preamble_conf.tex}
 
 % ============================================
 %     Preset 4. Additional Corrections
@@ -119,7 +117,7 @@
 \begin{itemize}
     \item Every author in our lab can use same notations and symbols. (\eg mathematically, physically, and etc.)
     \item Save time for preparing to write a paper.
-    \item \cite{Arefinia:2017aa}    
+    \item     \cite{Lopez:2021aa}
 \end{itemize}
 
 \color{blue}\lipsum[1-4]\color{black}
@@ -217,7 +215,7 @@ In this paper, following notations are used:
 %         BIBLIOGRAPHY
 % ============================================
 \bibliographystyle{ieeetr}
-\bibliography{references}
+\bibliography{\template/refs}
 
 \end{document}
 
