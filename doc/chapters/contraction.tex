@@ -178,7 +178,7 @@ Therefore, it can be handled by renormalizing the metric $\mm M(\bdx, t)$.
 Theorem \ref{thm:ctrac:main} can also be proven by using the transformed squared length integrated over two arbitrary solutions of \eqref{eq:sys}.
 The following theorem presents the alternative proof of Theorem \ref{thm:ctrac:main}.
 
-\begin{theorem}[see, T. 2.3 \cite{Tsukamoto:2021aa}]
+\begin{theorem}[see, p. 688 \cite{LOHMILLER:1998aa}, T. 2.3 \cite{Tsukamoto:2021aa}]
     Let $\mv{\xi}_1(t)$ and $\mv{\xi}_2(t)$ be two solutions of \eqref{eq:sys}, and define the transformed squared length with $\mm M(\bdx,t)$ of Theorem \ref{thm:ctrac:main} as follows:
     \begin{equation}
         V_{sl}(\bdx,\delta\bdx,t)
@@ -220,14 +220,28 @@ The following theorem presents the alternative proof of Theorem \ref{thm:ctrac:m
         \le
         \sqrt{\tfrac{V_{sl}}{\underbar{m}}}
         ,
+        \label{eq:xi_x_Vl_Vsl}
     \end{equation}
     where $\mm M(\bdx,t) \ge \underbar{m}\mm I_n,\ \forall \bdx, t$ for $\exists\underbar{m}\in\R_{>0}$ and Theorem \ref{thm:ctrac:main} can also be proven by using \eqref{eq:Vsl} and \eqref{eq:Vl} as a Lyapunov-like function, resulting in incremental exponential stability of the system \eqref{eq:sys} (see, Definition \ref{def:inc_exp_stable}).
     Note that the shortest path integral $V_l$ of \eqref{eq:Vl} with a parameterized state $\bdx$ (\ie $\inf{V_l}=\sqrt{\inf{V_{sl}}}$) defines the Riemannian distance and the path integral of a minimizing geodesic.
 \end{theorem}
 
 \begin{proof}
-    ...
+    Note that $\mv{\xi}_i(t),\ \forall i\in\{1,2\}$ are parameterized $\bdx$.
+    Therefore, left-side equailty of \eqref{eq:xi_x_Vl_Vsl} holds.
+    The right-side inequality of \eqref{eq:xi_x_Vl_Vsl} can be proven by using the Cauchy-Schwarz inequality.
+
+    On the other hands, by taking time derivative of $V_{sl}$ and $V_l$, we have $\ddtt V_{sl} \le -2\alpha V_{sl}$ and $\ddtt V_l \le -\alpha V_l$.
+    As $\mm{M}(\bdx,t)$ is from Theorem \ref{thm:ctrac:main}, the incremental exponential stability of the system \eqref{eq:sys} is guaranteed using the comparison lemma of Lemma \ref{lem:comparison} as follows: 
+    \begin{equation}
+        \norm{\mv\xi_1(t)-\mv\xi_2(t)}
+        \le
+        \tfrac{V_{l}(0)}{\sqrt{\underbar{m}}} \exp(-\alpha t)
+        .
+    \end{equation}
 \end{proof}
+
+If there exists a bounded perturbation in \eqref{eq:sys}, then 
 
 \hfill
 

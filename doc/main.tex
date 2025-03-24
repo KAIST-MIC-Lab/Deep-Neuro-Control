@@ -4,7 +4,7 @@
 \newcommand*{\template}{../dding_template}
 \input{\template/preamble/preamble_article.tex}
 
-% Definition of \maketitle
+% Insert GIST logo
 \makeatletter         
 \def\@maketitle{
     \raggedleft
@@ -17,8 +17,8 @@
 }
 \makeatother
 
-\dottedcontents{section}[2em]{\bfseries}{1.5em}{1pc}
-\dottedcontents{subsection}[3em]{}{1.7em}{1pc}
+\dottedcontents{section}[2em]{\bfseries}{1.5em}{.75pc}
+\dottedcontents{subsection}[3em]{}{1.7em}{.75pc}
 
 % ========================================
 \newcommand*{\bdx}{\mv{x}} % bold x
@@ -63,6 +63,11 @@
 
 \begin{abstract}
     This project aims to develop control or estimator with deep neural network and contraction theory.
+    Learning-based control methods have been widely studied as remarkable advancements in the deep learning field.
+    However, naive application of deep learning to control problems often leads to poor performance and instability.
+    Even though some literature has shown that the learning-based control methods have been successfully applied to various control problems, the theoretical analysis of the stability and performance in the control perspective is still lacking.
+    Moreover, recent deep learning studies begins from the stochastic optimization algorithms, which make the analysis of the stability and performance more difficult.
+    To overcome theses difficulties, the contraction theory is studied to analyze its capability to analysis the stability and performance of the learning-based control methods.
 \end{abstract}
 
 \tableofcontents
