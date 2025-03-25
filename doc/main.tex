@@ -8,7 +8,11 @@
 \makeatletter         
 \def\@maketitle{
     \raggedleft
-    \includegraphics[width = 20mm]{GIST_Logo.jpg}\\[5ex]
+    \includegraphics[height = 8mm]{figs/logo_GIST.png}
+    % \includegraphics[height = 8mm]{figs/logo_KAIST.png}
+    \hspace{5mm}
+    \includegraphics[height = 8mm]{figs/logo_KMU.png}
+    \\[5ex]
     \begin{center}
         {\Huge \bfseries \@title }\\[4ex] 
         {\Large  \@author}\\[4ex] 
@@ -25,6 +29,8 @@
 \newcommand*{\bdy}{\mv{u}} % bold u
 \newcommand*{\bdz}{\mv{z}} % bold z
 \newcommand*{\bdq}{\mv{q}} % bold q
+\newcommand*{\bdu}{\mv{u}} % bold u
+\newcommand*{\bdd}{\mv{d}} % bold d
 
 \newcommand*{\bdf}{\mv{f}} % bold f
 
@@ -86,6 +92,19 @@
 %         REVIEW OF CONTRACTION THEORY
 % ========================================
 \input{chapters/contraction.tex}
+
+% ========================================
+% ConVex optimization-based
+% Steady-state Tracking Error Minimization
+%       - CV-STEM
+% ========================================
+\section{ConVex optimization-based Steady-state Tracking Error Minimization (CV-STEM)}
+
+% ========================================
+%  Neural (Stochastic) Contraction Metric
+%       - NCM or NSCM
+% ========================================
+\section{Neural (Stochastic) Contraction Metric (NCM or NSCM)}
 
 % ========================================
 %         Conclusion

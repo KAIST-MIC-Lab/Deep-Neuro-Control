@@ -39,7 +39,7 @@ For this, motivated by the calculus of variations \cite[Chap. 4]{Kirk:2004aa}, \
 \end{equation}
 For your information, $\delta\bdx$ is an infinitesimal displacement at \textit{fixed time}.
 
-\subsubsection{Notable Definitions}
+\subsubsection{Definitions}
 
 Before we present the fundamental theorem of contraction theory, we introduce the following definitions.
 One can re-visit this section while reading further.
@@ -80,6 +80,7 @@ One can re-visit this section while reading further.
     \end{equation}
     and is called the \textit{generalized Jacobian}.
     This can be easily derived by differentiating $\delta\bdz = \Theta(\bdx,t)\delta\bdx$ with respect to $t$, leading to $\ddtt\bdz=\mm F\bdz$.
+    \label{def:gen_jac}
 \end{definition}
 
 \subsubsection{Fundamental Theorem of Contraction Theory}
@@ -93,7 +94,7 @@ The following theorem presents the fundamental theorem of contraction theory and
         \mm\Theta(\bdx,t)^\top
         \mm\Theta(\bdx,t)
         > 0, \forall \bdx,t
-    $ where $\mm\Theta(\bdx,t)$ defines a smooth coordinate transformation of $\delta\bdx$ to $\delta\bdz$, \ie $\delta\bdz = \Theta(\bdx,t)\delta\bdx$, subject to the following equivalent conditions holds for $\exists\alpha\in\R_{>0},\ \forall \bdx,t$:
+    $ where $\mm\Theta(\bdx,t)$ (see, Definition \ref{def:metric}) defines a smooth coordinate transformation of $\delta\bdx$ to $\delta\bdz$, \ie $\delta\bdz = \Theta(\bdx,t)\delta\bdx$, subject to the following equivalent conditions holds for $\exists\alpha\in\R_{>0},\ \forall \bdx,t$:
     \begin{subequations}
         \begin{align}
             \lambda_{\max} (
@@ -224,6 +225,7 @@ The following theorem presents the alternative proof of Theorem \ref{thm:ctrac:m
     \end{equation}
     where $\mm M(\bdx,t) \ge \underbar{m}\mm I_n,\ \forall \bdx, t$ for $\exists\underbar{m}\in\R_{>0}$ and Theorem \ref{thm:ctrac:main} can also be proven by using \eqref{eq:Vsl} and \eqref{eq:Vl} as a Lyapunov-like function, resulting in incremental exponential stability of the system \eqref{eq:sys} (see, Definition \ref{def:inc_exp_stable}).
     Note that the shortest path integral $V_l$ of \eqref{eq:Vl} with a parameterized state $\bdx$ (\ie $\inf{V_l}=\sqrt{\inf{V_{sl}}}$) defines the Riemannian distance and the path integral of a minimizing geodesic.
+    \label{thm:ctrac:path_int}
 \end{theorem}
 
 \begin{proof}
@@ -241,14 +243,35 @@ The following theorem presents the alternative proof of Theorem \ref{thm:ctrac:m
     \end{equation}
 \end{proof}
 
-If there exists a bounded perturbation in \eqref{eq:sys}, then 
+In conclusion, Theorem \ref{thm:ctrac:main} defines necessary and sufficient conditions of incremental exponential stability of the system \eqref{eq:sys}, and Theorem \ref{thm:ctrac:path_int} provides an alternative proof of Theorem \ref{thm:ctrac:main} using the path integral of a minimizing geodesic.
 
 \hfill
 
-\begin{example}
+We provide two simple examples of the contraction system.
+
+\begin{example}[see, Ex. 2.2 \cite{Tsukamoto:2021aa}]
     Consider the following system:
     \begin{equation}
-        \ddt
+        \dot x = -x +\exp(t)
+        .
+    \end{equation}
+    The differential dynamics of the system can be rewritten as \eqref{eq:diff_sys} with $\delta\bdx=\delta x$ as follows:
+    \begin{equation}
+        \ddtt\delta x
+        =
+        -\delta x
+        .
+    \end{equation}
+    Using constraint \eqref{eq:ctrac:metric:M}, one can select the metric $\mm M=I$.
+    Then, one can conclude that the system \eqref{eq:sys} is contracting with an exponential rate $\alpha=1$.
+    However, the system \eqref{eq:sys} is not stable, since the solution of the system \eqref{eq:sys} is $x(t) = \tfrac{\exp(t)}{2}+(x(0)-\tfrac{1}{2})\exp(-t)$.
+    \label{ex:div}
+\end{example}
+
+\begin{example}[see, Ex. 1 \cite{Jouffroy:2004aa}]
+    Consider the following system:
+    \begin{equation}
+        \ddtt
         \begin{bmatrix}
             x_1\\
             x_2
@@ -264,15 +287,220 @@ If there exists a bounded perturbation in \eqref{eq:sys}, then
         \end{bmatrix}
         .
     \end{equation}
+    Using Lyapunov function $V=\tfrac{1}{2}(x_1^2+x_2^2)$, UGES (Uniformly Globally Exponentially Stable) can be easily proven.
+    The differential dynamics of the system can be rewritten as \eqref{eq:diff_sys} with $\delta\bdx=\begin{bmatrix}\delta x_1 & \delta x_2\end{bmatrix}^\top$ as follows:
+    \begin{equation}
+        \ddtt
+        \begin{bmatrix}
+            \delta x_1\\
+            \delta x_2
+        \end{bmatrix}
+        =
+        \begin{bmatrix}
+            -1+x_2 & x_1\\
+            -2x_2 & -1
+        \end{bmatrix}
+        \begin{bmatrix}
+            \delta x_1\\
+            \delta x_2
+        \end{bmatrix}
+        .
+    \end{equation}
+    Even though the system is UGES, it is difficult to prove the contraction of the system, since the skew-symmetric structure of the system matrix is destroyed ub derivation process.
+
+    Alternatively, one can use Lyapunov function $V=\tfrac{1}{2}((x_1-x_1')^2+(x_2-x_2')^2))$ where $x_1'$ and $x_2'$ denotes another solution.
+    Hence, the contraction should be compared to an \textit{incremental} form of stability.
 \end{example}
 
 \hfill
 
-However, aforementioned theorems are limited to the convergence of the state trajectory to a single trajectory.
+However, as discussed in Example \ref{ex:div}, aforementioned theorems are limited to the convergence of the state trajectory to a single trajectory.
 In the next section, we introduce the partial contraction theory to investigate the convergence of the state trajectory to a desired trajectory.
 
-\subsubsection{Partial Contraction}
+\subsubsection{Partial Contraction Theory}
 
-\cite{Wang:2004aa,Jouffroy:2004aa}
+The following theorem presents the partial contraction theory to ensure the convergence of the state trajectory to a desired trajectory.
+
+\begin{theorem}[see, T. 1 \cite{Wang:2004aa}, T. 3 \cite{Jouffroy:2004aa}, T. 2.2 \cite{Tsukamoto:2021aa}]
+    Consider a nonlinear system of the form 
+    \begin{equation}
+        \ddtt \bdx = \bdf(\bdx,\bdx,t)
+        ,
+    \end{equation}
+    and assume that the virtual system
+    \begin{equation}
+        \ddtt\bdq = \bdf(\bdq,\bdx,t)
+        ,
+    \end{equation}
+    is contracting with respect to $\bdq$.
+    If a particular solution of the virtual $\bdq$-system verifies a smooth specific property, then all solutions of the original $\bdx$-system verifies this property exponentially.
+    The original system is said to be partially contracting.
+    \label{thm:ctrac:partial}
+\end{theorem}
+
+\begin{proof}
+    The virtual, observer-like $\bdq$-system has two particular solutions, namely $\bdq(t) = \bdx(t),\ \forall t\in\R_{\ge0}$ and the solution with the speciﬁc property.
+    Since all trajectories of the $\bdq$-system converge exponentially to a single trajectory, this implies that $\bdx(t)$ veriﬁes the speciﬁc property exponentially.
+\end{proof}
+
+I am sure that you cannot easily undertand the word \textbf{specific property} in Theorem \ref{thm:ctrac:partial}.
+I hope the following example helps you to understand the partial contraction theory.
+
+\begin{example}[see, Ex. 4 \cite{Jouffroy:2004aa}]
+    Consider the system 
+    \begin{equation}
+        \ddtt \bdx = -\mm D(\bdx) + \bdu,
+    \end{equation}
+    and reference system 
+    \begin{equation}
+        \ddtt \bdx_d = -\mm D(\bdx_d).
+    \end{equation}
+    Using control input $\bdu = -\mm K(\bdx)(\bdx-\bdx_d)+(\mm D(\bdx)-\mm D(\bdx_d))\bdx_d$, the virtual system can be rewritten as
+    \begin{equation}
+        \ddtt\bdq=-\mm D(\bdx)+\mm K(\bdx)(\bdq-\bdx_d)-\mm D(\bdx_d)\bdx_d
+        .
+    \end{equation}
+    The particular solutions of the virtual system are $\bdq(t)=\bdx(t)$ and \textbf{specific property} $\bdq(t)=\bdx_d(t)$.
+    Now, investigate the contraction of the virtual system with the differential dynamics of $\delta\bdq$ as follows: $\ddtt\delta\bdq=-(\mm D(\bdx)+\mm K(\bdx))\delta\bdq$.
+    With contraction metric $\mm M=I$ (\ie $\mm D(\bdx)+\mm K(\bdx)>0$), one can conclude that the virtual system is contracting with an exponential rate $\alpha=1$.
+
+    This implies that all solutions including two solutions (\ie $\bdq(t)=\bdx(t)$ and $\bdq(t)=\bdx_d(t)$), of the virtual system will converge to a single trajectory exponentially, leading to $\bdq(t)=\bdx(t)=\bdx_d(t)$.
+    
+    It is notable that the selection of the virtual system is crucial to simply obtain contraction metric $\mm M(\bdx,t)$.
+    If we select the virtual system as $\ddtt \bdq = -(\mm D(\bdq)+\mm K(\bdq))(\bdq-\bdx_d)-\mm D(\bdx_d)\bdx_d$, then the contraction metric $\mm M$ is not easily obtained, since $\pptfrac{\mm K}{\bdq}$ and $\pptfrac{\mm D}{\bdq}$ are not zero matrices.
+\end{example}
+    
+\subsubsection{Derterministic Perturbation}
+
+Let us define deterministic prerturbated system by adding a bounded perturbation $\bdd(\bdx,t)$ to the system \eqref{eq:sys} as follows:
+\begin{equation}
+    \ddtt\bdx
+    =
+    \bdf(\bdx,t)
+    +
+    \bdd(\bdx,t)
+    ,
+    \label{eq:sys:pert}
+\end{equation}
+and two solutions of \eqref{eq:sys} $\mv\xi_1(t)$ and \eqref{eq:sys:pert} $\mv\xi_2(t)$.
+By parameterzing virtual state $\bdq(\mu,t)$ with $\mu\in[0,1]$ such that $\bdq(\mu=0,t)=\xi_0$ and $\bdq(\mu=1,t)=\xi_1$, we have virtual system as follows:
+\begin{equation}
+    \ddtt\bdq = \bdf(\bdq(\mu,t),t)+d_\mu(\mu,\xi_1,t)
+    ,
+    \label{eq:sys:pert:virtual}
+\end{equation}
+where $d_\mu(\mu,\xi_1,t)=\mu d(\xi_1,t)$, whose particular solutions are $\bdq(\mu=0,t)=\xi_0$ and $\bdq(\mu=1,t)=\xi_1$.
+
+The following theorem states the robustness of contracting system to the deterministic perturbation by extending Theorem \ref{thm:ctrac:path_int}.
+
+\begin{theorem}[see, Eq. 15 \cite{LOHMILLER:1998aa}, Lemma 1 \cite{Dani:2015aa}, T. 2.4 \cite{Tsukamoto:2021aa}]
+    If the system \eqref{eq:sys} satisfies \eqref{eq:ctrac:metric} of Theorem \ref{thm:ctrac:main}, then the path integral of the virtual system \eqref{eq:sys:pert:virtual} (\ie $V_l(\bdq,\delta\bdq,t)=\int_{\mv\xi_1}^{\mv\xi_2}\norm{\mm\Theta(\bdq,t)\delta\bdq}$), where $\mv{\xi}_1(t)$ and $\mv{\xi}_2(t)$ are solutions of \eqref{eq:sys} and \eqref{eq:sys:pert}, respectively, converges to a bounded error ball as long as $\mm\Theta\bdd\in \mathcal{L}_\infty$.
+    Specifically, if $\exists \underbar m, \bar m\in\R_{>0}$ such that $\underbar m\mm I_n\le\mm M(\bdx,t)\le\bar m\mm I_n$, and $\bar d = \sup_{\bdx,t} \norm{\bdd(\bdx,t)}$, then the following inequality holds:
+    \begin{equation}
+        \norm{\mv\xi_1(t)-\mv\xi_2(t)}
+        \le
+        \tfrac{V_{l}(0)}{\sqrt{\underbar{m}}}
+        \exp(-\alpha t)
+        +
+        \tfrac{\bar d}{\alpha}
+        \sqrt{\tfrac{\bar m}{\underbar m}}
+        (1-\exp(-\alpha t))
+        ,
+    \end{equation}
+    where $V_l(t)=V_l(\bdq,\delta\bdq,t)$.
+    \label{thm:ctrac:pert}
+\end{theorem}
+
+\begin{proof}
+    Invoking $\ddtt(\pptfrac{\bdq}{\mu})=\pptfrac{\bdf}{\bdq}\pptfrac{\bdq}{\mu}+\bdd$ and $\mm M=\mm\Theta^\top\mm\Theta$, we have time derivative integrand of $V_l$ as follows:
+    \begin{equation}
+        \begin{aligned}
+            \ddtt \norm{\mm\Theta\pptfrac{\bdq}{\mu}}
+            =&
+            \tfrac{1}{2}
+            \left(
+                \pptfrac{\bdq}{\mu}^\top
+                \mm M
+                \pptfrac{\bdq}{\mu}
+            \right)^{-\tfrac{1}{2}}
+            \left[
+                \pptfrac{\bdq}{\mu}^\top
+                \ddtt \mm M
+                \pptfrac{\bdq}{\mu}
+                +
+                \pptfrac{\bdq}{\mu}^\top
+                \mysym(\mm\Theta\tpfpx)
+                \pptfrac{\bdq}{\mu}
+                +
+                \pptfrac{\bdq}{\mu}^\top
+                2
+                \mm M \bdd            
+            \right]
+            \\
+            \le&
+            \tfrac{1}{2}
+            \left(
+                \pptfrac{\bdq}{\mu}^\top
+                \mm M
+                \pptfrac{\bdq}{\mu}
+            \right)^{-\tfrac{1}{2}}
+            \left[
+            -2\alpha 
+            \pptfrac{\bdq}{\mu}^\top
+            \mm M
+            \pptfrac{\bdq}{\mu}
+            +
+            \pptfrac{\bdq}{\mu}^\top
+            2
+            \mm M \bdd            
+            \right]
+            \\
+            \le &
+            -\alpha
+            \norm{\mm\Theta\pptfrac{\bdq}{\mu}}
+            +
+            \norm{\mm\Theta\pptfrac{\bdq}{\mu}}^{-1}
+            \norm{\mm\Theta\pptfrac{\bdq}{\mu}}
+            \norm{\mm\Theta \bdd}
+            \\
+            \le &
+            -\alpha
+            \norm{\mm\Theta\pptfrac{\bdq}{\mu}}
+            +
+            \norm{\mm\Theta \bdd}
+            .
+        \end{aligned}
+    \end{equation}
+    By integrating the above inequality with respect to $\mu$ from $0$ to $1$, we have $\ddtt V_l(t)=-\alpha V_l(t)+\sup_{\bdq,\mv\xi_1,t}\norm{\mm\Theta\bdd}$.
+    Hence, by applying the comparison lemma (Lemma \ref{lem:comparison}), we have the following result as follows:
+    \begin{equation}
+        V_l(t)
+        \le
+        V_l(0)\exp(-\alpha t)
+        +
+        \tfrac{\sup_{\bdq,\mv\xi_1,t}\norm{\mm\Theta\bdd}}{\alpha}
+        (1-\exp(-\alpha t))
+        .
+    \end{equation}
+    By using the inequality \eqref{eq:xi_x_Vl_Vsl}, we have the desired result as follows:
+    \begin{equation}
+        \norm{\mv\xi_1(t)-\mv\xi_2(t)}
+        \le
+        \tfrac{V_{l}(0) \exp(-\alpha t)}{\sqrt{\underbar{m}}}
+        +
+        \tfrac{\bar d}{\alpha}
+        \sqrt{\tfrac{\bar m}{\underbar m}}
+        (1-\exp(-\alpha t))
+        ,
+    \end{equation}
+    where $\underbar m=\inf_t\lambda_{\min}(\mm M)$ and $\bar m=\sup_t\lambda_{\max}(\mm M)$.
+    It is notable that Theorem \ref{thm:ctrac:path_int} is a special case of Theorem \ref{thm:ctrac:pert} with $\bdd=\mv 0$.
+\end{proof}
+
+Since most of systems are subject to the perturbation, Theorem \ref{thm:ctrac:pert} will be utilized in the most of further cases.
 
 \subsection{Basic Results of Contraction Theory for Stochastic Systems}
+
+\color{red}
+WILL BE UPDATED LATER.
+\color{black}
