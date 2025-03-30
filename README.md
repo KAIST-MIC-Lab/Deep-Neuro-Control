@@ -97,7 +97,7 @@ Then the simulation results are plotted like below.
 
 ## Authors
 
-- Ryu Myeongseok [@DDingR](https://gitlab.com/DDingR)
+- Ryu Myeongseok [@DDingR](https://github.com/DDingR)
 - You Sesun [@yousesun95](https://gitlab.com/yousesun95)
 - Choi Kyunhhwan 
 

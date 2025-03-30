@@ -7,10 +7,10 @@
 % Insert GIST logo
 \makeatletter         
 \def\@maketitle{
-    \raggedleft
-    \includegraphics[height = 8mm]{figs/logo_GIST.png}
-    % \includegraphics[height = 8mm]{figs/logo_KAIST.png}
-    \hspace{5mm}
+    \raggedright
+    % \includegraphics[height = 8mm]{figs/logo_GIST.png}
+    \includegraphics[height = 8mm]{figs/logo_KAIST.png}
+    \hspace{70mm}
     \includegraphics[height = 8mm]{figs/logo_KMU.png}
     \\[5ex]
     \begin{center}
@@ -20,9 +20,6 @@
     \end{center}
 }
 \makeatother
-
-\dottedcontents{section}[2em]{\bfseries}{1.5em}{.75pc}
-\dottedcontents{subsection}[3em]{}{1.7em}{.75pc}
 
 % ========================================
 \newcommand*{\bdx}{\mv{x}} % bold x
@@ -46,11 +43,11 @@
 
 \author{
     Myeongseok Ryu
-    \thanks{Myeongseok Ryu and Kyunghwan Choi are with the School of Mechanical and Robotics Engineering, Gwangju Institute of Science and Technology, 61005 Gwangju, Republic of Korea {\tt\small dding\_98@gm.gist.ac.kr, khchoi@gist.ac.kr}}%
-    ,
+    \thanks{
+        Myeongseok Ryu and Kyunghwan Choi are with the Department of Mechanical and Robotics Engineering, Gwangju Institute of Science and Technology, 61005 Gwangju, Republic of Korea {\tt\small dding\_98@gm.gist.ac.kr, khchoi@gist.ac.kr}}%
+    , 
     Sesun You
-    \thanks{Sesun You is 
-        {\tt\small example@mail.com}}%
+    \thanks{Sesun You is with 000, Keimyung University, 000, 000, Republic of Korea {\tt\small example@mail.com}}%
     ,
     Kyunghwan Choi
     \footnotemark[1]
@@ -68,12 +65,12 @@
 \maketitle
 
 \begin{abstract}
-    This project aims to develop control or estimator with deep neural network and contraction theory.
+    This research aims to develop a controller or estimator with deep learning and contraction theory.
     Learning-based control methods have been widely studied as remarkable advancements in the deep learning field.
     However, naive application of deep learning to control problems often leads to poor performance and instability.
-    Even though some literature has shown that the learning-based control methods have been successfully applied to various control problems, the theoretical analysis of the stability and performance in the control perspective is still lacking.
+    Even though some literature has shown that the learning-based control methods have been successfully applied to several control problems, the theoretical analysis of the stability and performance in the control perspective is still lacking.
     Moreover, recent deep learning studies begins from the stochastic optimization algorithms, which make the analysis of the stability and performance more difficult.
-    To overcome theses difficulties, the contraction theory is studied to analyze its capability to analysis the stability and performance of the learning-based control methods.
+    To overcome these difficulties, the contraction theory is studied to analyze its capability for the stability and performance analysis of the learning-based control methods.
 \end{abstract}
 
 \tableofcontents
@@ -98,7 +95,7 @@
 % Steady-state Tracking Error Minimization
 %       - CV-STEM
 % ========================================
-\section{ConVex optimization-based Steady-state Tracking Error Minimization (CV-STEM)}
+\input{chapters/CV-STEM.tex}
 
 % ========================================
 %  Neural (Stochastic) Contraction Metric
