@@ -12,10 +12,10 @@ First, we start with the following deterministic systems:
     = 
     \bdf(\bdx,t)
     ,
-    \label{eq:sys}
+    \label{eq:ctrac:sys}
 \end{equation}
 where $\bdf(\bdx,t)$ is an $n\times1$ sufficiently smooth non-linear vector function and $\bdx\in\R^n$ is the state vector.
-The smooth property of $\bdf(\bdx,t)$ is essential to ensure the existence and uniqueness of the solution to \eqref{eq:sys} \cite[see, pp. 88-89]{Khalil:2002aa}.
+The smooth property of $\bdf(\bdx,t)$ is essential to ensure the existence and uniqueness of the solution to \eqref{eq:ctrac:sys} \cite[see, pp. 88-89]{Khalil:2002aa}.
 
 \begin{figure}[!t]
     \centering
@@ -28,14 +28,14 @@ The smooth property of $\bdf(\bdx,t)$ is essential to ensure the existence and u
 \end{figure}
 
 The biggest difference between the traditional Lyapunov theory and the contraction theory is that the contraction theory investigates the convergence of the state trajectory to a single trajectory (contraction behavior), while the Lyapunov theory focuses on the convergence of the state trajectory to a single point \ie see, Fig.~\ref{fig:lyaVSctrac}.
-For this, motivated by the calculus of variations \cite[Chap. 4]{Kirk:2004aa}, \eqref{eq:sys} can be rewritten as differential dynamics using \textit{differential displacement} $\delta\bdx$ as follows:
+For this, motivated by the calculus of variations \cite[Chap. 4]{Kirk:2004aa}, \eqref{eq:ctrac:sys} can be rewritten as differential dynamics using \textit{differential displacement} $\delta\bdx$ as follows:
 \begin{equation}
     \ddtt\delta\bdx
     =
     \tpfpx(\bdx,t)
     \delta\bdx
     .
-    \label{eq:diff_sys}
+    \label{eq:ctrac:diff_sys}
 \end{equation}
 For your information, $\delta\bdx$ is an infinitesimal displacement at \textit{fixed time}.
 
@@ -45,7 +45,7 @@ Before we present the fundamental theorem of contraction theory, we introduce th
 One can re-visit this section while reading further.
 
 \begin{definition}[see, Def. 2.2 \cite{Tsukamoto:2021aa}]  
-    If any two trajectories $\mv\xi_1(t)$ and $\mv\xi_2(t)$ of \eqref{eq:sys} converge to a single trajectory, then the system \eqref{eq:sys} is said to be \textit{incrementally exponentially stable}, if $\exists C,\alpha>0$, subject to the following holds:
+    If any two trajectories $\mv\xi_1(t)$ and $\mv\xi_2(t)$ of \eqref{eq:ctrac:sys} converge to a single trajectory, then the system \eqref{eq:ctrac:sys} is said to be \textit{incrementally exponentially stable}, if $\exists C,\alpha>0$, subject to the following holds:
     \begin{equation}      
         \norm{\mv\xi_1(t)-\mv\xi_2(t)}
         \le 
@@ -61,7 +61,7 @@ One can re-visit this section while reading further.
 
 \begin{definition}
     Let $\mm\Theta(\bdx,t)$ be a smooth coordinate transformation of $\delta\bdx$ to $\delta\bdz$, \ie $\delta\bdz = \Theta(\bdx,t)\delta\bdx$.
-    Then, a symmetric continuously differentiable matrix $\mm M(\bdx,t):=\mm\Theta(\bdx,t)^\top\mm\Theta(\bdx,t)$ is said to be a \textit{metric} of the system \eqref{eq:sys}.
+    Then, a symmetric continuously differentiable matrix $\mm M(\bdx,t):=\mm\Theta(\bdx,t)^\top\mm\Theta(\bdx,t)$ is said to be a \textit{metric} of the system \eqref{eq:ctrac:sys}.
     \label{def:metric}
 \end{definition}
 
@@ -85,7 +85,7 @@ One can re-visit this section while reading further.
 
 \subsubsection{Fundamental Theorem of Contraction Theory}
 
-The following theorem presents the fundamental theorem of contraction theory and corresponding necessary and sufficient condition for exponential convergence of the differential system \eqref{eq:diff_sys}.
+The following theorem presents the fundamental theorem of contraction theory and corresponding necessary and sufficient condition for exponential convergence of the differential system \eqref{eq:ctrac:diff_sys}.
 
 \begin{theorem}[see, T. 2.1 \cite{Tsukamoto:2021aa}]
     If $
@@ -113,7 +113,7 @@ The following theorem presents the fundamental theorem of contraction theory and
             \le&
             -\alpha
             ,
-        \label{eq:ctrac:metric:F}
+        \label{eq:ctrac:ctrac:metric:F}
             \\
             \ddtt \mm M
             +
@@ -121,17 +121,17 @@ The following theorem presents the fundamental theorem of contraction theory and
             \le&
             -2\alpha\mm M
             ,
-        \label{eq:ctrac:metric:M}
+        \label{eq:ctrac:ctrac:metric:M}
         \end{align}
-        \label{eq:ctrac:metric}
+        \label{eq:ctrac:ctrac:metric}
     \end{subequations}
-    where the arguments of $\mm M(\bdx,t)$ and $\mm F(\bdx,t)$ are omitted for simplicity, then, the system \eqref{eq:sys} is said to be contracting with an exponential rate $\alpha$, \ie all trajectories of \eqref{eq:sys} converge to a single trajectory.
+    where the arguments of $\mm M(\bdx,t)$ and $\mm F(\bdx,t)$ are omitted for simplicity, then, the system \eqref{eq:ctrac:sys} is said to be contracting with an exponential rate $\alpha$, \ie all trajectories of \eqref{eq:ctrac:sys} converge to a single trajectory.
     The converse is also true.
     \label{thm:ctrac:main}
 \end{theorem}
 
 \begin{proof}
-    Taking time derivative of a differential Lyapunov function of $\delta\bdx$, $V=\delta\bdz^\top\bdz=\delta\bdx^\top\mm M\delta\bdx$, using the differential dynamics \eqref{eq:diff_sys}, we have
+    Taking time derivative of a differential Lyapunov function of $\delta\bdx$, $V=\delta\bdz^\top\bdz=\delta\bdx^\top\mm M\delta\bdx$, using the differential dynamics \eqref{eq:ctrac:diff_sys}, we have
     \begin{equation}
         \begin{aligned}
             \ddtt V (\bdx, \delta\bdx, t)
@@ -176,11 +176,11 @@ Therefore, it can be handled by renormalizing the metric $\mm M(\bdx, t)$.
 
 \hfill
 
-Theorem \ref{thm:ctrac:main} can also be proven by using the transformed squared length integrated over two arbitrary solutions of \eqref{eq:sys}.
+Theorem \ref{thm:ctrac:main} can also be proven by using the transformed squared length integrated over two arbitrary solutions of \eqref{eq:ctrac:sys}.
 The following theorem presents the alternative proof of Theorem \ref{thm:ctrac:main}.
 
 \begin{theorem}[see, p. 688 \cite{LOHMILLER:1998aa}, T. 2.3 \cite{Tsukamoto:2021aa}]
-    Let $\mv{\xi}_1(t)$ and $\mv{\xi}_2(t)$ be two solutions of \eqref{eq:sys}, and define the transformed squared length with $\mm M(\bdx,t)$ of Theorem \ref{thm:ctrac:main} as follows:
+    Let $\mv{\xi}_1(t)$ and $\mv{\xi}_2(t)$ be two solutions of \eqref{eq:ctrac:sys}, and define the transformed squared length with $\mm M(\bdx,t)$ of Theorem \ref{thm:ctrac:main} as follows:
     \begin{equation}
         V_{sl}(\bdx,\delta\bdx,t)
         =
@@ -193,7 +193,7 @@ The following theorem presents the alternative proof of Theorem \ref{thm:ctrac:m
         \pptfrac{\bdx}{\mu}
         \der\mu
         ,
-        \label{eq:Vsl}
+        \label{eq:ctrac:Vsl}
     \end{equation}
     where $\bdx$ is a smooth path parameterized as $\bdx(\mu=0,t)=\mv\xi_1(t)$ and $\bdx(\mu=1,t)=\mv\xi_2(t)$ by $\mu\in\{0,1\}$.
     Also, define the path integral with the transformation $\mm\Theta(\bdx,t)$ for $\mm M(\bdx,t)=\mm\Theta(\bdx,t)^\top\mm\Theta(\bdx,t)$ as follows:
@@ -206,9 +206,9 @@ The following theorem presents the alternative proof of Theorem \ref{thm:ctrac:m
         \textstyle\int_{\mv{\xi}_1(t)}^{\mv{\xi}_2(t)}
         \norm{\mm\Theta(\bdx,t)\delta\bdx}
         .
-        \label{eq:Vl}
+        \label{eq:ctrac:Vl}
     \end{equation}
-    Then, \eqref{eq:Vsl} and \eqref{eq:Vl} satisfy the following inequality:
+    Then, \eqref{eq:ctrac:Vsl} and \eqref{eq:ctrac:Vl} satisfy the following inequality:
     \begin{equation}
         \norm{\mv\xi_1(t)-\mv\xi_2(t)}
         =
@@ -221,20 +221,20 @@ The following theorem presents the alternative proof of Theorem \ref{thm:ctrac:m
         \le
         \sqrt{\tfrac{V_{sl}}{\underbar{m}}}
         ,
-        \label{eq:xi_x_Vl_Vsl}
+        \label{eq:ctrac:xi_x_Vl_Vsl}
     \end{equation}
-    where $\mm M(\bdx,t) \ge \underbar{m}\mm I_n,\ \forall \bdx, t$ for $\exists\underbar{m}\in\R_{>0}$ and Theorem \ref{thm:ctrac:main} can also be proven by using \eqref{eq:Vsl} and \eqref{eq:Vl} as a Lyapunov-like function, resulting in incremental exponential stability of the system \eqref{eq:sys} (see, Definition \ref{def:inc_exp_stable}).
-    Note that the shortest path integral $V_l$ of \eqref{eq:Vl} with a parameterized state $\bdx$ (\ie $\inf{V_l}=\sqrt{\inf{V_{sl}}}$) defines the Riemannian distance and the path integral of a minimizing geodesic.
+    where $\mm M(\bdx,t) \ge \underbar{m}\mm I_n,\ \forall \bdx, t$ for $\exists\underbar{m}\in\R_{>0}$ and Theorem \ref{thm:ctrac:main} can also be proven by using \eqref{eq:ctrac:Vsl} and \eqref{eq:ctrac:Vl} as a Lyapunov-like function, resulting in incremental exponential stability of the system \eqref{eq:ctrac:sys} (see, Definition \ref{def:inc_exp_stable}).
+    Note that the shortest path integral $V_l$ of \eqref{eq:ctrac:Vl} with a parameterized state $\bdx$ (\ie $\inf{V_l}=\sqrt{\inf{V_{sl}}}$) defines the Riemannian distance and the path integral of a minimizing geodesic.
     \label{thm:ctrac:path_int}
 \end{theorem}
 
 \begin{proof}
     Note that $\mv{\xi}_i(t),\ \forall i\in\{1,2\}$ are parameterized $\bdx$.
-    Therefore, left-side equailty of \eqref{eq:xi_x_Vl_Vsl} holds.
-    The right-side inequality of \eqref{eq:xi_x_Vl_Vsl} can be proven by using the Cauchy-Schwarz inequality.
+    Therefore, left-side equailty of \eqref{eq:ctrac:xi_x_Vl_Vsl} holds.
+    The right-side inequality of \eqref{eq:ctrac:xi_x_Vl_Vsl} can be proven by using the Cauchy-Schwarz inequality.
 
     On the other hands, by taking time derivative of $V_{sl}$ and $V_l$, we have $\ddtt V_{sl} \le -2\alpha V_{sl}$ and $\ddtt V_l \le -\alpha V_l$.
-    As $\mm{M}(\bdx,t)$ is from Theorem \ref{thm:ctrac:main}, the incremental exponential stability of the system \eqref{eq:sys} is guaranteed using the comparison lemma of Lemma \ref{lem:comparison} as follows: 
+    As $\mm{M}(\bdx,t)$ is from Theorem \ref{thm:ctrac:main}, the incremental exponential stability of the system \eqref{eq:ctrac:sys} is guaranteed using the comparison lemma of Lemma \ref{lem:comparison} as follows: 
     \begin{equation}
         \norm{\mv\xi_1(t)-\mv\xi_2(t)}
         \le
@@ -243,7 +243,7 @@ The following theorem presents the alternative proof of Theorem \ref{thm:ctrac:m
     \end{equation}
 \end{proof}
 
-In conclusion, Theorem \ref{thm:ctrac:main} defines necessary and sufficient conditions of incremental exponential stability of the system \eqref{eq:sys}, and Theorem \ref{thm:ctrac:path_int} provides an alternative proof of Theorem \ref{thm:ctrac:main} using the path integral of a minimizing geodesic.
+In conclusion, Theorem \ref{thm:ctrac:main} defines necessary and sufficient conditions of incremental exponential stability of the system \eqref{eq:ctrac:sys}, and Theorem \ref{thm:ctrac:path_int} provides an alternative proof of Theorem \ref{thm:ctrac:main} using the path integral of a minimizing geodesic.
 
 \hfill
 
@@ -255,16 +255,16 @@ We provide two simple examples of the contraction system.
         \dot x = -x +\exp(t)
         .
     \end{equation}
-    The differential dynamics of the system can be rewritten as \eqref{eq:diff_sys} with $\delta\bdx=\delta x$ as follows:
+    The differential dynamics of the system can be rewritten as \eqref{eq:ctrac:diff_sys} with $\delta\bdx=\delta x$ as follows:
     \begin{equation}
         \ddtt\delta x
         =
         -\delta x
         .
     \end{equation}
-    Using constraint \eqref{eq:ctrac:metric:M}, one can select the metric $\mm M=I$.
-    Then, one can conclude that the system \eqref{eq:sys} is contracting with an exponential rate $\alpha=1$.
-    However, the system \eqref{eq:sys} is not stable, since the solution of the system \eqref{eq:sys} is $x(t) = \tfrac{\exp(t)}{2}+(x(0)-\tfrac{1}{2})\exp(-t)$.
+    Using constraint \eqref{eq:ctrac:ctrac:metric:M}, one can select the metric $\mm M=I$.
+    Then, one can conclude that the system \eqref{eq:ctrac:sys} is contracting with an exponential rate $\alpha=1$.
+    However, the system \eqref{eq:ctrac:sys} is not stable, since the solution of the system \eqref{eq:ctrac:sys} is $x(t) = \tfrac{\exp(t)}{2}+(x(0)-\tfrac{1}{2})\exp(-t)$.
     \label{ex:div}
 \end{example}
 
@@ -288,7 +288,7 @@ We provide two simple examples of the contraction system.
         .
     \end{equation}
     Using Lyapunov function $V=\tfrac{1}{2}(x_1^2+x_2^2)$, UGES (Uniformly Globally Exponentially Stable) can be easily proven.
-    The differential dynamics of the system can be rewritten as \eqref{eq:diff_sys} with $\delta\bdx=\begin{bmatrix}\delta x_1 & \delta x_2\end{bmatrix}^\top$ as follows:
+    The differential dynamics of the system can be rewritten as \eqref{eq:ctrac:diff_sys} with $\delta\bdx=\begin{bmatrix}\delta x_1 & \delta x_2\end{bmatrix}^\top$ as follows:
     \begin{equation}
         \ddtt
         \begin{bmatrix}
@@ -372,7 +372,7 @@ I hope the following example helps you to understand the partial contraction the
     
 \subsubsection{Derterministic Perturbation}
 
-Let us define deterministic prerturbated system by adding a bounded perturbation $\bdd(\bdx,t)$ to the system \eqref{eq:sys} as follows:
+Let us define deterministic prerturbated system by adding a bounded perturbation $\bdd(\bdx,t)$ to the system \eqref{eq:ctrac:sys} as follows:
 \begin{equation}
     \ddtt\bdx
     =
@@ -380,30 +380,30 @@ Let us define deterministic prerturbated system by adding a bounded perturbation
     +
     \bdd(\bdx,t)
     ,
-    \label{eq:sys:pert}
+    \label{eq:ctrac:sys:pert}
 \end{equation}
-and two solutions of \eqref{eq:sys} $\mv\xi_1(t)$ and \eqref{eq:sys:pert} $\mv\xi_2(t)$.
+and two solutions of \eqref{eq:ctrac:sys} $\mv\xi_1(t)$ and \eqref{eq:ctrac:sys:pert} $\mv\xi_2(t)$.
 By parameterzing virtual state $\bdq(\mu,t)$ with $\mu\in[0,1]$ such that $\bdq(\mu=0,t)=\xi_0$ and $\bdq(\mu=1,t)=\xi_1$, we have virtual system as follows:
 \begin{equation}
     \ddtt\bdq = \bdf(\bdq(\mu,t),t)+d_\mu(\mu,\xi_1,t)
     ,
-    \label{eq:sys:pert:virtual}
+    \label{eq:ctrac:sys:pert:virtual}
 \end{equation}
 where $d_\mu(\mu,\xi_1,t)=\mu d(\xi_1,t)$, whose particular solutions are $\bdq(\mu=0,t)=\xi_0$ and $\bdq(\mu=1,t)=\xi_1$.
 
 The following theorem states the robustness of contracting system to the deterministic perturbation by extending Theorem \ref{thm:ctrac:path_int}.
 
 \begin{theorem}[see, Eq. 15 \cite{LOHMILLER:1998aa}, Lemma 1 \cite{Dani:2015aa}, T. 2.4 \cite{Tsukamoto:2021aa}]
-    If the system \eqref{eq:sys} satisfies \eqref{eq:ctrac:metric} of Theorem \ref{thm:ctrac:main}, then the path integral of the virtual system \eqref{eq:sys:pert:virtual} (\ie $V_l(\bdq,\delta\bdq,t)=\int_{\mv\xi_1}^{\mv\xi_2}\norm{\mm\Theta(\bdq,t)\delta\bdq}$), where $\mv{\xi}_1(t)$ and $\mv{\xi}_2(t)$ are solutions of \eqref{eq:sys} and \eqref{eq:sys:pert}, respectively, converges to a bounded error ball as long as $\mm\Theta\bdd\in \mathcal{L}_\infty$.
-    Specifically, if $\exists \underbar m, \bar m\in\R_{>0}$ such that $\underbar m\mm I_n\le\mm M(\bdx,t)\le\bar m\mm I_n$, and $\bar d = \sup_{\bdx,t} \norm{\bdd(\bdx,t)}$, then the following inequality holds:
+    If the system \eqref{eq:ctrac:sys} satisfies \eqref{eq:ctrac:ctrac:metric} of Theorem \ref{thm:ctrac:main}, then the path integral of the virtual system \eqref{eq:ctrac:sys:pert:virtual} (\ie $V_l(\bdq,\delta\bdq,t)=\int_{\mv\xi_1}^{\mv\xi_2}\norm{\mm\Theta(\bdq,t)\delta\bdq}$), where $\mv{\xi}_1(t)$ and $\mv{\xi}_2(t)$ are solutions of \eqref{eq:ctrac:sys} and \eqref{eq:ctrac:sys:pert}, respectively, converges to a bounded error ball as long as $\mm\Theta\bdd\in \mathcal{L}_\infty$.
+    Specifically, if $\exists \underbar m, \overline m\in\R_{>0}$ such that $\underbar m\mm I_n\le\mm M(\bdx,t)\le\overline m\mm I_n$, and $\overline d = \sup_{\bdx,t} \norm{\bdd(\bdx,t)}$, then the following inequality holds:
     \begin{equation}
         \norm{\mv\xi_1(t)-\mv\xi_2(t)}
         \le
         \tfrac{V_{l}(0)}{\sqrt{\underbar{m}}}
         \exp(-\alpha t)
         +
-        \tfrac{\bar d}{\alpha}
-        \sqrt{\tfrac{\bar m}{\underbar m}}
+        \tfrac{\overline d}{\alpha}
+        \sqrt{\tfrac{\overline m}{\underbar m}}
         (1-\exp(-\alpha t))
         ,
     \end{equation}
@@ -482,18 +482,18 @@ The following theorem states the robustness of contracting system to the determi
         (1-\exp(-\alpha t))
         .
     \end{equation}
-    By using the inequality \eqref{eq:xi_x_Vl_Vsl}, we have the desired result as follows:
+    By using the inequality \eqref{eq:ctrac:xi_x_Vl_Vsl}, we have the desired result as follows:
     \begin{equation}
         \norm{\mv\xi_1(t)-\mv\xi_2(t)}
         \le
         \tfrac{V_{l}(0) \exp(-\alpha t)}{\sqrt{\underbar{m}}}
         +
-        \tfrac{\bar d}{\alpha}
-        \sqrt{\tfrac{\bar m}{\underbar m}}
+        \tfrac{\overline d}{\alpha}
+        \sqrt{\tfrac{\overline m}{\underbar m}}
         (1-\exp(-\alpha t))
         ,
     \end{equation}
-    where $\underbar m=\inf_t\lambda_{\min}(\mm M)$ and $\bar m=\sup_t\lambda_{\max}(\mm M)$.
+    where $\underbar m=\inf_t\lambda_{\min}(\mm M)$ and $\overline m=\sup_t\lambda_{\max}(\mm M)$.
     It is notable that Theorem \ref{thm:ctrac:path_int} is a special case of Theorem \ref{thm:ctrac:pert} with $\bdd=\mv 0$.
 \end{proof}
 

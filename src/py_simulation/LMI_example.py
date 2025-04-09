@@ -6,22 +6,37 @@ import cvxpy as cp
 import numpy as np
 
 # Problem data.
-m = 30
-n = 20
+bar_d = 100
+n = 2
+mu = 5
+alp = 0.02 # shall be determined
+dt = 1e-2
 np.random.seed(1)
-A = np.random.randn(m, n)
-b = np.random.randn(m)
 
-# Construct the problem.
-x = cp.Variable(n)
-objective = cp.Minimize(cp.sum_squares(A @ x - b))
-constraints = [0 <= x, x <= 1]
+pre_W = np.array([1, 0, 0, 1]).reshape((2,2))
+dfdx = np.array([1, 0, 0, 1]).reshape((2,2))
+# dfdx = np.array([10, 4, 1, 10]).reshape((2,2))
+
+#1 Construct the problem.
+X = cp.Variable()
+W = cp.Variable((n,n))
+
+# objective = cp.Minimize(cp.sum_squares(bar_d/alp*X))
+objective = cp.Minimize(X)
+constraints = [
+    W == W.T,
+    mu*(W-pre_W)/dt - mu*(W.T@dfdx.T + dfdx@W) >= mu*2*alp*W,
+    np.eye(n) <= mu*W,
+    mu*W <= X * np.eye(n),
+    ]
 prob = cp.Problem(objective, constraints)
 
 # The optimal objective value is returned by `prob.solve()`.
 result = prob.solve()
-# The optimal value for x is stored in `x.value`.
-print(x.value)
-# The optimal Lagrange multiplier for a constraint is stored in
-# `constraint.dual_value`.
+
+print("status:", prob.status)
+print("optimal value", result)
+print("optimal X", X.value)
+print("optimal W", W.value)
+
 print(constraints[0].dual_value)
