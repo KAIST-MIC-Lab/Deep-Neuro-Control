@@ -21,8 +21,9 @@ dfdx = np.array([1, 0, 0, 1]).reshape((2,2))
 X = cp.Variable()
 W = cp.Variable((n,n))
 
+objective = cp.Minimize(bar_d/alp*X)
 # objective = cp.Minimize(cp.sum_squares(bar_d/alp*X))
-objective = cp.Minimize(X)
+# objective = cp.Minimize(X)
 constraints = [
     W == W.T,
     mu*(W-pre_W)/dt - mu*(W.T@dfdx.T + dfdx@W) >= mu*2*alp*W,

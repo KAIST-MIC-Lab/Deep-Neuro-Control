@@ -9,16 +9,16 @@ class Env:
         self.x = np.zeros([2, 1])
 
         self.A = np.array([
-            [0, 1],
+            [-.1, 1],
             [-2, -3]
         ])
         self.B = np.array([
-            [0],
-            [1]
+            [1, 0.1],
+            [0.1, 1]
         ])
 
         self.x_num = 2
-        self.u_num = 1
+        self.u_num = 2
 
         return
     

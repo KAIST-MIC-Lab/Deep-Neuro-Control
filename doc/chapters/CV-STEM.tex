@@ -14,7 +14,7 @@ First, let us consider the following system:
    \label{eq:cv:sys}
 \end{equation}
 where $\bdx \in \mathbb{R}^n$ is the state vector, $\bdf: \mathbb{R}^n \times \mathbb{R}^+ \to \mathbb{R}^n$ is a nonlinear function, and $\bdd(t) \in \mathbb{R}^n$ is the bounded disturbance vector such that $\norm{\bdd} \leq \overline{d}\in\R_{>0}$.
-Then, according to the Theorem \ref{thm:ctrac:main}, the condition \eqref{eq:ctrac:ctrac:metric:M} for the system \eqref{eq:cv:sys} to be contracting is given by
+Ignoring $\bdd$, according to the Theorem \ref{thm:ctrac:main}, the condition \eqref{eq:ctrac:ctrac:metric:M} for the system \eqref{eq:cv:sys} to be contracting is given by
 \begin{equation}
     \ddtt\mm{M}
     +
@@ -27,4 +27,54 @@ Then, according to the Theorem \ref{thm:ctrac:main}, the condition \eqref{eq:ctr
     ,
     \label{eq:cv:ctrac:condition}
 \end{equation}
+where $\alpha \in \R_{>0}$ is the contraction rate, and $\mm{M} \in \R^{n\times n}$ is the contraction metric which satisfies $\underline{m}\mm{I} \leq \mm{M} \leq \overline{m}\mm{I}$, where $\underline{m}, \overline{m} \in \R_{>0}$ are the lower and upper bounds of the contraction metric, respectively.
+Then, the smallest path integral is exponentially bounded, thereby yielding a bounded tube of states:
+\begin{equation}
+    \norm{\mv{\xi}_1(t)-\mv{\xi}_2(t)}
+    -
+    \tfrac{V_l(0)}{\sqrt{\underline{m}}}
+    \exp(-\alpha t)
+    \le 
+    \tfrac{\overline{d}}{\alpha}
+    \sqrt{
+        \tfrac{\overline{m}}{\underline{m}}
+    }
+    (1-\exp(-\alpha t))
+    \le
+    \tfrac{\overline{d}}{\alpha}
+    \sqrt{
+        \tfrac{\overline{m}}{\underline{m}} 
+    }
+    \le
+    \tfrac{\overline{d}}{\alpha}
+    \tfrac{\overline{m}}{\underline{m}}
+    ,
+\end{equation}
+\ie see, Theorem \ref{thm:ctrac:pert}.
+
+\subsection{CV-STEM for deterministic systems}
+\label{sec:cv:cvstem}
+
+The CV-STEM is a method to sample contraction metrics using the convex optimization method.
+The CV-STEM is introduced in \cite{Tsukamoto:2019aa,Tsukamoto:2021ad} to handle the control design of It\^{o} stochastic systems.
+In \cite{Tsukamoto:2021ae}, the simpler formulation of CV-STEM  for deterministic systems is presented.
+
+To formulate the convex optimization problem, we first reformulate the condition \eqref{eq:cv:ctrac:condition} into the following form:
+\begin{align}
+    J_{\rm NL}^*
+    =
+    \min_{
+        \mathcal{X}>0,\mm{W}>0
+    }
+    \tfrac{\overline{d}}{\alpha}
+    \mathcal{X}
+    \\
+    \text{s.t.}
+    \eqref{eq:cv:ctrac:condition} 
+    ,
+    {\ \rm and \ }
+    \underline{m}\mm{I} \leq \mm{M} \leq \overline{m}\mm{I}
+    ,
+    \label{eq:cv:cvstem:opt}
+\end{align}
 
