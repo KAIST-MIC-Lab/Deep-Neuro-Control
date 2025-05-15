@@ -10,8 +10,8 @@ class Env:
 
         self.x = np.zeros([2, 1])
 
-        self.L = .66        # Inductance (mH)
-        self.R = 2.51       # Resistance (Ohm)
+        self.L = .66e-3    # Inductance (mH)
+        self.R = 0.251       # Resistance (Ohm)
         self.J = 3.24e-5    # Inertia (kg.m^2)
         self.Phi = 16.8e-3  # Flux (Wb)
         self.P = 4          # Pole pairs
@@ -36,6 +36,7 @@ class Env:
     def step(self, u):
         [th, w, ia, ib] = self.x.reshape(-1)
         [va, vb] = u.reshape(-1)
+        # [va, vb] = u
 
         L = self.L
         R = self.R
@@ -50,8 +51,8 @@ class Env:
         grad = np.array([
             w,
             (1/J)*(trq - fv*w - trqL),
-            (1/L)*(va - R*ia - P*Phi*w*np.sin(P*th)),
-            (1/L)*(vb - R*ib + P*Phi*w*np.cos(P*th)),
+            (1/L)*(va - R*ia + P*Phi*w*np.sin(P*th)),
+            (1/L)*(vb - R*ib - P*Phi*w*np.cos(P*th)),
         ]).reshape(4,1)
 
         self.x = self.x + grad * self.dt

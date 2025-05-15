@@ -1,8 +1,10 @@
 
 import numpy as np
-from EnvSimple import Env
+# from EnvSimple import Env
+from EnvPMSM import Env
 import matplotlib.pyplot as plt
-from LMI_controller import CVSTEM
+# from LMI_controller import CVSTEM
+from SM_LMI_controller import CVSTEM
 from NCM import NCM
 import pickle
 
@@ -15,10 +17,10 @@ FIGURE_SAVE = 0
 
 NN_PATH = "train_src/model.pth"
 
-T = 4.0            # simulation time
-ctrl_dt = 1e-2      # control time step
+T = .01         # simulation time
+ctrl_dt = 1e-4      # control time step
 dt = ctrl_dt * 1e0 # time step
-rpt_dt = 1        # report time step (on console)
+rpt_dt = .1        # report time step (on console)
 t = np.arange(0, T, dt)
 
 # ============================================
@@ -26,9 +28,9 @@ t = np.arange(0, T, dt)
 # ============================================
 def ref_input(t, x):
     ud = np.array([
-        np.sin(t),
-        -np.cos(t)
-    ]).reshape(-1, 1) * 10
+        np.sin(10*t),
+        np.sin(10*(t-10))
+    ]).reshape(-1, 1) * 1e-1
 
     return ud
 
@@ -36,19 +38,22 @@ def simulate(x0, xd0):
     env = Env(dt)
     env_ref = Env(dt)
 
-    x = x0
-    # x = np.array([
-    #     0.0, 
-    #     0.0, 
-    # ], dtype="f").reshape(2,1);
+    # x = x0
+    x = np.array([
+        0.0, 
+        0.0, 
+        x0[0,0],
+        x0[1,0]
+    ], dtype="f").reshape(4,1);
     
     env.reset(x)
 
-    xd0 = xd0
-    # xd0 = np.array([
-    #     10.0, 
-    #     -10.0, 
-    # ], dtype="f").reshape(2,1);
+    xd0 = np.array([
+        0.0, 
+        0.0, 
+        xd0[0,0],
+        xd0[1,0]
+    ], dtype="f").reshape(4,1);
 
     env_ref.reset(xd0)
 
@@ -78,7 +83,7 @@ def simulate(x0, xd0):
             # print(f"norm of M: {np.linalg.norm(M)}")
             # print(f"norm of M_CVSTEM: {np.linalg.norm(M_CVSTEM)}")
 
-            # M = np.zeros((2, 2))
+            M = np.zeros((2, 2))
             # u = ud
 
         env.step(u)
@@ -119,7 +124,7 @@ def result_plot():
         #   FIG 1: Error (Alpha)
         # =================================
         plt.figure(1, figsize=(fig_width, fig_height))
-        plt.plot(t, [x[0] - xd[0] for x, xd in zip(x_hist, r_hist)], label="$e_{\\alpha}$", color="blue", linewidth=line_width)
+        plt.plot(t, [x[2] - xd[2] for x, xd in zip(x_hist, r_hist)], label="$e_{\\alpha}$", color="blue", linewidth=line_width)
         plt.title("Tracking Error of $e_{\\alpha}$", fontdict=fontdict)
         plt.grid(True)
         plt.legend(fontsize=lgd_size)
@@ -130,7 +135,7 @@ def result_plot():
         #   FIG 2: Error (Beta)
         # =================================
         plt.figure(2, figsize=(fig_width, fig_height))
-        plt.plot(t, [x[1] - xd[1] for x, xd in zip(x_hist, r_hist)], label="$e_{\\beta}$", color="blue", linewidth=line_width)
+        plt.plot(t, [x[3] - xd[3] for x, xd in zip(x_hist, r_hist)], label="$e_{\\beta}$", color="blue", linewidth=line_width)
         plt.title("Tracking Error of $e_{\\beta}$", fontdict=fontdict)
         plt.grid(True)
         plt.legend(fontsize=lgd_size)
@@ -142,8 +147,8 @@ def result_plot():
         #    FIG 3: Current (Alpha)
         # =================================
         plt.figure(3, figsize=(fig_width, fig_height))
-        plt.plot(t, [x[0] for x in x_hist], label="$i_{\\alpha}$", color="blue", linewidth=line_width)
-        plt.plot(t, [xd[0] for xd in r_hist], label="$i_{\\alpha}^*$", color="red", linewidth=line_width)
+        plt.plot(t, [x[2] for x in x_hist], label="$i_{\\alpha}$", color="blue", linewidth=line_width)
+        plt.plot(t, [xd[2] for xd in r_hist], label="$i_{\\alpha}^*$", color="red", linewidth=line_width)
         plt.title("Tracking Result of $i_{\\alpha}$", fontdict=fontdict)
         plt.grid(True)
         plt.legend(fontsize=lgd_size)
@@ -154,8 +159,8 @@ def result_plot():
         #    FIG 4: Current (Beta)
         # =================================
         plt.figure(4, figsize=(fig_width, fig_height))
-        plt.plot(t, [x[1] for x in x_hist], label="$i_{\\beta}$", color="blue", linewidth=line_width)
-        plt.plot(t, [xd[1] for xd in r_hist], label="$i_{\\beta}^*$", color="red", linewidth=line_width)
+        plt.plot(t, [x[3] for x in x_hist], label="$i_{\\beta}$", color="blue", linewidth=line_width)
+        plt.plot(t, [xd[3] for xd in r_hist], label="$i_{\\beta}^*$", color="red", linewidth=line_width)
         plt.title("Tracking Result of $i_{\\beta}$", fontdict=fontdict)
         plt.grid(True)
         plt.legend(fontsize=lgd_size)
@@ -184,29 +189,59 @@ def result_plot():
         plt.xlabel('Time / s', fontdict=fontdict);
         plt.ylabel('$v_\\beta$ / V',  fontdict=fontdict);
 
+        # =================================
+        #    FIG 7: Angular Velocity
+        # =================================
+        plt.figure(7, figsize=(fig_width, fig_height))
+        plt.plot(t, [x[1] for x in x_hist], label="$\\omega$", color="blue", linewidth=line_width)
+        plt.title("Angular Velocity", fontdict=fontdict)
+        plt.grid(True)
+        plt.legend(fontsize=lgd_size)
+        plt.xlabel('Time / s', fontdict=fontdict);
+        plt.ylabel('$\\omega$ / rad/s',  fontdict=fontdict);
+
+        # =================================
+        #    FIG 8: Angular Position
+        # =================================
+        plt.figure(8, figsize=(fig_width, fig_height))
+        plt.plot(t, [x[0] for x in x_hist], label="$\\theta$", color="blue", linewidth=line_width)
+        plt.title("Angular Position", fontdict=fontdict)
+        plt.grid(True)
+        plt.legend(fontsize=lgd_size)
+        plt.xlabel('Time / s', fontdict=fontdict);
+        plt.ylabel('$\\theta$ / rad',  fontdict=fontdict);
+        
+
+
         plt.show()
 
 # ============================================
 #         MAIN FUNCTION
 # ============================================
 if __name__ == "__main__":
-    X_MAX = 10
-    X_NUM = 1
+    # X_MAX = 10
+    # X_NUM = 1
+    # x1_range = np.linspace(-X_MAX, X_MAX, X_NUM, dtype="f")
+    # x2_range = np.linspace(-X_MAX, X_MAX, X_NUM, dtype="f")
 
-    x_range = np.linspace(-X_MAX, X_MAX, X_NUM, dtype="f")
+    x1_range = np.array([
+        1.0], dtype="f")
+    x2_range = np.array([
+        -1.0], dtype="f")
 
     _SAVE = {}
 
-    for idx_x1 in range(len(x_range)):
-        for idx_x2 in range(len(x_range)):
+    for idx_x1 in range(len(x1_range)):
+        for idx_x2 in range(len(x2_range)):
             x = np.array([
-                x_range[idx_x1],
-                x_range[idx_x2],
+                x1_range[idx_x1],
+                x2_range[idx_x2],
             ], dtype="f").reshape(2,1);
             xd0 = np.array([
-                10.0, 
-                -10.0, 
+                0.0, 
+                0.0, 
             ], dtype="f").reshape(2,1);
+            # xd0 = x.copy()
 
             print(f"Simulation {idx_x1}, {idx_x2}")
             print(f"x: {x.T}, xd0: {xd0.T}")

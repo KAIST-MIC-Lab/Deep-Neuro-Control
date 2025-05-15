@@ -9,7 +9,7 @@ class CVSTEM:
 
         self.x = np.zeros([2, 1])
 
-        self.m_MAX = 1.0
+        self.m_MAX = 1e1
         self.m_MIN = 0.001
         self.b_MAX = 1    
 
