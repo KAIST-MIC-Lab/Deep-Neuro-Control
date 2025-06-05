@@ -17,9 +17,9 @@ FIGURE_SAVE = 0
 
 NN_PATH = "train_src/model.pth"
 
-T = .01         # simulation time
-ctrl_dt = 1e-4      # control time step
-dt = ctrl_dt * 1e0 # time step
+T = .1         # simulation time
+ctrl_dt = 1e-4     # control time step
+dt = ctrl_dt * 1e0 # time step 
 rpt_dt = .1        # report time step (on console)
 t = np.arange(0, T, dt)
 
@@ -30,12 +30,13 @@ def ref_input(t, x):
     ud = np.array([
         np.sin(10*t),
         np.sin(10*(t-10))
-    ]).reshape(-1, 1) * 1e-1
+    ]).reshape(-1, 1) * 1e1
 
     return ud
 
 def simulate(x0, xd0):
     env = Env(dt)
+    env_ud = Env(dt)
     env_ref = Env(dt)
 
     # x = x0
@@ -45,8 +46,9 @@ def simulate(x0, xd0):
         x0[0,0],
         x0[1,0]
     ], dtype="f").reshape(4,1);
-    
+
     env.reset(x)
+    env_ud.reset(x)
 
     xd0 = np.array([
         0.0, 
@@ -58,6 +60,7 @@ def simulate(x0, xd0):
     env_ref.reset(xd0)
 
     x_hist = []
+    x_ud_hist = []
     u_hist = []
     r_hist = []
     ud_hist = []
@@ -86,9 +89,11 @@ def simulate(x0, xd0):
             M = np.zeros((2, 2))
             # u = ud
 
-        env.step(u)
+        env.step(ud)
+        env_ud.step(ud)
 
         x_hist.append(env.x)
+        x_ud_hist.append(env_ud.x)
         u_hist.append(u)
         r_hist.append(xd)
         ud_hist.append(ud)
@@ -99,7 +104,7 @@ def simulate(x0, xd0):
 
     print("Simulation Done")
 
-    return x_hist, u_hist, r_hist, ud_hist, M_hist
+    return x_hist, x_ud_hist, u_hist, r_hist, ud_hist, M_hist
     
 def result_plot():
     # =================================
@@ -120,10 +125,12 @@ def result_plot():
         plt.rcParams['font.family'] = 'Times New Roman'
         plt.rcParams['font.size'] = font_size_ticl 
 
+
         # =================================
         #   FIG 1: Error (Alpha)
         # =================================
-        plt.figure(1, figsize=(fig_width, fig_height))
+        plt.subplot(241)
+        # plt.figure(1, figsize=(fig_width, fig_height))
         plt.plot(t, [x[2] - xd[2] for x, xd in zip(x_hist, r_hist)], label="$e_{\\alpha}$", color="blue", linewidth=line_width)
         plt.title("Tracking Error of $e_{\\alpha}$", fontdict=fontdict)
         plt.grid(True)
@@ -134,7 +141,8 @@ def result_plot():
         # =================================
         #   FIG 2: Error (Beta)
         # =================================
-        plt.figure(2, figsize=(fig_width, fig_height))
+        plt.subplot(242)
+        # plt.figure(2, figsize=(fig_width, fig_height))
         plt.plot(t, [x[3] - xd[3] for x, xd in zip(x_hist, r_hist)], label="$e_{\\beta}$", color="blue", linewidth=line_width)
         plt.title("Tracking Error of $e_{\\beta}$", fontdict=fontdict)
         plt.grid(True)
@@ -146,8 +154,10 @@ def result_plot():
         # =================================
         #    FIG 3: Current (Alpha)
         # =================================
-        plt.figure(3, figsize=(fig_width, fig_height))
+        plt.subplot(243)
+        # plt.figure(3, figsize=(fig_width, fig_height))
         plt.plot(t, [x[2] for x in x_hist], label="$i_{\\alpha}$", color="blue", linewidth=line_width)
+        plt.plot(t, [x[2] for x in x_ud_hist], label="$i_{\\alpha}^*$", color="cyan", linewidth=line_width)
         plt.plot(t, [xd[2] for xd in r_hist], label="$i_{\\alpha}^*$", color="red", linewidth=line_width)
         plt.title("Tracking Result of $i_{\\alpha}$", fontdict=fontdict)
         plt.grid(True)
@@ -158,8 +168,10 @@ def result_plot():
         # =================================
         #    FIG 4: Current (Beta)
         # =================================
-        plt.figure(4, figsize=(fig_width, fig_height))
+        plt.subplot(244)
+        # plt.figure(4, figsize=(fig_width, fig_height))
         plt.plot(t, [x[3] for x in x_hist], label="$i_{\\beta}$", color="blue", linewidth=line_width)
+        plt.plot(t, [x[3] for x in x_ud_hist], label="$i_{\\beta}^*$", color="cyan", linewidth=line_width)
         plt.plot(t, [xd[3] for xd in r_hist], label="$i_{\\beta}^*$", color="red", linewidth=line_width)
         plt.title("Tracking Result of $i_{\\beta}$", fontdict=fontdict)
         plt.grid(True)
@@ -170,8 +182,10 @@ def result_plot():
         # =================================
         #    FIG 5: Voltage (Alpha)
         # =================================
-        plt.figure(5, figsize=(fig_width, fig_height))
+        plt.subplot(245)
+        # plt.figure(5, figsize=(fig_width, fig_height))
         plt.plot(t, [u[0] for u in u_hist], label="$v_\\alpha$", color="blue", linewidth=line_width)
+        plt.plot(t, [ud[0] for ud in ud_hist], label="$v_\\alpha^*$", color="cyan", linewidth=line_width)
         plt.title("Control Input", fontdict=fontdict)
         plt.grid(True)
         plt.legend(fontsize=lgd_size)
@@ -181,8 +195,10 @@ def result_plot():
         # =================================
         #    FIG 5: Voltage (Alpha)
         # =================================
-        plt.figure(6, figsize=(fig_width, fig_height))
+        plt.subplot(246)
+        # plt.figure(6, figsize=(fig_width, fig_height))
         plt.plot(t, [u[1] for u in u_hist], label="$v_\\beta$", color="blue", linewidth=line_width)
+        plt.plot(t, [ud[1] for ud in ud_hist], label="$v_\\beta^*$", color="cyan", linewidth=line_width)
         plt.title("Control Input", fontdict=fontdict)
         plt.grid(True)
         plt.legend(fontsize=lgd_size)
@@ -192,8 +208,12 @@ def result_plot():
         # =================================
         #    FIG 7: Angular Velocity
         # =================================
-        plt.figure(7, figsize=(fig_width, fig_height))
+        plt.subplot(247)
+        # plt.figure(7, figsize=(fig_width, fig_height))
         plt.plot(t, [x[1] for x in x_hist], label="$\\omega$", color="blue", linewidth=line_width)
+        plt.plot(t, [x[1] for x in x_ud_hist], label="$\\omega^*$", color="cyan", linewidth=line_width)
+        plt.plot(t, [xd[1] for xd in r_hist], label="$i_{\\alpha}^*$", color="red", linewidth=line_width)
+
         plt.title("Angular Velocity", fontdict=fontdict)
         plt.grid(True)
         plt.legend(fontsize=lgd_size)
@@ -203,8 +223,11 @@ def result_plot():
         # =================================
         #    FIG 8: Angular Position
         # =================================
-        plt.figure(8, figsize=(fig_width, fig_height))
+        plt.subplot(248)
+        # plt.figure(8, figsize=(fig_width, fig_height))
         plt.plot(t, [x[0] for x in x_hist], label="$\\theta$", color="blue", linewidth=line_width)
+        plt.plot(t, [x[0] for x in x_ud_hist], label="$\\theta^*$", color="cyan", linewidth=line_width)
+        plt.plot(t, [xd[0] for xd in r_hist], label="$i_{\\alpha}^*$", color="red", linewidth=line_width)
         plt.title("Angular Position", fontdict=fontdict)
         plt.grid(True)
         plt.legend(fontsize=lgd_size)
@@ -245,10 +268,11 @@ if __name__ == "__main__":
 
             print(f"Simulation {idx_x1}, {idx_x2}")
             print(f"x: {x.T}, xd0: {xd0.T}")
-            x_hist, u_hist, r_hist, ud_hist, M_hist = simulate(x0=x, xd0=xd0)
+            x_hist, x_ud_hist, u_hist, r_hist, ud_hist, M_hist = simulate(x0=x, xd0=xd0)
 
             _SAVE[f'x{x}_xd{xd0}'] = {
                 'x_hist': x_hist,
+                'x_ud_hist': x_ud_hist,
                 'u_hist': u_hist,
                 'r_hist': r_hist,
                 'ud_hist': ud_hist,
