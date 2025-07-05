@@ -26,8 +26,8 @@ t = np.arange(0, T, dt)
 # ============================================
 def ref_input(t, x):
     ud = np.array([
-        np.sin(t),
-        -np.cos(t)
+        np.sin(t)+1,
+        -np.cos(t)+1
     ]).reshape(-1, 1) * 10
 
     return ud
@@ -80,6 +80,7 @@ def simulate(x0, xd0):
 
             # M = np.zeros((2, 2))
             # u = ud
+            # u = np.zeros((2, 1), dtype="f")
 
         env.step(u)
 
@@ -87,7 +88,7 @@ def simulate(x0, xd0):
         u_hist.append(u)
         r_hist.append(xd)
         ud_hist.append(ud)
-        M_hist.append(M)
+        M_hist.append(np.linalg.norm(M,2))
 
         if (t_idx % (rpt_dt / dt)) == 0:
             print(f"Simulation Time: {t_idx * dt:.3f} sec")
@@ -118,7 +119,7 @@ def result_plot():
         # =================================
         #   FIG 1: Error (Alpha)
         # =================================
-        plt.figure(1, figsize=(fig_width, fig_height))
+        plt.subplot(241)
         plt.plot(t, [x[0] - xd[0] for x, xd in zip(x_hist, r_hist)], label="$e_{\\alpha}$", color="blue", linewidth=line_width)
         plt.title("Tracking Error of $e_{\\alpha}$", fontdict=fontdict)
         plt.grid(True)
@@ -129,7 +130,7 @@ def result_plot():
         # =================================
         #   FIG 2: Error (Beta)
         # =================================
-        plt.figure(2, figsize=(fig_width, fig_height))
+        plt.subplot(242)
         plt.plot(t, [x[1] - xd[1] for x, xd in zip(x_hist, r_hist)], label="$e_{\\beta}$", color="blue", linewidth=line_width)
         plt.title("Tracking Error of $e_{\\beta}$", fontdict=fontdict)
         plt.grid(True)
@@ -141,7 +142,7 @@ def result_plot():
         # =================================
         #    FIG 3: Current (Alpha)
         # =================================
-        plt.figure(3, figsize=(fig_width, fig_height))
+        plt.subplot(243)
         plt.plot(t, [x[0] for x in x_hist], label="$i_{\\alpha}$", color="blue", linewidth=line_width)
         plt.plot(t, [xd[0] for xd in r_hist], label="$i_{\\alpha}^*$", color="red", linewidth=line_width)
         plt.title("Tracking Result of $i_{\\alpha}$", fontdict=fontdict)
@@ -153,7 +154,7 @@ def result_plot():
         # =================================
         #    FIG 4: Current (Beta)
         # =================================
-        plt.figure(4, figsize=(fig_width, fig_height))
+        plt.subplot(244)
         plt.plot(t, [x[1] for x in x_hist], label="$i_{\\beta}$", color="blue", linewidth=line_width)
         plt.plot(t, [xd[1] for xd in r_hist], label="$i_{\\beta}^*$", color="red", linewidth=line_width)
         plt.title("Tracking Result of $i_{\\beta}$", fontdict=fontdict)
@@ -165,7 +166,7 @@ def result_plot():
         # =================================
         #    FIG 5: Voltage (Alpha)
         # =================================
-        plt.figure(5, figsize=(fig_width, fig_height))
+        plt.subplot(245)
         plt.plot(t, [u[0] for u in u_hist], label="$v_\\alpha$", color="blue", linewidth=line_width)
         plt.title("Control Input", fontdict=fontdict)
         plt.grid(True)
@@ -176,13 +177,24 @@ def result_plot():
         # =================================
         #    FIG 5: Voltage (Alpha)
         # =================================
-        plt.figure(6, figsize=(fig_width, fig_height))
+        plt.subplot(246)
         plt.plot(t, [u[1] for u in u_hist], label="$v_\\beta$", color="blue", linewidth=line_width)
         plt.title("Control Input", fontdict=fontdict)
         plt.grid(True)
         plt.legend(fontsize=lgd_size)
         plt.xlabel('Time / s', fontdict=fontdict);
         plt.ylabel('$v_\\beta$ / V',  fontdict=fontdict);
+
+        # =================================
+        #    FIG 6: M Norm
+        # =================================
+        plt.subplot(247)
+        plt.plot(t, M_hist, label="$||M||_2$", color="blue", linewidth=line_width)
+        plt.title("Norm of $M$", fontdict=fontdict)
+        plt.grid(True)
+        plt.legend(fontsize=lgd_size)
+        plt.xlabel('Time / s', fontdict=fontdict);
+        plt.ylabel('$||M||_2$',  fontdict=fontdict);
 
         plt.show()
 

@@ -1,16 +1,24 @@
+% ============================================
+%         Preset 1. Document Type
+% ============================================
 \documentclass{article}
 
+% ============================================
+%         Preset 2. Pre-defined Settings
+% ============================================
 \def\pub{false} % true for publication, false for draft
 \newcommand*{\template}{../template}
 \input{\template/preamble/preamble_article.tex}
 
-% Insert GIST logo
+% ============================================
+%         Preset 2. University Logo
+% ============================================
+% Insert University logo
 \makeatletter         
 \def\@maketitle{
-    \raggedright
-    % \includegraphics[height = 8mm]{figs/logo_GIST.png}
-    \includegraphics[height = 8mm]{figs/logo_KAIST.png}
-    \hspace{70mm}
+    \raggedleft
+    % \includegraphics[height = 8mm]{\template/figs/logo_MIC.png}
+    \includegraphics[height = 8mm]{\template/figs/logo_KAIST_simple.png}
     \includegraphics[height = 8mm]{figs/logo_KMU.png}
     \\[5ex]
     \begin{center}

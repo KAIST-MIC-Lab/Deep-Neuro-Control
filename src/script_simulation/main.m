@@ -1,3 +1,7 @@
+
+addpath(genpath([pwd filesep 'YALMIP-master']));
+addpath(genpath([pwd filesep 'sedumi']));
+
 %% FASTEN YOUR SEATBELT
 clear
 
@@ -6,10 +10,10 @@ FIGURE_PLOT_FLAG = 1;   % plot the result
 FIGURE_SAVE_FLAG = 0;   % save the figure as .png and .eps
 
 %% SIMULATION SETTING
-T = 1;                 % simulation time
-ctrl_dt = 1e-6;         % controller sampling time
+T = 5e-2;                 % simulation time
+ctrl_dt = 1e-4;         % controller sampling time
 dt = ctrl_dt * 1e0;       % simulation sampling time
-rpt_dt = .1;             % report time (on console)
+rpt_dt = 1e-3;             % report time (on console)
 t = 0:dt:T;             % time vector
 
 %% REPORT SETTING
@@ -23,55 +27,61 @@ fprintf("\n")
 fprintf("RESULT_SAVE_FLAG : %d\n", RESULT_SAVE_FLAG)
 fprintf("FIGURE_PLOT_FLAG : %d\n", FIGURE_PLOT_FLAG)
 fprintf("FIGURE_SAVE_FLAG : %d\n", FIGURE_SAVE_FLAG)
-fprintf("\n")
+% fprintf("\n")
 
 %% SYSTEM AND REFERENCE DEFINITION
-x = [2.5;0];              % initial state 
-u = 0;              % initial input
-Delta = [2.5;0];          % initial fin deflection 
-mu_z = 0;               % initial normal force coefficient
+x = transpose([1,0,0,0]);              % initial state 
+u = transpose([0,0]);              % initial input
+xd = transpose([0,0,0,0]);
 
 grad = @system_grad;    % system gradient
 
-ref = @(t) [            % reference function
-    sin(t)+2.5;
-    % 10
-];
+ud_func = @(t) [sin(10*t); cos(10*t)] * 10;
+trq_d_func = @(t) sin(100*t) *0;
 
 num_x = length(x);      % number of states
 num_u = length(u);      % number of inputs
 num_t = length(t);      % number of time steps
 
 %% CONTROLLER LOAD
-K = 1;       % controller gain
+NCM_init
 
 %% RECORDER SETTING
 x_hist = zeros(num_x, num_t);   % state history 
-                                % [pitch rate; angle of attack]
+xd_hist = zeros(num_x, num_t); % state derivative history
 u_hist = zeros(num_u, num_t);   % input history
-r_hist = zeros(num_x, num_t);   % reference history
-Del_hist = zeros(num_x, num_t); % fin deflection history
-mu_hist = zeros(1, num_t);      % normal force coefficient history
+ud_hist = zeros(num_u, num_t); % input derivative history
+X_hist = zeros(1, num_t);   % 
+optDone_hist = zeros(1, num_t); % optimization done history
+
 %% MAIN LOOP
 fprintf("SIMULATION RUNNING...\n")
 
 for t_idx = 1:1:num_t
-    % Error Calculation
-    r = ref(t(t_idx));
-    e = x(1) - r;
-
-    % Control Decision
-    u = -K'*e;
     
+    % Control Decision
+    ud = ud_func(t(t_idx));  % reference input
+    e = x - xd;  % error
+    
+    ncm = NCM_ctrl(ncm, x, xd, ud);  % controller call
+
+    L = .66e-3;    % Inductance (mH)
+    B = [0 0;0 0;1/L 0; 0 1/L];
+    u = ud - ncm.inv_R * B' * inv(ncm.W) * e;  % control input
+
     % Record
     x_hist(:, t_idx) = x;
+    xd_hist(:, t_idx) = xd;
     u_hist(:, t_idx) = u;
-    r_hist(:, t_idx) = r;
-    Del_hist(:, t_idx) = Delta;
-    mu_hist(t_idx) = mu_z;
+    ud_hist(:, t_idx) = ud;
+    X_hist(t_idx) = ncm.X;  % controller gain
+    optDone_hist(t_idx) = ncm.optDone;  % optimization done flag
+
 
     % Step forward
-    [x,Delta,mu_z] = system_step(dt, x, u, Delta);
+    trq_d = trq_d_func(t(t_idx));
+    x = system_step(dt, x, u, trq_d);
+    xd = system_step(dt, xd, ud, 0);
 
     % Report
     if mod(t_idx, rpt_dt/dt) == 0
@@ -123,52 +133,33 @@ end
 beep()
 
 %% LOCAL FUNCTIONS
-function [x,Delta,mu_z] = system_step(dt, x, u, Delta)
-    alp = x(1);                % angle of attack [deg]
-    q = x(2);                  % pitch rate [deg/s]      
+function x = system_step(dt, x, u, d)
+    %%
+    th = x(1);  % theta
+    thd = x(2);  % theta dot
+    ia = x(3);  % Ia
+    ib = x(4);  % Ib
 
-    % assert(alp < 20 && alp > -20, "Angle of Attack is out of range")
-
-    %% FIN DYNAMICS
-    delta_c = u;            % commanded fin deflection [deg]
-    omega_a = 150;          % actuator bandwidth [rad/s]
-
-    Delta_grad = ([0 1; -omega_a^2 -1.4*omega_a]*Delta + [0; omega_a^2*delta_c]);
-    Delta = Delta + Delta_grad * dt;
-    delta = Delta(1);       % fin deflection [deg]
-    % delta = delta_c;
-
-    %% SYSTEM PARAMETERS
-    d = .75;                % reference diameter [ft]
-    f = 180/pi;             % radians-to-degrees conversion
-    g = 32.2;               % acceleration due to gravity [ft/s^2]
-    Iyy = 182.5;            % pitch moment of inertia [slug-ft^2]
-    Q = 6132.8;             % dynamic pressure [lb/ft^2]
-    S = .44;                % reference area [ft^2]
-    V = 3109.3;             % velocity [ft/s]
-    W = 450;                % weight [lb]
-
-    %% FORCE CALCULATE
-    phi_z = 103e-6*alp^3 - 945e-5*alp*abs(alp) -.170*alp;
-    phi_m = 215e-6*alp^3 -195e-4*alp*abs(alp) +.051*alp;
-
-    bm = -.206; bz = -.034;
-
-    Cz = phi_z + bz*delta;
-    % Cm = phi_m + bm*delta;
-
-    Z = Cz*Q*S;            % normal force [lb]
-    % m = Cm*Q*S*d;           % pitch moment [ft-lb]
-
-    mu_z = Z/W;             % normal force coefficient
+    trq_d = d;
+    
+    %%
+    L = .66e-3;    % Inductance (mH)
+    R = 0.251;     % Resistance (Ohm)
+    J = 3.24e-5;   % Inertia (kg.m^2)
+    Phi = 16.8e-3; % Flux (Wb)
+    P = 4;         % Pole pairs
+    fv = 2e-3;     % Viscous friction (N.m.s/rad)
+    
+    %% 
+    trq = -(3/2)*P*Phi*sin(P*th)*ia + (3/2)*P*Phi*cos(P*th)*ib;
 
     %%
-    grad_tmp = [
-        f*g*Q*S*cos(alp/f)/W/V;
-        f*Q*S*d/Iyy
+    grad = [
+        thd;
+        (1/J)*(trq - fv*thd + trq_d);
+        (1/L)*(u(1) - R*ia + P*Phi*thd*sin(P*th));
+        (1/L)*(u(2) - R*ib - P*Phi*thd*cos(P*th))
     ];
-    grad = grad_tmp .* [phi_z; phi_m] ...
-        + [0 1;0 0] * [alp; q] + grad_tmp .* [bz; bm] * delta;
     
     x = x + grad * dt;
 

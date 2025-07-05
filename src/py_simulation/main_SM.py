@@ -65,6 +65,7 @@ def simulate(x0, xd0):
     r_hist = []
     ud_hist = []
     M_hist = []
+    optDone_hist = []
 
     # ctrl_NCM = NCM(NN_PATH)
     ctrl_CVSTEM = CVSTEM(ctrl_dt)
@@ -81,12 +82,12 @@ def simulate(x0, xd0):
 
             # u, M = ctrl_NCM.getControl(x, xd, ud)
             # u_CVSTEM, M_CVSTEM = ctrl_CVSTEM.getControl(x, xd, ud)
-            u, M = ctrl_CVSTEM.getControl(x, xd, ud)
+            u, M, optDone = ctrl_CVSTEM.getControl(x, xd, ud)
 
             # print(f"norm of M: {np.linalg.norm(M)}")
             # print(f"norm of M_CVSTEM: {np.linalg.norm(M_CVSTEM)}")
 
-            M = np.zeros((2, 2))
+            # M = np.zeros((2, 2))
             # u = ud
 
         env.step(ud)
@@ -97,14 +98,17 @@ def simulate(x0, xd0):
         u_hist.append(u)
         r_hist.append(xd)
         ud_hist.append(ud)
-        M_hist.append(M)
+        M_hist.append(np.linalg.norm(M,2))
+        optDone_hist.append(optDone)
 
         if (t_idx % (rpt_dt / dt)) == 0:
             print(f"Simulation Time: {t_idx * dt:.3f} sec")
 
     print("Simulation Done")
 
-    return x_hist, x_ud_hist, u_hist, r_hist, ud_hist, M_hist
+    optDone = np.array(optDone_hist, dtype="f").reshape(-1, 1)
+
+    return x_hist, x_ud_hist, u_hist, r_hist, ud_hist, M_hist, optDone
     
 def result_plot():
     # =================================
@@ -129,7 +133,7 @@ def result_plot():
         # =================================
         #   FIG 1: Error (Alpha)
         # =================================
-        plt.subplot(241)
+        plt.subplot(251)
         # plt.figure(1, figsize=(fig_width, fig_height))
         plt.plot(t, [x[2] - xd[2] for x, xd in zip(x_hist, r_hist)], label="$e_{\\alpha}$", color="blue", linewidth=line_width)
         plt.title("Tracking Error of $e_{\\alpha}$", fontdict=fontdict)
@@ -141,7 +145,7 @@ def result_plot():
         # =================================
         #   FIG 2: Error (Beta)
         # =================================
-        plt.subplot(242)
+        plt.subplot(252)
         # plt.figure(2, figsize=(fig_width, fig_height))
         plt.plot(t, [x[3] - xd[3] for x, xd in zip(x_hist, r_hist)], label="$e_{\\beta}$", color="blue", linewidth=line_width)
         plt.title("Tracking Error of $e_{\\beta}$", fontdict=fontdict)
@@ -154,7 +158,7 @@ def result_plot():
         # =================================
         #    FIG 3: Current (Alpha)
         # =================================
-        plt.subplot(243)
+        plt.subplot(253)
         # plt.figure(3, figsize=(fig_width, fig_height))
         plt.plot(t, [x[2] for x in x_hist], label="$i_{\\alpha}$", color="blue", linewidth=line_width)
         plt.plot(t, [x[2] for x in x_ud_hist], label="$i_{\\alpha}^*$", color="cyan", linewidth=line_width)
@@ -168,7 +172,7 @@ def result_plot():
         # =================================
         #    FIG 4: Current (Beta)
         # =================================
-        plt.subplot(244)
+        plt.subplot(254)
         # plt.figure(4, figsize=(fig_width, fig_height))
         plt.plot(t, [x[3] for x in x_hist], label="$i_{\\beta}$", color="blue", linewidth=line_width)
         plt.plot(t, [x[3] for x in x_ud_hist], label="$i_{\\beta}^*$", color="cyan", linewidth=line_width)
@@ -182,7 +186,7 @@ def result_plot():
         # =================================
         #    FIG 5: Voltage (Alpha)
         # =================================
-        plt.subplot(245)
+        plt.subplot(255)
         # plt.figure(5, figsize=(fig_width, fig_height))
         plt.plot(t, [u[0] for u in u_hist], label="$v_\\alpha$", color="blue", linewidth=line_width)
         plt.plot(t, [ud[0] for ud in ud_hist], label="$v_\\alpha^*$", color="cyan", linewidth=line_width)
@@ -195,7 +199,7 @@ def result_plot():
         # =================================
         #    FIG 5: Voltage (Alpha)
         # =================================
-        plt.subplot(246)
+        plt.subplot(256)
         # plt.figure(6, figsize=(fig_width, fig_height))
         plt.plot(t, [u[1] for u in u_hist], label="$v_\\beta$", color="blue", linewidth=line_width)
         plt.plot(t, [ud[1] for ud in ud_hist], label="$v_\\beta^*$", color="cyan", linewidth=line_width)
@@ -208,7 +212,7 @@ def result_plot():
         # =================================
         #    FIG 7: Angular Velocity
         # =================================
-        plt.subplot(247)
+        plt.subplot(257)
         # plt.figure(7, figsize=(fig_width, fig_height))
         plt.plot(t, [x[1] for x in x_hist], label="$\\omega$", color="blue", linewidth=line_width)
         plt.plot(t, [x[1] for x in x_ud_hist], label="$\\omega^*$", color="cyan", linewidth=line_width)
@@ -223,7 +227,7 @@ def result_plot():
         # =================================
         #    FIG 8: Angular Position
         # =================================
-        plt.subplot(248)
+        plt.subplot(258)
         # plt.figure(8, figsize=(fig_width, fig_height))
         plt.plot(t, [x[0] for x in x_hist], label="$\\theta$", color="blue", linewidth=line_width)
         plt.plot(t, [x[0] for x in x_ud_hist], label="$\\theta^*$", color="cyan", linewidth=line_width)
@@ -234,6 +238,27 @@ def result_plot():
         plt.xlabel('Time / s', fontdict=fontdict);
         plt.ylabel('$\\theta$ / rad',  fontdict=fontdict);
         
+        # =================================
+        #    FIG 9: M Norm
+        # =================================
+        plt.subplot(259)
+        plt.plot(t, M_hist, label="$||M||_2$", color="blue", linewidth=line_width)
+        plt.title("Norm of $M$", fontdict=fontdict)
+        plt.grid(True)
+        plt.legend(fontsize=lgd_size)
+        plt.xlabel('Time / s', fontdict=fontdict);
+        plt.ylabel('$||M||_2$',  fontdict=fontdict);
+
+        # =================================
+        #    FIG 10: optDone
+        # =================================
+        plt.subplot(2,5,10)
+        plt.plot(t, optDone_hist, label="optDone", color="blue", linewidth=line_width)
+        plt.title("optDone", fontdict=fontdict)
+        plt.grid(True)
+        plt.legend(fontsize=lgd_size)
+        plt.xlabel('Time / s', fontdict=fontdict);
+        plt.ylabel('optDone',  fontdict=fontdict);
 
 
         plt.show()
@@ -268,7 +293,7 @@ if __name__ == "__main__":
 
             print(f"Simulation {idx_x1}, {idx_x2}")
             print(f"x: {x.T}, xd0: {xd0.T}")
-            x_hist, x_ud_hist, u_hist, r_hist, ud_hist, M_hist = simulate(x0=x, xd0=xd0)
+            x_hist, x_ud_hist, u_hist, r_hist, ud_hist, M_hist, optDone_hist = simulate(x0=x, xd0=xd0)
 
             _SAVE[f'x{x}_xd{xd0}'] = {
                 'x_hist': x_hist,
@@ -276,7 +301,8 @@ if __name__ == "__main__":
                 'u_hist': u_hist,
                 'r_hist': r_hist,
                 'ud_hist': ud_hist,
-                'M_hist': M_hist
+                'M_hist': M_hist,
+                'optDone_hist': optDone_hist
             }
 
             if FIGURE_PLOT:

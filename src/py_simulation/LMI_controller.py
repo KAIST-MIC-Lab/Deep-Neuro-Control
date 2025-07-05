@@ -10,7 +10,7 @@ class CVSTEM:
         self.x = np.zeros([2, 1])
 
         self.m_MAX = 1e1
-        self.m_MIN = 0.001
+        self.m_MIN = 0.01
         self.b_MAX = 1    
 
         self.mu = self.m_MAX    
@@ -27,8 +27,8 @@ class CVSTEM:
     
     def getSytemGradient(self, x, xd):
         A = np.array([
-            [.3, 1],
-            [-2, -.3]
+            [-.1, 1],
+            [-2, -3]
         ])
         B = np.array([
             [1, 0.1],

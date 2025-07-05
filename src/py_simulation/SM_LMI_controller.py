@@ -12,21 +12,21 @@ class CVSTEM(Env):
 
         self.x = np.zeros([4, 1])
 
-        self.m_MAX = 1e-2
+        self.m_MAX = 1e5
         # self.m_MIN = self.m_MAX *1e-2
-        self.m_MIN = 1e-4
-        self.b_MAX = 1e-3    
+        self.m_MIN = 0e-2
+        self.b_MAX = 0e-3    
 
         self.mu = self.m_MAX    
 
-        self.alpha = 1e3
+        self.alpha = 1e2
 
         self.x_num = 4
         self.u_num = 2
 
-        self.pre_W = np.eye(self.x_num) * 1e0
-        # self.pre_W = np.zeros((self.x_num, self.x_num))
-        R = np.diag([1, 1]) * 1e3
+        # self.pre_W = np.eye(self.x_num) * 1e-1
+        self.pre_W = np.zeros((self.x_num, self.x_num))
+        R = np.diag([1, 1]) * 1e1
         self.inv_R = np.linalg.inv(R)
 
         return
@@ -189,6 +189,7 @@ class CVSTEM(Env):
         if prob.status == cp.OPTIMAL:
             W_opt = W.value
             X_opt = X.value
+            optDone = 1
         else:
             print("Problem is not optimal")
             print("status:", prob.status)
@@ -196,17 +197,18 @@ class CVSTEM(Env):
             print(pre_W)
             W_opt = pre_W
             X_opt = None
+            optDone = 0
 
         self.pre_W = W_opt
 
-        return W_opt
+        return W_opt, optDone
     
     def getControl(self, x, xd, ud):
         (A, B) = self.getSytemGradient(x, xd, ud)
 
-        W = self.LMIsolver(A, B)
+        W, optDone = self.LMIsolver(A, B)
         M = np.linalg.inv(W)
 
         u = ud - self.inv_R@B.T@M@(x - xd)
 
-        return u, M
+        return u, M, optDone
