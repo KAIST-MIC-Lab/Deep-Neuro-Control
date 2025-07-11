@@ -69,16 +69,16 @@ function ncm = NCM_ctrl(ncm, x, xd, ud)
     % optimize(con, obj);
     sol = optimize(con, obj, ops);
 
-    if sol.problem ~= 0
-        ncm.optDone = 0;
-        ncm.X = 0;
-        ncm.W = pre_W;  % keep the previous value
-        % warning('YALMIP Error: %s', yalmiperror);
-    else
+    % if sol.problem ~= 0
+    %     ncm.optDone = 0;
+    %     ncm.X = 0;
+    %     ncm.W = pre_W;  % keep the previous value
+    %     % warning('YALMIP Error: %s', yalmiperror);
+    % else
         ncm.W = value(W);
         ncm.X = value(X);
         ncm.optDone = 1;
-    end
+    % end
     
     %%
 

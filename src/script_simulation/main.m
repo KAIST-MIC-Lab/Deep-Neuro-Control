@@ -11,8 +11,8 @@ FIGURE_SAVE_FLAG = 0;   % save the figure as .png and .eps
 
 %% SIMULATION SETTING
 T = 5e-2;                 % simulation time
-ctrl_dt = 1e-4;         % controller sampling time
-dt = ctrl_dt * 1e0;       % simulation sampling time
+ctrl_dt = 1e-2;         % controller sampling time
+dt = ctrl_dt * 1e-2;       % simulation sampling time
 rpt_dt = 1e-3;             % report time (on console)
 t = 0:dt:T;             % time vector
 
@@ -32,12 +32,12 @@ fprintf("FIGURE_SAVE_FLAG : %d\n", FIGURE_SAVE_FLAG)
 %% SYSTEM AND REFERENCE DEFINITION
 x = transpose([1,0,0,0]);              % initial state 
 u = transpose([0,0]);              % initial input
-xd = transpose([0,0,0,0]);
+xd = transpose([1,0,0,0]);
 
 grad = @system_grad;    % system gradient
 
-ud_func = @(t) [sin(10*t); cos(10*t)] * 10;
-trq_d_func = @(t) sin(100*t) *0;
+ud_func = @(t) [sin(20*t); cos(15*t)] * 10;
+trq_d_func = @(t) sin(20*t) *1;
 
 num_x = length(x);      % number of states
 num_u = length(u);      % number of inputs
