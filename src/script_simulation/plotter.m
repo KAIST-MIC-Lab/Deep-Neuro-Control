@@ -34,6 +34,7 @@ tl = tiledlayout(2, 4, 'Padding', 'none', 'TileSpacing', 'compact');
 nexttile;
 
 plot(t, x_hist(1,:), "Color", "blue", "LineWidth", line_width, "LineStyle", "-"); hold on
+plot(t, x_non_hist(1,:), "Color", "cyan", "LineWidth", line_width, "LineStyle", "-"); hold on
 plot(t, xd_hist(1,:), "Color", "red", "LineWidth", line_width, "LineStyle", "--"); hold on
 
 grid on; grid minor;
@@ -50,6 +51,7 @@ ax.FontName = 'Times New Roman';
 
 nexttile;
 plot(t, x_hist(2,:), "Color", "blue", "LineWidth", line_width, "LineStyle", "-"); hold on
+plot(t, x_non_hist(2,:), "Color", "cyan", "LineWidth", line_width, "LineStyle", "-"); hold on
 plot(t, xd_hist(2,:), "Color", "red", "LineWidth", line_width, "LineStyle", "--"); hold on
 
 grid on; grid minor;
@@ -66,6 +68,7 @@ ax.FontName = 'Times New Roman';
 
 nexttile;
 plot(t, x_hist(3,:), "Color", "blue", "LineWidth", line_width, "LineStyle", "-"); hold on
+plot(t, x_non_hist(3,:), "Color", "cyan", "LineWidth", line_width, "LineStyle", "-"); hold on
 plot(t, xd_hist(3,:), "Color", "red", "LineWidth", line_width, "LineStyle", "--"); hold on
 
 grid on; grid minor;
@@ -82,6 +85,7 @@ ax.FontName = 'Times New Roman';
 
 nexttile;
 plot(t, x_hist(4,:), "Color", "blue", "LineWidth", line_width, "LineStyle", "-"); hold on
+plot(t, x_non_hist(4,:), "Color", "cyan", "LineWidth", line_width, "LineStyle", "-"); hold on
 plot(t, xd_hist(4,:), "Color", "red", "LineWidth", line_width, "LineStyle", "--"); hold on
 
 grid on; grid minor;
@@ -100,12 +104,14 @@ ax.FontName = 'Times New Roman';
 %        Fig. 2: Control Input
 % ============================================
 nexttile;
-plot(t, X_hist(1,:), "Color", "blue", "LineWidth", line_width, "LineStyle", "-"); hold on
+% plot(t, X_hist(1,:), "Color", "blue", "LineWidth", line_width, "LineStyle", "-"); hold on
+plot(t, M_hist(1,:), "Color", "blue", "LineWidth", line_width, "LineStyle", "-"); hold on
 
 grid on; grid minor;
 xlabel('Time / s', 'FontSize', font_size, 'Interpreter', 'latex');
 ylabel('$X$', 'FontSize', font_size, 'Interpreter', 'latex');
-maxVal = max(X_hist(1,:)); minVal = min(X_hist(1,:)); 
+% maxVal = max(X_hist(1,:)); minVal = min(X_hist(1,:)); 
+maxVal = max(M_hist(1,:)); minVal = min(M_hist(1,:)); 
 len = maxVal-minVal; ratio = .1;
 ylim([minVal-len*ratio maxVal+len*ratio]);
 xlim([0 T])

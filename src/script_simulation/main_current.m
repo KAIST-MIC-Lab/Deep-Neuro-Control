@@ -11,9 +11,8 @@ FIGURE_SAVE_FLAG = 0;   % save the figure as .png and .eps
 
 %% SIMULATION SETTING
 T = 5e-2;                 % simulation time
-ctrl_dt = 1e-3;         % controller sampling time
-% dt = ctrl_dt * 1e-1;       % simulation sampling time
-dt = 1/20e3;
+ctrl_dt = 1e-2;         % controller sampling time
+dt = ctrl_dt * 1e-2;       % simulation sampling time
 rpt_dt = 1e-3;             % report time (on console)
 t = 0:dt:T;             % time vector
 
@@ -31,18 +30,14 @@ fprintf("FIGURE_SAVE_FLAG : %d\n", FIGURE_SAVE_FLAG)
 % fprintf("\n")
 
 %% SYSTEM AND REFERENCE DEFINITION
-% x = transpose([1,5,2,-2]);              % initial state 
-x = transpose([.2,0,0,0]);              % initial state 
-x_non = x;
+x = transpose([1,0,0,0]);              % initial state 
 u = transpose([0,0]);              % initial input
-xd = transpose([0,0,0,0]);
+xd = transpose([1,0,0,0]);
 
 grad = @system_grad;    % system gradient
 
-% ud_func = @(t) [sin(20*t); cos(15*t)] * 10;
-% ud_func = @(t) [sin(20*t); cos(15*t)] * 1;
-ud_func = @(t) [1;1] * heaviside(t-0.02) + -.5;
-trq_d_func = @(t) sin(20*t) * 0e-1;
+ud_func = @(t) [sin(20*t); cos(15*t)] * 10;
+trq_d_func = @(t) sin(20*t) *1;
 
 num_x = length(x);      % number of states
 num_u = length(u);      % number of inputs
@@ -53,13 +48,11 @@ NCM_init
 
 %% RECORDER SETTING
 x_hist = zeros(num_x, num_t);   % state history 
-x_non_hist = zeros(num_x, num_t);   
 xd_hist = zeros(num_x, num_t); % state derivative history
-u_hist = zeros(num_u, num_t);   % input history  
+u_hist = zeros(num_u, num_t);   % input history
 ud_hist = zeros(num_u, num_t); % input derivative history
 X_hist = zeros(1, num_t);   % 
 optDone_hist = zeros(1, num_t); % optimization done history
-M_hist = zeros(1, num_t);   % 
 
 %% MAIN LOOP
 fprintf("SIMULATION RUNNING...\n")
@@ -72,31 +65,27 @@ for t_idx = 1:1:num_t
     
     ncm = NCM_ctrl(ncm, x, xd, ud);  % controller call
 
-    % L = .66e-3;    % Inductance (mH)
-    L = .66;
-    B = [0 0;1/L 0; 0 1/L];
-    u = ud - ncm.inv_R * B' * inv(ncm.W) * e(2:end);  % control input
-    % u = ud - ncm.inv_R * B' * inv(ncm.W) * e;  % control input
+    L = .66e-3;    % Inductance (mH)
+    B = [0 0;0 0;1/L 0; 0 1/L];
+    u = ud - ncm.inv_R * B' * inv(ncm.W) * e;  % control input
 
     % Record
     x_hist(:, t_idx) = x;
-    x_non_hist(:, t_idx) = x_non;
     xd_hist(:, t_idx) = xd;
     u_hist(:, t_idx) = u;
     ud_hist(:, t_idx) = ud;
     X_hist(t_idx) = ncm.X;  % controller gain
     optDone_hist(t_idx) = ncm.optDone;  % optimization done flag
-    M_hist(:, t_idx) = norm(inv(ncm.W));
+
 
     % Step forward
     trq_d = trq_d_func(t(t_idx));
     x = system_step(dt, x, u, trq_d);
-    x_non = system_step(dt, x_non, ud, trq_d);
     xd = system_step(dt, xd, ud, 0);
 
     % Report
     if mod(t_idx, rpt_dt/dt) == 0
-        fprintf('Simulation Time: %.4f\n', t(t_idx))
+        fprintf('Simulation Time: %.2f\n', t(t_idx))
     end
 end
 
@@ -154,8 +143,7 @@ function x = system_step(dt, x, u, d)
     trq_d = d;
     
     %%
-    % L = .66e-3;    % Inductance (mH)
-    L = .66;
+    L = .66e-3;    % Inductance (mH)
     R = 0.251;     % Resistance (Ohm)
     J = 3.24e-5;   % Inertia (kg.m^2)
     Phi = 16.8e-3; % Flux (Wb)
