@@ -6,9 +6,17 @@
 %===============================================================================
 \documentclass{ifacconf}
 
+% \usepackage{hyperref}
 \usepackage{graphicx}      % include this line if your document contains figures
 \usepackage{natbib}        % required for bibliography
+\usepackage{comment}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[dvipsnames]{xcolor}
 
+% ============================================
+%         GENERAL MACROS
+% ============================================
 \newcommand{\template}{template}
 \newcommand{\KHCH}[1]{{\color{RoyalPurple} [KH: #1]}} % Kyunghwan's
 \newcommand{\MSRY}[1]{{\color{Peach} [MS: #1]}} % Myeongseok's 
@@ -19,12 +27,23 @@
 #2,line width=2pt] (0,3pt) -- (1.5em,3pt);}]}
 \newcommand{\ctxt}[2]{\color{#1}#2\color{black}}
 
+% ============================================
+%         MATH MACROS
+% ============================================
 % \input{\template/macros/macros_math.tex}
 \newcommand\R{\mathbb{R}}
 
 \newcommand*{\mv}[1]{\boldsymbol{#1}} % my vector
 \newcommand*{\mm}[1]{\boldsymbol{#1}} % my matrix
 \newcommand*{\norm}[1]{\lVert #1 \rVert} % euclidean norm
+
+\DeclareMathOperator{\mysym}{sym}       % symmetric part of a matrix
+
+% ============================================
+%         MOTOR SYMBOLS
+% ============================================
+\newcommand*{\ia}{i_\mathrm{\alpha}} % a-phase current
+\newcommand*{\ib}{i_\mathrm{\beta}} % b-phase current
 
 % ============================================
 %         FRACTIONS
@@ -59,7 +78,7 @@
 \begin{frontmatter}
 
 \title{
-   Contraction Theory, Deep Learning, PMSM
+   Contraction Theory Based Control for Synchronous Machines
 \thanksref{footnoteinfo}} 
 % Title, preferably not more than 10 words.
 
@@ -73,25 +92,376 @@ letters, not all uppercase.}
 
 \address[First]{
    Korea Advanced Institute of Science and Technology (KAIST), 
-   Boulder, CO 80305 USA (e-mail: author@ boulder.nist.gov).}
+   Daejeon 34051, South Korea (e-mail: dding\_98@kaist.ac.kr)}
 \address[Second]{
    Korea Advanced Institute of Science and Technology (KAIST), 
-   Fort Collins, CO 80523 USA (e-mail: author@lamar. colostate.edu)}
+   Daejeon 34051, South Korea (e-mail: kh.choi@kaist.ac.kr)}
 \address[Third]{
    Kyemyung University, 
-   Fort Collins, CO 80523 USA (e-mail: author@lamar. colostate.edu)}
+   Daegu 42601, South Korea (e-mail: yousesun@kmu.ac.kr)}
 
 \begin{abstract}                % Abstract of 50--100 words
-   Besides the traditional Lyapunov stability theory, contraction theory 
+   Besides the traditional Lyapunov stability theory, contraction theory offers a interesting perspective on the stability of nonlinear systems.
+   It allows us to analyze the stability of systems by examining the convergence of trajectories in the state space.
+   In this paper, the contraction theory is applied to the control of synchronous machines, specifically permanent magnet synchronous motors (PMSMs).
+   The proposed control strategy is mainly designed to ensure the contraction of the system trajectories to a desired system trajectories, under unknown (and stochastic) disturbances.
+   Real time validation of the proposed control strategy is performed on a PMSM system.
+   The results demonstrate the effectiveness of the proposed control strategy in achieving stability and robustness in the presence of disturbances.
    
 \end{abstract}
 
 \begin{keyword}
-   Contraction theory, deep learning, permanent magnet synchronous motor (PMSM), ...
+   Contraction theory, permanent magnet synchronous motor (PMSM)
 \end{keyword}
 
 \end{frontmatter}
 %===============================================================================
+
+\section*{Notation}
+
+In this paper, we use the following notation:
+\begin{itemize}
+   \item $:=$ denotes \textit{defined as}.
+   \item $(\cdot^\top)$ denotes the transpose of a matrix or a vector.
+   \item $\mv{x}:=[x_i]_{i\in\{1,\cdots,n\}}\in\R^n$ denotes the state vector.
+   \item $\mm A:=[a_{ij}]_{i,j\in\{1,\cdots,n\}}\in\R^{n\times n}$ denotes a matrix.
+   \item $\lambda_{i}(\mm A),\ i\in\{\max,\min\}$ denotes the maximum and minimum singular value of $\mm A$, respectively.
+   \item $\mm I_n$ denotes the identity matrix of size $n$ and $\mm 0_{n\times m}$ denotes the zero matrix of size $n\times m$.
+   \item $\mysym$ denotes the symmetric part of a matrix, \ie $\mysym(\mm A):=\tfrac{1}{2}(\mm A+\mm A^\top)$ (see \cite{Tsukamoto:2021ac}).
+\end{itemize}
+
+\section{Introduction}
+
+\subsection{Motivation}
+
+\subsection{Contributions}
+
+The main contributions of this paper are 
+\begin{itemize}
+   \item A contraction theory based control strategy for synchronous machines, is proposed;
+   \item The contraction metric is obtained by using linear matrix inequalities (LMI) which simplifies the calculation of the contraction metric;
+   \item ...; and
+   \item The effectiveness and the feasibility of the contraction theory based control on synchronous machines is validated through real-time experiments.
+\end{itemize}
+
+
+\section{Preliminaries}
+
+\subsection{Mathematical Modeling of Synchronous Machines}
+
+Let us consider a synchronous machine presented in \cite{Lee:2018aa}, as follows:
+\begin{equation} \label{eq:model:SM}
+   \begin{cases}
+      \ddtt{\theta}
+      =&
+      \omega
+      \\
+      \ddtt{\omega}
+      =&
+      \tfrac{1}{J}
+      \big(
+         \tau-f_v\omega+\tau_L
+      \big)
+      ,
+   \end{cases}
+\end{equation}
+where $\theta\in\R$ is the rotor angle, $\omega\in\R$ is the rotor speed, $J\in\R_{>0}$ is the moment of inertia, $\tau:=\tau(\ia,\ib)\in\R^2$ is the electromagnetic torque generated by the machine, $f_v$ is the viscous friction coefficient, and $\tau_L$ is the load torque.
+The electromagnetic torque $\tau$ is typically a function of the phase currents $\ia$ and $\ib$ of the machine, which can be expressed as:
+\begin{equation} \label{eq:tau:SM}
+   \tau
+   = 
+   -\tfrac{3}{2} P\Phi (\sin(P\theta) \ia + \cos(P\theta) \ib)
+   ,
+\end{equation}
+where $P$ is the number of pole pairs and $\Phi$ is the flux linkage.
+
+For brevity, we will denote the system \eqref{eq:model:SM} as general state space form:
+\begin{equation} \label{eq:model:SM:state}
+   \ddtt\mv{x}
+   =
+   \mm{A} \mv{x}
+   +
+   \mm{B}_1 \mv{u}
+   +
+   \mm{B}_2 d
+   ,
+\end{equation}
+where $\mv{x} := \left(\theta, \omega\right)^\top$, $\mv{u} := \left(\ia, \ib\right)^\top$ and $d := \tau_L$ denote the state vector, the control input vector and the disturbance vector, respectively.
+The system matrix $\mm{A}$ and the input matrices $\mm{B}_1:=\mm{B}_1(\mv{x})$ and $\mm{B}_2$ are defined as follows:
+\begin{equation}
+   \mm{A} =
+   \begin{bmatrix}
+      0 & 1 \\
+      0 & -\tfrac{f_v}{J}
+   \end{bmatrix},
+   \quad
+   \mm{B}_1 =
+   \begin{bmatrix}
+      0 & 0 \\
+      -\tfrac{3P\Phi}{2J}\sin(P\theta) & \tfrac{3P\Phi}{2J}\cos(P\theta)
+   \end{bmatrix}
+   ,
+\end{equation}
+and $\mm{B}_2 = \left( 0, 1 \right)^\top$.
+It is well known that the system \eqref{eq:model:SM:state} is controllable and observable under the assumption that the system parameters are known \MSRY{..? REF}.
+
+\subsection{Contraction Theory}
+
+\subsubsection{Contraction Metrics} \label{sec:sub:contraction}
+
+Consider that we have the following deterministic nonlinear system:
+\begin{equation} \label{eq:sys}
+   \ddtt\mv{x}
+   =
+   \mv{f}(\mv{x},t)
+   .
+\end{equation}
+The contraction theory starts with the definition of \textit{differential dynamics} of the system \eqref{eq:sys} using \textit{differential displacement} $\delta\mv{x}$ \cite[Chap 4]{Kirk:2004aa}, which is defined as follows:
+\begin{equation}
+   \ddtt{\delta\mv{x}}
+   =
+   \pptfrac{\mv{f}}{\mv{x}} \delta\mv{x}
+   .
+\end{equation}
+The differential displacement $\delta\mv{x}$ is the infinitesimal displacement at \textit{fixed time}.
+
+The contraction property of the system \eqref{eq:sys} can be analyzed using the Lyapunov function $V:=V(\mv{x},t)=\delta\mv{x}^\top \mm{M} \delta\mv{x}$, where $\mm{M} := \mm{M}(\mv{x},t)$ is a positive definite matrix called the \textit{contraction metric}.
+For the system \eqref{eq:sys} to be contracting, the following condition must hold:
+\begin{equation} \label{eq:contraction:condition}
+   \ddtt\mm{M} 
+   + 
+   2\mysym(
+      \mm{M} \pptfrac{\mv{f}}{\mv{x}}
+   ) 
+   \leq 
+   -2\alpha\mm{M}
+   ,
+\end{equation}
+which leads to $\ddtt V \leq -\alpha V$ for some $\alpha > 0$.
+In other words, all solutions of the system \eqref{eq:sys} are contracting to a unique solution with an exponential rate $\alpha$.
+
+On the other hand, the partial contraction theory investigates the contraction of the system using a virtual system.
+Following theorem details the partial contraction theory.
+
+\begin{thm} [Thm.~1 \cite{Wang:2004aa}] \label{thm:partial:contraction}
+   Consider a nonlinear system of the form 
+   $
+      \ddtt\mv{x} = \mv{f}(\mv{x},\mv{x},t)
+   $
+   and the virtual system 
+   $
+      \ddtt\mv{q} = \mv{f}(\mv{q},\mv{x},t)
+   $
+   are contracting with respect to $\mv{q}$.
+   If a particular solution of virtual system verifies a smooth specific property, then all solutions of the original system verifies this property exponentially.
+\end{thm}
+
+\subsection{Perturbed Contraction System}
+
+The following theorem presents the contraction property of the perturbed system by adding a bounded perturbation $\mv{d}(\mv{x},t)$ to the system \eqref{eq:sys}:
+\begin{equation}
+   \ddtt\mv{x}
+   =
+   \mv{f}(\mv{x},t) + \mv{d}(\mv{x},t)
+   .
+\end{equation}
+
+% Steady state error of perturbed contraction system
+\begin{thm} [Eq.~15 \cite{LOHMILLER:1998aa}] \label{thm:contraction:perturbed}
+   If the system \eqref{eq:sys} is contracting with the contraction metric $\mm{M}$ which satisfies the condition \eqref{eq:contraction:condition}, the path integral of the virtual system ...
+   \MSRY{ADD!!}
+   \begin{equation}
+      \norm{\mv\xi_1(t)-\mv\xi_2(t)}
+      \le
+      \tfrac{V_{l}(0)}{\sqrt{\underbar{m}}}
+      \exp(-\alpha t)
+      +
+      \tfrac{\overline d}{\alpha}
+      \sqrt{\tfrac{\overline m}{\underbar m}}
+      (1-\exp(-\alpha t))
+      ,
+   \end{equation}
+   \MSRY{ADD!!}
+\end{thm}
+
+\begin{pf}
+   See Theorem 2.4 in \cite{Tsukamoto:2021aa}.
+\end{pf}
+
+
+\MSRY{Any more comments, if needed}
+
+\section{Main Results}
+
+In this section, the control problem will be presented, followed by the design of the proposed control strategy based on contraction theory.
+
+\subsection{Problem Formulation}
+
+Motivated by the use of the partial contraction theory in \cite{Tsukamoto:2021af}, \MSRY{and more...}, we assume that the desired trajectory (including desired control input) of the system is given without disturbances, as follows:
+\begin{equation} \label{eq:desired:sys}
+   \ddtt\mv{x}^*   =
+   \mm{A} \mv{x}^*
+   +
+   \mm{B}_1 \mv{u}^*
+   ,
+\end{equation}
+where $\mv{x}^*$ is the desired state vector and $\mv{u}^*$ is the desired control input vector.
+
+Finally, the control objective is to design a control input $\mv{u}$ (current references) such that the system trajectories of the system \eqref{eq:desired:sys} and the desired system \eqref{eq:desired:sys} converges.
+We assume that a lower lever control is designed to track the current references $\mv{u}$, and thus we can focus on the control design for the system \eqref{eq:model:SM:state}.
+
+\subsection{Control Design}
+
+Following the control design in \cite{Tsukamoto:2021af}, state-dependent coefficient (SDC) formulation \cite{Dani:2015aa} is used to represent the error dynamics \MSRY{more details}.
+The SDC $\mathbb{A}:=\mathbb{A}(\mv{x},\mv{x}^*)$ is defined as follows:
+\begin{equation} \label{eq:SDC}
+   \mathbb{A}
+   :=
+   \textstyle\int_0^1 
+   \left[
+      \pptfrac{\mv{f}}{\mv{x}}     
+   \right]
+   \big(
+      c \mv{x} + (1-c) \mv{x}^*
+   \big)
+   \,
+   \der c
+   ,
+\end{equation}
+where 
+$
+   \mv{f}
+   :=
+   \mm{A}(\mv{x}-\mv{x}^*)
+   + \mm{B}_1 \mv{u} 
+   - \mm{B}_1^* \mv{u}^*
+$
+and $\mm{B}_1^* := \mm{B}_1(\mv{x}^*)$, and $c$ is a dummy variable for the integration.
+The SDC for the system \eqref{eq:sys} is derived in Appendix \ref{sec:appendix:SDC} (see \eqref{eq:SDC:explicit:2}).
+The existence... blah blah can be found in \cite{Dani:2015aa}, \MSRY{and more...}.
+
+Then, the error dynamics can be expressed as:
+\begin{equation} \label{eq:error:dyn}
+   \begin{aligned}
+      \ddtt
+      (
+         \mv{x} - \mv{x}^*
+      )
+      =&
+      \mm{A} (
+         \mv{x} - \mv{x}^*
+      )
+      + \mm{B}_1 \mv{u}
+      - \mm{B}_1^* \mv{u}^*
+      + \mm{B}_2 d
+      \\
+      =&
+      \underbrace
+      {
+         \mm{A} (
+            \mv{x} - \mv{x}^*
+         )
+         +
+         (
+            \mm{B}_1 
+            - \mm{B}_1^* 
+         ) \mv{u}^*
+      }_{= \mathbb{A}(\mv{x},\mv{x}^*) (\mv{x} - \mv{x}^*)}
+      \\
+      &
+      - \mm{B}_1 
+      (
+         \mv{u} - \mv{u}^*
+      )
+      + \mm{B}_2 d
+      \\
+      =&
+      \mathbb{A} (\mv{x} - \mv{x}^*)
+      - \mm{B}_1 
+      (\mv{u} - \mv{u}^*)
+      + \mm{B}_2 d
+      \\
+      =&
+      \left(
+         \mathbb{A} - \mm{B}_1 \mm{R}^{-1} \mm{B}_1 ^\top \mm{M}
+      \right)
+      (\mv{x} - \mv{x}^*)
+      +
+      \mm{B}_2 d
+      ,
+   \end{aligned}
+\end{equation}
+with the control input $\mv{u}$ defined as:
+\begin{equation} \label{eq:control:input}
+   \mv{u}
+   =
+   \mv{u}^*
+   -
+   \mm{R}^{-1} \mm{B}_1^\top \mm{M} (\mv{x} - \mv{x}^*)
+\end{equation}
+where $\mm{R} \succ 0$ is a positive definite matrix and $\mm{M}:=\mm{M}(\mv{x},\mv{x^*},t) \succ 0$ is the contraction metric defined in Section \ref{sec:sub:contraction}.
+
+Finally, invoking the partial contraction theory reviewed in Section \ref{sec:sub:contraction}, we can define the virtual system as follows:
+\begin{equation} \label{eq:sys:virtual}
+   \ddtt\mv{q}
+   =
+   \ddtt\mv{x}^*
+   +
+   \left(
+      \mathbb{A} - \mm{B}_1\mm{R}^{-1} \mm{B}_1^\top \mm{M}
+   \right)
+   (\mv{q} - \mv{x}^*)
+   +
+   \mm{B}_2 d_{\mu}
+   ,
+\end{equation}
+where $\mv{q}$ is the virtual state vector and $d_{\mu}:=d_{\mu}(d,\mu), \forall \mu\in[0,1]$ is defined as $d_{\mu} = d_{\mu}(d,0)$ and $d_{\mu} = d_{\mu}(d,1)$.
+The differential dynamics is then defined as:
+\begin{equation} \label{eq:sys:virtual:variational}
+   \ddtt{\delta{\mv{q}}}
+   =
+   \left(
+      \mathbb{A} - \mm{B}_1\mm{R}^{-1} \mm{B}_1^\top \mm{M}
+   \right)
+   \delta{\mv{q}}
+   .
+\end{equation}
+
+Then according to Theorem \ref{thm:contraction:perturbed} and the partial contraction theory, the system \eqref{eq:sys:virtual} and the system \eqref{eq:desired:sys} will converge to the desired trajectory $\mv{x}^*$ with steady state error:
+\begin{equation} \label{eq:ss:error}
+   \mv{e}_{\rm{ss}}
+   = 
+   ..?
+   ,
+\end{equation}
+with the following conditions:
+\begin{equation} 
+   \ddtt\mm{M}
+   +
+   2\mysym(
+      \mm{M}\mathbb{A}
+   )
+   +
+   \mm{M}\mm{B}_1\mm{R}^{-1} \mm{B}_1^\top \mm{M}
+   \leq
+   -2\alpha\mm{M}
+\end{equation}
+
+\MSRY{ADD!!}
+
+\subsection{Contraction Metric Calculation}
+
+LMI LMI
+
+\section{Validations}
+
+\subsection{Numerical Validation}
+
+\subsection{Real-Time Validation}
+
+\section{Conclusion}
+
+\begin{comment}
 
 \section{Introduction}
 This document is a template for \LaTeXe. If you are reading a paper or
@@ -341,15 +711,110 @@ the main points of the paper, do not replicate the abstract as the
 conclusion. A conclusion might elaborate on the importance of the work
 or suggest applications and extensions.
 
+\end{comment}
+
 \begin{ack}
 Place acknowledgments here.
 \end{ack}
 
-\bibliography{ifacconf}             % bib file to produce the bibliography
+\bibliography{template/refs, localRefs}             % bib file to produce the bibliography
                                     % with bibtex (preferred)
 
 \appendix
-\section{A summary of Latin grammar}    % Each appendix must have a short title.
-\section{Some Latin vocabulary}              % Sections and subsections are supported  
-                                                                         % in the appendices.
+\section{SDC Derivation} \label{sec:appendix:SDC}
+
+In this appendix, the SDC $\mathbb{A}$ will be derived in detail.
+First, we follow the definition of the SDC in \eqref{eq:SDC} as follows:
+\begin{equation}
+   \begin{aligned}
+      \mathbb{A}
+      =&
+      \textstyle\int_0^1 
+      \left[
+         \pptfrac{}{\mv{x}}
+         \left(
+            \mm{A} \mv{x}
+            +
+            \mm{B}_1 \mv{u}^*
+         \right)
+      \right]
+      \big(
+         c \mv{x} + (1-c) \mv{x}^*
+      \big)
+      \,
+      \der c
+      \\
+      =&
+      \textstyle\int_0^1
+      \left[
+         \left(
+            \mm{A}
+            +
+            \begin{bmatrix}
+               0 & 0 
+               \\
+               b_1 & 0
+            \end{bmatrix}
+         \right)
+      \right]
+      \big(
+         c \mv{x} + (1-c) \mv{x}^*      
+      \big)
+      \,
+      \der c
+      ,
+   \end{aligned}
+\end{equation}
+where 
+$
+   b_1
+   :=
+   b_1(\mv{x},\mv{x}^*)
+   = 
+   - \tfrac{3P^2\Phi}{2J}
+   \left(
+      \cos(P x_1) u_1^*
+      +
+      \sin(P x_1) u_2^*
+   \right)
+$.
+Then, we can rewrite the SDC as follows:
+\begin{equation} \label{eq:SDC:explicit:2}
+   \mathbb{A}
+   =
+   \begin{bmatrix}
+      0 & 1 \\
+      b_2(\mv{x},\mv{x}^*) & -\tfrac{f_v}{J}
+   \end{bmatrix}
+   ,
+\end{equation}
+where 
+\begin{equation*}
+   \begin{aligned}
+      b_2(\mv{x},\mv{x}^*)
+      :=&
+      \tfrac{3P\Phi}{2J(x_1-x_1^*)}
+      \big[
+         \left\{
+            \sin(P x_1)
+            -
+            \sin(P x_1^*)
+         \right\}
+         u_1^*
+      \\
+      &
+         +
+         \left\{
+            \cos(P x_1)
+            -
+            \cos(P x_1^*)
+         \right\}
+         u_2^*
+      \big]
+      .
+   \end{aligned}
+\end{equation*}
+
+% First, since $\mm{A}$ is a constant matrix, we can ignore in the integration in \eqref{eq:SDC}.
+
 \end{document}
