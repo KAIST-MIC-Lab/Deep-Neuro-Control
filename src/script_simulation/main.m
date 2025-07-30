@@ -10,12 +10,22 @@ FIGURE_PLOT_FLAG = 1;   % plot the result
 FIGURE_SAVE_FLAG = 0;   % save the figure as .png and .eps
 
 %% SIMULATION SETTING
-T = 5e-2;                 % simulation time
+T = 1;                 % simulation time
 ctrl_dt = 1e-3;         % controller sampling time
-% dt = ctrl_dt * 1e-1;       % simulation sampling time
+% ctrl_dt = 1e-1;         % controller sampling time
 dt = 1/20e3;
+% dt = 1/1e3;
 rpt_dt = 1e-3;             % report time (on console)
 t = 0:dt:T;             % time vector
+
+%% SM PARAMETERS
+param.L = .66e-3;    % Inductance (mH)
+param.R = 0.251;     % Resistance (Ohm)
+param.J = 3.24e-5;   % Inertia (kg.m^2)
+param.Phi = 16.8e-3; % Flux (Wb)
+param.P = 4;         % Pole pairs
+param.fv = 2e-3;     % Viscous friction (N.m.s/rad)
+    
 
 %% REPORT SETTING
 fprintf("\n")
@@ -32,16 +42,19 @@ fprintf("FIGURE_SAVE_FLAG : %d\n", FIGURE_SAVE_FLAG)
 
 %% SYSTEM AND REFERENCE DEFINITION
 % x = transpose([1,5,2,-2]);              % initial state 
-x = transpose([.2,0,0,0]);              % initial state 
+x = transpose([0,0]);              % initial state 
 x_non = x;
 u = transpose([0,0]);              % initial input
-xd = transpose([0,0,0,0]);
+% xd = transpose([0,0]);
 
 grad = @system_grad;    % system gradient
 
 % ud_func = @(t) [sin(20*t); cos(15*t)] * 10;
 % ud_func = @(t) [sin(20*t); cos(15*t)] * 1;
-ud_func = @(t) [1;1] * heaviside(t-0.02) + -.5;
+xd_func = @(t) sin(t) + 1/10*sin(10*t);
+dxd_func = @(t) cos(t) + cos(10*t);
+ddxd_func = @(t) -sin(t) - 10*sin(10*t);
+
 trq_d_func = @(t) sin(20*t) * 0e-1;
 
 num_x = length(x);      % number of states
@@ -67,16 +80,21 @@ fprintf("SIMULATION RUNNING...\n")
 for t_idx = 1:1:num_t
     
     % Control Decision
-    ud = ud_func(t(t_idx));  % reference input
-    e = x - xd;  % error
-    
-    ncm = NCM_ctrl(ncm, x, xd, ud);  % controller call
+    xd = xd_func(t(t_idx));  % reference state
+    [alp, ud] = BSC_input(x, xd, dxd_func(t(t_idx)), ddxd_func(t(t_idx)), param);
 
-    % L = .66e-3;    % Inductance (mH)
-    L = .66;
-    B = [0 0;1/L 0; 0 1/L];
-    u = ud - ncm.inv_R * B' * inv(ncm.W) * e(2:end);  % control input
-    % u = ud - ncm.inv_R * B' * inv(ncm.W) * e;  % control input
+    xd = [xd; alp];  % reference state with virtual input
+    e = x - xd;  % error
+
+    ncm = NCM_ctrl(ncm, x, xd, ud, param);  % controller call
+
+    th = x(1);
+    L = param.L;    % Inductance (mH)
+    P = param.P;         % Pole pairs
+    Phi = param.Phi; % Flux (Wb)
+    B = [0 0; -(3*P*Phi)/(2*L)*sin(P*th) (3*P*Phi)/(2*L)*cos(P*th)];  % input matrix
+    % u = ud;  % control input
+    u = ud - B*ncm.inv_R*B' * inv(ncm.W) * e;  % control input with NCM
 
     % Record
     x_hist(:, t_idx) = x;
@@ -90,9 +108,9 @@ for t_idx = 1:1:num_t
 
     % Step forward
     trq_d = trq_d_func(t(t_idx));
-    x = system_step(dt, x, u, trq_d);
-    x_non = system_step(dt, x_non, ud, trq_d);
-    xd = system_step(dt, xd, ud, 0);
+    x = system_step(dt, x, u, trq_d, param);
+    x_non = system_step(dt, x_non, ud, trq_d, param);
+    % xd = system_step(dt, xd, ud, 0, param);
 
     % Report
     if mod(t_idx, rpt_dt/dt) == 0
@@ -143,24 +161,24 @@ end
 
 beep()
 
-%% LOCAL FUNCTIONS
-function x = system_step(dt, x, u, d)
+%% LOCAL FUNCTION
+function x = system_step(dt, x, u, d, param)
     %%
     th = x(1);  % theta
     thd = x(2);  % theta dot
-    ia = x(3);  % Ia
-    ib = x(4);  % Ib
+
+    ia = u(1);  % Ia
+    ib = u(2);  % Ib
 
     trq_d = d;
     
     %%
-    % L = .66e-3;    % Inductance (mH)
-    L = .66;
-    R = 0.251;     % Resistance (Ohm)
-    J = 3.24e-5;   % Inertia (kg.m^2)
-    Phi = 16.8e-3; % Flux (Wb)
-    P = 4;         % Pole pairs
-    fv = 2e-3;     % Viscous friction (N.m.s/rad)
+    L = param.L;    % Inductance (mH)
+    R = param.R;     % Resistance (Ohm)
+    J = param.J;   % Inertia (kg.m^2)
+    Phi = param.Phi; % Flux (Wb)
+    P = param.P;         % Pole pairs
+    fv = param.fv;     % Viscous friction (N.m.s/rad)
     
     %% 
     trq = -(3/2)*P*Phi*sin(P*th)*ia + (3/2)*P*Phi*cos(P*th)*ib;
@@ -169,10 +187,44 @@ function x = system_step(dt, x, u, d)
     grad = [
         thd;
         (1/J)*(trq - fv*thd + trq_d);
-        (1/L)*(u(1) - R*ia + P*Phi*thd*sin(P*th));
-        (1/L)*(u(2) - R*ib - P*Phi*thd*cos(P*th))
     ];
     
     x = x + grad * dt;
 
+end
+
+function [alp, ud]  = BSC_input(x, xd, dxd, ddxd, param)
+    %%
+    k1 = 1e2;  % position gain
+    k2 = 1e2;  % velocity gain
+    
+    %%
+    x1 = x(1);  % theta
+    x2 = x(2);  % theta dot
+
+    r1 = xd(1);  
+
+    dr1 = dxd(1);  
+    ddr1 = ddxd(1);  
+
+    %%
+    L = param.L;    % Inductance (mH)
+    R = param.R;     % Resistance (Ohm)
+    J = param.J;   % Inertia (kg.m^2)
+    Phi = param.Phi; % Flux (Wb)
+    P = param.P;         % Pole pairs
+    fv = param.fv;     % Viscous friction (N.m.s/rad)
+
+    %%
+    alp = dr1 - k1 * (x1-r1);
+
+    trq = J * ( ...
+        -k2 * (x2 - alp) - (x1 - r1) ...
+        + fv*x2 + ddr1 - k1*(x2 - dr1) ...
+    );
+
+    ud = [
+        -(2/3)*trq * sin(P*x1) / (P*Phi);
+        +(2/3)*trq * cos(P*x1) / (P*Phi)
+    ];
 end
