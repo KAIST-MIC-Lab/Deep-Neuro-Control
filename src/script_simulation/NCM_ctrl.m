@@ -1,5 +1,12 @@
 function ncm = NCM_ctrl(ncm, x, xd, ud, param)
     
+    if ncm.init % for initial control (no CV-STEM)
+        ncm.optDone = 0;
+        ncm.init = 0;
+        return
+
+    else
+
     dt = ncm.dt;
     d_MAX = ncm.d_MAX;  % maximum disturbance
     m_MIN = ncm.m_MIN;
@@ -12,6 +19,9 @@ function ncm = NCM_ctrl(ncm, x, xd, ud, param)
 
     x_num = ncm.x_num;
 
+    lbd = 2e-2; % this will be included in `ncm` structure
+    bar_b1 = 3.1111e+03; % this one will be, as well
+
     %% 
     th = x(1);
     L = param.L;    % Inductance (mH)
@@ -22,41 +32,31 @@ function ncm = NCM_ctrl(ncm, x, xd, ud, param)
     SDC = SDCmotor(x, xd, ud, param);  % System Dynamics Coefficient
 
     %% OPTIMIZATION PROBLEM DEFINITION
-    W = sdpvar(x_num ,x_num);
-    assign(W, eye(x_num)*0);
+    W_bar = sdpvar(x_num ,x_num);
     X = sdpvar(1,1);
-    % mu = sdpvar(1,1);
-    assign(X, 1);
-    % assign(mu, 1);
+    mu = sdpvar(1,1);
 
-    c0 = 1;
-    c1 = 0;
+    pre_W_bar = ncm.W_bar;
 
-    pre_W = ncm.W;
+    assign(W_bar, pre_W_bar);
+    % assign(W, eye(x_num)*0);
+    assign(X, ncm.X);
+    % assign(X, 1);
 
-    obj = c0*X;
-    % obj = c0*X + c1*mu;
+    obj = X + lbd * mu;
+    % obj = bar_b1*d_MAX*X/alpha + lbd * mu;
     
-    % if ncm.init
-    if false
-        con = [
-                % W == W';
-                (W'*SDC' + SDC*W) - 2*d_MAX*B*inv_R*B' <= -2*alpha*W;
-                eye(x_num) <= mu*W;
-                mu*W <= X * eye(x_num);
-                % X == mu/m_MIN;
-            ];
-    else
-        con = [
-            % W == W';
-            -(W-pre_W)/dt + (W'*SDC' + SDC*W) - 2*d_MAX*B*inv_R*B' <= -2*alpha*W;
-            eye(x_num) <= mu*W;
-            mu*W <= X * eye(x_num);
-            % X == mu/m_MIN;
-        ];
-
-        ncm.init = 0;
-    end
+    eps = 1e-1;
+    
+    con = [
+        % W == W';
+        -(W_bar-pre_W_bar)/dt + (W_bar*SDC' + SDC*W_bar) - 2*mu*B*inv_R*B' <= -2*alpha*W_bar - eps*eye(x_num);
+        % -(W_bar-eye(2))/dt + (W_bar*SDC' + SDC*W_bar) - 2*mu*B*inv_R*B' <= -2*alpha*W_bar - eps*eye(x_num);
+        eye(x_num) <= W_bar;
+        W_bar <= X * eye(x_num);
+        % X == mu/m_MIN;
+        1e-12 <= mu;
+    ];
 
     ops = sdpsettings('solver', 'sedumi', ...
                   'verbose', 0, ...
@@ -65,16 +65,18 @@ function ncm = NCM_ctrl(ncm, x, xd, ud, param)
     sol = optimize(con, obj, ops);
 
     if sol.problem ~= 0
-        ncm.optDone = 0;
+        ncm.optDone = sol.problem;
         ncm.X = 0;
-        ncm.W = pre_W;  % keep the previous value
+        ncm.mu = ncm.mu;
+        ncm.W_bar = pre_W_bar;  % keep the previous value
         % warning('YALMIP Error: %s', yalmiperror);
     else
-        ncm.W = value(W);
+        ncm.W_bar = value(W_bar);
         ncm.X = value(X);
-        ncm.optDone = 1;
+        ncm.mu = value(mu);
+        ncm.optDone = sol.problem;
     end
-    
+
     %%
 
 end

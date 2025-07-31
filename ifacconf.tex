@@ -273,6 +273,10 @@ Following theorem details the partial contraction theory.
    If a particular solution of virtual system verifies a smooth specific property, then all solutions of the original system verifies this property exponentially.
 \end{thm}
 
+For your intuition, the following example illustrates the application of the partial contraction theory.
+
+\cblue{Add example!}
+
 \subsection{Perturbed Contraction System}
 
 The following theorem presents the contraction property of the perturbed system by adding a bounded perturbation $\mv{d}(\mv{x},t)$ to the system \eqref{eq:sys}:
@@ -290,11 +294,11 @@ The following theorem presents the contraction property of the perturbed system 
    \begin{equation}
       \norm{\mv\xi_1(t)-\mv\xi_2(t)}
       \le
-      \tfrac{V_{l}(0)}{\sqrt{\underbar{m}}}
+      \tfrac{V_{l}(0)}{\sqrt{\underline{m}}}
       \exp(-\alpha t)
       +
       \tfrac{\overline d}{\alpha}
-      \sqrt{\tfrac{\overline m}{\underbar m}}
+      \sqrt{\tfrac{\overline m}{\underline{m}}}
       (1-\exp(-\alpha t))
       ,
    \end{equation}
@@ -314,7 +318,7 @@ In this section, the control problem will be presented, followed by the design o
 
 \subsection{Problem Formulation}
 
-Motivated by the use of the partial contraction theory in \cite{Tsukamoto:2021af}, \MSRY{and more...}, we assume that the desired trajectory (including desired control input) of the system is given without disturbances, as follows:
+Motivated by the use of the partial contraction theory in \cite{Tsukamoto:2021af}, \MSRY{and more...}, we assume that the desired trajectory (including desired control input) of the system is given without disturbances, \ie $d=0$, as follows:
 \begin{equation} \label{eq:desired:sys}
    \ddtt\mv{x}^*   =
    \mm{A} \mv{x}^*
@@ -322,7 +326,7 @@ Motivated by the use of the partial contraction theory in \cite{Tsukamoto:2021af
    \mm{B}_1 \mv{u}^*
    ,
 \end{equation}
-where $\mv{x}^*$ is the desired state vector and $\mv{u}^*$ is the desired control input vector.
+where $\mv{x}^*\in\R^2$ is the desired state vector and $\mv{u}^*\in\R^2$ is the desired control input vector.
 
 Finally, the control objective is to design a control input $\mv{u}$ (current references) such that the system trajectories of the system \eqref{eq:desired:sys} and the desired system \eqref{eq:desired:sys} converges.
 We assume that a lower lever control is designed to track the current references $\mv{u}$, and thus we can focus on the control design for the system \eqref{eq:model:SM:state}.
@@ -461,7 +465,7 @@ with the following conditions:
       \mm{M}\mathbb{A}
    )
    +
-   \mm{M}\mm{B}_1\mm{R}^{-1} \mm{B}_1^\top \mm{M}
+   2\mm{M}\mm{B}_1\mm{R}^{-1} \mm{B}_1^\top \mm{M}
    \leq
    -2\alpha\mm{M}
 \end{equation}

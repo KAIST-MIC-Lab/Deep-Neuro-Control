@@ -10,15 +10,22 @@ FIGURE_PLOT_FLAG = 1;   % plot the result
 FIGURE_SAVE_FLAG = 0;   % save the figure as .png and .eps
 
 %% SIMULATION SETTING
-T = 1;                 % simulation time
-ctrl_dt = 1e-3;         % controller sampling time
-% ctrl_dt = 1e-1;         % controller sampling time
-dt = 1/20e3;
-% dt = 1/1e3;
-rpt_dt = 1e-3;             % report time (on console)
+T = 5;                 % simulation time
+% ctrl_dt = 1e-3;         % controller sampling time
+ctrl_dt = 1e-2;         % controller sampling time
+% dt = 1/20e3;
+dt = 1/1e4;
+rpt_dt = 1e-1;             % report time (on console)
 t = 0:dt:T;             % time vector
 
 %% SM PARAMETERS
+% param.L = .66;    % Inductance (mH)
+% param.R = 251;     % Resistance (Ohm)
+% param.J = 3.24e-2;   % Inertia (kg.m^2)
+% param.Phi = 16.8; % Flux (Wb)
+% param.P = 4;         % Pole pairs
+% param.fv = 2;     % Viscous friction (N.m.s/rad)
+
 param.L = .66e-3;    % Inductance (mH)
 param.R = 0.251;     % Resistance (Ohm)
 param.J = 3.24e-5;   % Inertia (kg.m^2)
@@ -45,15 +52,15 @@ fprintf("FIGURE_SAVE_FLAG : %d\n", FIGURE_SAVE_FLAG)
 x = transpose([0,0]);              % initial state 
 x_non = x;
 u = transpose([0,0]);              % initial input
-% xd = transpose([0,0]);
+xd = transpose([0,0]);
 
 grad = @system_grad;    % system gradient
 
 % ud_func = @(t) [sin(20*t); cos(15*t)] * 10;
 % ud_func = @(t) [sin(20*t); cos(15*t)] * 1;
-xd_func = @(t) sin(t) + 1/10*sin(10*t);
-dxd_func = @(t) cos(t) + cos(10*t);
-ddxd_func = @(t) -sin(t) - 10*sin(10*t);
+xd_func = @(t) 20*sin(t) + 1/10*sin(10*t);
+dxd_func = @(t) 20*cos(t) + cos(10*t);
+ddxd_func = @(t) -20*sin(t) - 10*sin(10*t);
 
 trq_d_func = @(t) sin(20*t) * 0e-1;
 
@@ -73,28 +80,30 @@ ud_hist = zeros(num_u, num_t); % input derivative history
 X_hist = zeros(1, num_t);   % 
 optDone_hist = zeros(1, num_t); % optimization done history
 M_hist = zeros(1, num_t);   % 
+mu_hist = zeros(1, num_t);
 
 %% MAIN LOOP
 fprintf("SIMULATION RUNNING...\n")
 
 for t_idx = 1:1:num_t
     
-    % Control Decision
-    xd = xd_func(t(t_idx));  % reference state
-    [alp, ud] = BSC_input(x, xd, dxd_func(t(t_idx)), ddxd_func(t(t_idx)), param);
-
-    xd = [xd; alp];  % reference state with virtual input
-    e = x - xd;  % error
-
-    ncm = NCM_ctrl(ncm, x, xd, ud, param);  % controller call
-
-    th = x(1);
-    L = param.L;    % Inductance (mH)
-    P = param.P;         % Pole pairs
-    Phi = param.Phi; % Flux (Wb)
-    B = [0 0; -(3*P*Phi)/(2*L)*sin(P*th) (3*P*Phi)/(2*L)*cos(P*th)];  % input matrix
-    % u = ud;  % control input
-    u = ud - B*ncm.inv_R*B' * inv(ncm.W) * e;  % control input with NCM
+    if t_idx==1 || rem(t(t_idx)/dt, ctrl_dt/dt) == 0
+        % Control Decision
+        th_ref = xd_func(t(t_idx));  % reference state
+        ud = BSC_input(xd, th_ref, dxd_func(t(t_idx)), ddxd_func(t(t_idx)), param);
+    
+        e = x - xd;  % error
+    
+        ncm = NCM_ctrl(ncm, x, xd, ud, param);  % controller call
+    
+        th = x(1);
+        L = param.L;    % Inductance (mH)
+        P = param.P;         % Pole pairs
+        Phi = param.Phi; % Flux (Wb)
+        B = [0 0; -(3*P*Phi)/(2*L)*sin(P*th) (3*P*Phi)/(2*L)*cos(P*th)];  % input matrix
+        % u = ud;  % control input
+        u = ud - ncm.inv_R*B' * inv(ncm.W_bar/ncm.mu) * e;  % control input with NCM
+    end
 
     % Record
     x_hist(:, t_idx) = x;
@@ -104,13 +113,13 @@ for t_idx = 1:1:num_t
     ud_hist(:, t_idx) = ud;
     X_hist(t_idx) = ncm.X;  % controller gain
     optDone_hist(t_idx) = ncm.optDone;  % optimization done flag
-    M_hist(:, t_idx) = norm(inv(ncm.W));
+    M_hist(:, t_idx) = norm(inv(ncm.W_bar/ncm.mu));
+    mu_hist(:, t_idx) = ncm.mu;
 
     % Step forward
-    trq_d = trq_d_func(t(t_idx));
-    x = system_step(dt, x, u, trq_d, param);
-    x_non = system_step(dt, x_non, ud, trq_d, param);
-    % xd = system_step(dt, xd, ud, 0, param);
+    x = system_step(dt, x, u, sign(x(2)) * 0.001, param);
+    x_non = system_step(dt, x_non, ud, sign(x_non(2)) * 0.001, param);
+    xd = system_step(dt, xd, ud, 0, param);
 
     % Report
     if mod(t_idx, rpt_dt/dt) == 0
@@ -165,13 +174,14 @@ beep()
 function x = system_step(dt, x, u, d, param)
     %%
     th = x(1);  % theta
-    thd = x(2);  % theta dot
+    w = x(2);  % theta dot
 
     ia = u(1);  % Ia
     ib = u(2);  % Ib
 
+    %% 
     trq_d = d;
-    
+
     %%
     L = param.L;    % Inductance (mH)
     R = param.R;     % Resistance (Ohm)
@@ -185,18 +195,18 @@ function x = system_step(dt, x, u, d, param)
 
     %%
     grad = [
-        thd;
-        (1/J)*(trq - fv*thd + trq_d);
+        w;
+        (1/J)*(trq - fv*w - trq_d);
     ];
     
     x = x + grad * dt;
 
 end
 
-function [alp, ud]  = BSC_input(x, xd, dxd, ddxd, param)
+function ud = BSC_input(x, xd, dxd, ddxd, param)
     %%
-    k1 = 1e2;  % position gain
-    k2 = 1e2;  % velocity gain
+    k1 = 1e1;  % position gain
+    k2 = 1e1;  % velocity gain
     
     %%
     x1 = x(1);  % theta
