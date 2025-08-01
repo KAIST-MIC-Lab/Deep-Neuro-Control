@@ -1,0 +1,177 @@
+[package]
+name = "mosekexamples"
+version = "11.0.27"
+edition = "2023"
+
+[dependencies]
+mosek = "11.0"
+itertools = "0.10"
+
+
+[[bin]]
+name = "acc1"
+path = "acc1.rs"
+
+[[bin]]
+name = "acc2"
+path = "acc2.rs"
+
+[[bin]]
+name = "blas_lapack"
+path = "blas_lapack.rs"
+
+[[bin]]
+name = "callback"
+path = "callback.rs"
+
+[[bin]]
+name = "portfolio_1_basic"
+path = "portfolio_1_basic.rs"
+
+[[bin]]
+name = "portfolio_2_frontier"
+path = "portfolio_2_frontier.rs"
+
+[[bin]]
+name = "portfolio_3_impact"
+path = "portfolio_3_impact.rs"
+
+[[bin]]
+name = "portfolio_4_transcost"
+path = "portfolio_4_transcost.rs"
+
+[[bin]]
+name = "portfolio_5_card"
+path = "portfolio_5_card.rs"
+
+[[bin]]
+name = "portfolio_6_factor"
+path = "portfolio_6_factor.rs"
+
+[[bin]]
+name = "cqo1"
+path = "cqo1.rs"
+
+[[bin]]
+name = "ceo1"
+path = "ceo1.rs"
+
+[[bin]]
+name = "pow1"
+path = "pow1.rs"
+
+[[bin]]
+name = "djc1"
+path = "djc1.rs"
+
+[[bin]]
+name = "concurrent1"
+path = "concurrent1.rs"
+
+[[bin]]
+name = "feasrepairex1"
+path = "feasrepairex1.rs"
+
+[[bin]]
+name = "helloworld"
+path = "helloworld.rs"
+
+[[bin]]
+name = "lo1"
+path = "lo1.rs"
+
+[[bin]]
+name = "lo2"
+path = "lo2.rs"
+
+[[bin]]
+name = "logistic"
+path = "logistic.rs"
+
+[[bin]]
+name = "gp1"
+path = "gp1.rs"
+
+[[bin]]
+name = "milo1"
+path = "milo1.rs"
+
+[[bin]]
+name = "mioinitsol"
+path = "mioinitsol.rs"
+
+[[bin]]
+name = "mico1"
+path = "mico1.rs"
+
+[[bin]]
+name = "opt_server_async"
+path = "opt_server_async.rs"
+
+[[bin]]
+name = "opt_server_sync"
+path = "opt_server_sync.rs"
+
+[[bin]]
+name = "parallel"
+path = "parallel.rs"
+
+[[bin]]
+name = "parameters"
+path = "parameters.rs"
+
+[[bin]]
+name = "pinfeas"
+path = "pinfeas.rs"
+
+[[bin]]
+name = "reoptimization"
+path = "reoptimization.rs"
+
+[[bin]]
+name = "qcqo1"
+path = "qcqo1.rs"
+
+[[bin]]
+name = "qo1"
+path = "qo1.rs"
+
+[[bin]]
+name = "response"
+path = "response.rs"
+
+[[bin]]
+name = "sdo1"
+path = "sdo1.rs"
+
+[[bin]]
+name = "sdo2"
+path = "sdo2.rs"
+
+[[bin]]
+name = "sdo_lmi"
+path = "sdo_lmi.rs"
+
+[[bin]]
+name = "sensitivity"
+path = "sensitivity.rs"
+
+[[bin]]
+name = "simple"
+path = "simple.rs"
+
+[[bin]]
+name = "solutionquality"
+path = "solutionquality.rs"
+
+[[bin]]
+name = "solvebasis"
+path = "solvebasis.rs"
+
+[[bin]]
+name = "solvelinear"
+path = "solvelinear.rs"
+
+[[bin]]
+name = "sparsecholesky"
+path = "sparsecholesky.rs"

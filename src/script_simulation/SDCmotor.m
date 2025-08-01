@@ -10,7 +10,7 @@ function SDC = SDCmotor(x,xd,ud,param)
     ud2 = ud(2);  % control input 2
 
     %%
-    L = param.L;    % Inductance (mH)
+    % L = param.L;    % Inductance (mH)
     P = param.P;         % Pole pairs
     Phi = param.Phi; % Flux (Wb)
     J = param.J;   % Inertia (kg.m^2)

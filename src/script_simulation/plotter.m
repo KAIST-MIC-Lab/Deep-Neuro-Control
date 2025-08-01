@@ -36,13 +36,16 @@ nexttile;
 plot(t, x_hist(1,:), "Color", "blue", "LineWidth", line_width, "LineStyle", "-"); hold on
 plot(t, x_non_hist(1,:), "Color", "cyan", "LineWidth", line_width, "LineStyle", "-"); hold on
 plot(t, xd_hist(1,:), "Color", "red", "LineWidth", line_width, "LineStyle", "--"); hold on
+plot(t, th_ref_hist(1,:), "Color", "magenta", "LineWidth", line_width, "LineStyle", "--"); hold on
 
 grid on; grid minor;
 xlabel('Time / s', 'FontSize', font_size, 'Interpreter', 'latex');
 ylabel('$x_1$', 'FontSize', font_size, 'Interpreter', 'latex');
-maxVal = max(x_non_hist(1,:)); minVal = min(x_non_hist(1,:)); 
+maxVal = max(xd_hist(1,:)); minVal = min(xd_hist(1,:)); 
 len = maxVal-minVal; ratio = .1;
-ylim([minVal-len*ratio maxVal+len*ratio]);
+if len ~= 0
+    ylim([minVal-len*ratio maxVal+len*ratio]);
+end
 xlim([0 T])
 
 ax = gca;
@@ -57,9 +60,11 @@ plot(t, xd_hist(2,:), "Color", "red", "LineWidth", line_width, "LineStyle", "--"
 grid on; grid minor;
 xlabel('Time / s', 'FontSize', font_size, 'Interpreter', 'latex');
 ylabel('$x_2$', 'FontSize', font_size, 'Interpreter', 'latex');
-maxVal = max(x_non_hist(2,:)); minVal = min(x_non_hist(2,:)); 
+maxVal = max(xd_hist(2,:)); minVal = min(xd_hist(2,:)); 
 len = maxVal-minVal; ratio = .1;
-ylim([minVal-len*ratio maxVal+len*ratio]);
+if len ~= 0
+    ylim([minVal-len*ratio maxVal+len*ratio]);
+end
 xlim([0 T])
 
 ax = gca;
@@ -113,7 +118,9 @@ ylabel('$X$', 'FontSize', font_size, 'Interpreter', 'latex');
 % maxVal = max(X_hist(1,:)); minVal = min(X_hist(1,:)); 
 maxVal = max(M_hist(1,:)); minVal = min(M_hist(1,:)); 
 len = maxVal-minVal; ratio = .1;
-% ylim([minVal-len*ratio maxVal+len*ratio]);
+if len ~= 0
+    ylim([minVal-len*ratio maxVal+len*ratio]);
+end
 xlim([0 T])
 
 ax = gca;
@@ -129,7 +136,9 @@ ylabel('Done', 'FontSize', font_size, 'Interpreter', 'latex');
 % maxVal = max(optDone_hist(1,:)); minVal = min(optDone_hist(1,:)); 
 maxVal = 1; minVal = 0; 
 len = maxVal-minVal; ratio = .1;
-% ylim([minVal-len*ratio maxVal+len*ratio]);
+% if len ~= 0
+%     ylim([minVal-len*ratio maxVal+len*ratio]);
+% end
 xlim([0 T])
 
 ax = gca;
@@ -146,7 +155,9 @@ ylabel('mu', 'FontSize', font_size, 'Interpreter', 'latex');
 % maxVal = max(optDone_hist(1,:)); minVal = min(optDone_hist(1,:)); 
 maxVal = 1; minVal = 0; 
 len = maxVal-minVal; ratio = .1;
-% ylim([minVal-len*ratio maxVal+len*ratio]);
+if len ~= 0
+    ylim([minVal-len*ratio maxVal+len*ratio]);
+end
 xlim([0 T])
 
 ax = gca;
@@ -163,7 +174,9 @@ xlabel('Time / s', 'FontSize', font_size, 'Interpreter', 'latex');
 ylabel('$u_1$', 'FontSize', font_size, 'Interpreter', 'latex');
 maxVal = max(ud_hist(1,:)); minVal = min(ud_hist(1,:)); 
 len = maxVal-minVal; ratio = .1;
-ylim([minVal-len*ratio maxVal+len*ratio]);
+if len ~= 0
+    ylim([minVal-len*ratio maxVal+len*ratio]);
+end
 xlim([0 T])
 
 ax = gca;
@@ -179,7 +192,9 @@ xlabel('Time / s', 'FontSize', font_size, 'Interpreter', 'latex');
 ylabel('$u_2$', 'FontSize', font_size, 'Interpreter', 'latex');
 maxVal = max(ud_hist(2,:)); minVal = min(ud_hist(2,:)); 
 len = maxVal-minVal; ratio = .1;
-ylim([minVal-len*ratio maxVal+len*ratio]);
+if len ~= 0
+    ylim([minVal-len*ratio maxVal+len*ratio]);
+end
 xlim([0 T])
 
 ax = gca;
