@@ -1,4 +1,5 @@
 {
   "accentColor": "#f55c5c",
-  "showRibbon": true
+  "showRibbon": true,
+  "textFontFamily": "Times New Roman"
 }

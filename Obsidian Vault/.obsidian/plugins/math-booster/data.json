@@ -15,7 +15,7 @@
       "refFormat": "[type] [number] ([title])",
       "noteMathLinkFormat": "[title] if title exists, [type] [number] otherwise",
       "ignoreMainTheoremCalloutWithoutTitle": false,
-      "numberOnlyReferencedEquations": true,
+      "numberOnlyReferencedEquations": false,
       "inferEqNumberPrefix": true,
       "inferEqNumberPrefixFromProperty": "",
       "inferEqNumberPrefixRegExp": "^[0-9]+(\\.[0-9]+)*",

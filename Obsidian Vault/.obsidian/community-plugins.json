@@ -1,4 +1,6 @@
 [
   "obsidian-latex",
-  "mathlinks"
+  "mathlinks",
+  "obsidian-citation-plugin",
+  "number-headings-obsidian"
 ]
