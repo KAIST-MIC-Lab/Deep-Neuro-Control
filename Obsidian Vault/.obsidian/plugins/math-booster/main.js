@@ -6048,5 +6048,3 @@ var LatexReferencer3 = class extends import_obsidian36.Plugin {
     }, 800);
   }
 };
-
-/* nosourcemap */

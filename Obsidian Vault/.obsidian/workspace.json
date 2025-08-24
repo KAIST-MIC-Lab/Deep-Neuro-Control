@@ -14,8 +14,8 @@
               "type": "markdown",
               "state": {
                 "file": "Contraction Theory Based Control Under Input Saturation–LMI Approach.md",
-                "mode": "preview",
-                "source": true,
+                "mode": "source",
+                "source": false,
                 "backlinks": false
               },
               "icon": "lucide-file",
@@ -100,7 +100,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 201.5
   },
   "right": {
     "id": "2ab1a81649331b46",
@@ -182,6 +182,7 @@
   },
   "left-ribbon": {
     "hiddenItems": {
+      "obsidian42-brat:BRAT": false,
       "switcher:Open quick switcher": false,
       "graph:Open graph view": false,
       "canvas:Create new canvas": false,
@@ -191,7 +192,7 @@
       "bases:Create new base": false
     }
   },
-  "active": "81723aaeabcb8472",
+  "active": "0d6fa435cffd7eba",
   "lastOpenFiles": [
     "Untitled.base",
     "Contraction Theory Based Control Under Input Saturation–LMI Approach.md",

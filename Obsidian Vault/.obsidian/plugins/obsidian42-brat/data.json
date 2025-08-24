@@ -1,0 +1,22 @@
+{
+  "pluginList": [
+    "RyotaUshio/obsidian-latex-theorem-equation-referencer"
+  ],
+  "pluginSubListFrozenVersion": [
+    {
+      "repo": "RyotaUshio/obsidian-latex-theorem-equation-referencer",
+      "version": "2.2.0"
+    }
+  ],
+  "themesList": [],
+  "updateAtStartup": true,
+  "updateThemesAtStartup": true,
+  "enableAfterInstall": true,
+  "loggingEnabled": false,
+  "loggingPath": "BRAT-log",
+  "loggingVerboseEnabled": false,
+  "debuggingMode": false,
+  "notificationsEnabled": true,
+  "personalAccessToken": "",
+  "selectLatestPluginVersionByDefault": false
+}

@@ -13,14 +13,140 @@
 > - Numerical validation is demonstrated
 
 ## 1 Preliminaries
+Consider a nonlinear system as follows:
+$$
+\ddtt\mv{x}
+=
+\mv{f}(\mv{x},t)
+.
+$$
 
+^ffa982
 
+The differential dynamics can be obtained using partial derivative as follows:
+$$
+\ddtt\delta\mv{x} = \pptfrac{\mv{f}}{\mv{x}}\delta\mv{x}
+.
+$$
 
+The system [[#^ffa982]] is contracting according to the following theorem.
+> [!theorem] Contraction Condition
+> The system [[#^ffa982]] is contracting, if there exists the contraction metric $\mm{M}:=\mm{M}(\mv{x},t)$ satisfying 
+> $$
+> \ddtt\mm{M}+2\mysym(\mm{M}\pptfrac{\mv{f}}{\mv{x}}) \le -2\alpha\mm{M}
+> $$
+> with an exponential rate $\alpha\in\R_{>0}$.
 
-> [!theorem]
+^4b076f
+
+`\begin{proof}`
+Consider the following Lyapunov function $V:=V(\mv{x},\delta\mv{x},t)=\tfrac{1}{2}\delta\mv{x}^\top\delta\mv{x}$. The time derivative of $V$ is
+$$
+\ddtt V = 
+\delta\mv{x}^\top 
+\left(\ddtt\mm{M}+2\mysym(\mm{M}\pptfrac{\mv{f}}{\mv{x}}) \right)
+\delta\mv{x}
+\le
+-2\alpha
+\delta\mv{x}^\top 
+\mm{M}
+\delta\mv{x}
+=
+-\alpha V
+.
+$$
+Therefore, $\norm{\delta\mv{x}}\to 0$ as $t\to 0$ with an exponential rate $\alpha$.
+`\end{proof}`
+Now, consider a perturbed system as follows:
+$$
+\ddtt\mv{x}
+=
+\mv{f}(\mv{x},t)
++ \mv{d}(\mv{x},t)
+.
+$$
+
+^aa0442
+
+> [!theorem] Partial Contraction
 > Consider a nonlinear system of the form $\ddtt\mv{x} = \mv{f}(\mv{x},\mv{x},t)$ and the virtual system $\ddtt\mv{q} = \mv{f}(\mv{q},\mv{x},t)$ are contracting with respect to $\mv{q}$. If a particular solution of virtual system verifies a smooth specific property, then all solutions of the original system verifies this property exponentially.
 
+Assume that the contraction metric $\mm{M}$ satisfies the contraction condition presented in  [[#^4b076f]] . Then the following theorem can be used to ...
+ 
+> [!Theorem] Contraction (Perturbed System)
+> If the system [[#^aa0442]]  is contracting with contraction metric $\mm{M}$ and decay rate $\alpha$, *i.e.,* $\mm{M}\mathbb{A}+\mathbb{A}\mm{M}-\mm{M}\mm{B}\mm{R}^{-1}\mm{B}^\top\mm{M}\le-2\alpha\mm{M}$, and $\Theta\mv{d}\in\mathcal{L}_\infty$ and $\exists\underline{m},\overline{m}\in\R_{>0}$, and $\exists\overline{d}\in\R_{\ge0}$, subject to $\overline{d}=\sup_{\mv{x},t}\norm{\mv{d}}$, and $\underline{m}\mm{I}\le \mm{M}\le\overline{m}\mm{I}$.
+> Then, we have the following relation: 
+> $$
+> \norm{\xi_1(t)-\xi_0(t)}
+> \le
+> 
+> $$
+> .....
 
+^c3ed0a
+
+`\begin{proof}`
+According the [[#^4b076f]], we have $\mm{M}=\mm{\Theta}^\top\mm{\Theta}$.  Then, the following relation can be obtained:
+$$
+\begin{aligned}
+\ddtt \norm{\mm\Theta\pptfrac{\mv{q}}{\mu}}
+=&
+\tfrac{1}{2}
+\left(
+\pptfrac{\mv{q}}{\mu}^\top
+\mm M
+\pptfrac{\mv{q}}{\mu}
+\right)^{-\tfrac{1}{2}}
+\left[
+\pptfrac{\mv{q}}{\mu}^\top
+\ddtt \mm M
+\pptfrac{\mv{q}}{\mu}
++
+\pptfrac{\mv{q}}{\mu}^\top
+2\mysym(\mm\Theta\pptfrac{\mv{f}}{\mv{q}})
+\pptfrac{\mv{q}}{\mu}
++
+\pptfrac{\mv{q}}{\mu}^\top
+2
+\mm M \mv{d}
+\right]
+\\
+\le&
+\tfrac{1}{2}
+\left(
+\pptfrac{\mv{q}}{\mu}^\top
+\mm M
+\pptfrac{\mv{q}}{\mu}
+\right)^{-\tfrac{1}{2}}
+\left[
+-2\alpha
+\pptfrac{\mv{q}}{\mu}^\top
+\mm M
+\pptfrac{\mv{q}}{\mu}
++
+\pptfrac{\mv{q}}{\mu}^\top
+2\mm M \mv{d}
+\right]
+\\
+\le &
+-\alpha
+\norm{\mm\Theta\pptfrac{\mv{q}}{\mu}}
++
+\norm{\mm\Theta\pptfrac{\mv{q}}{\mu}}^{-1}
+\norm{\mm\Theta\pptfrac{\mv{q}}{\mu}}
+\norm{\mm\Theta \mv{d}}
+\\
+\le &
+-\alpha
+\norm{\mm\Theta\pptfrac{\mv{q}}{\mu}}
++
+\norm{\mm\Theta \mv{d}}
+.
+\end{aligned}
+$$
+By integrating 
+
+`\end{proof}`
 ## 2 System Declaration
 Let say we have the following system,
 $$
@@ -99,7 +225,7 @@ $$
 + \mm{B}
 \underbrace{
 (\mysat(\mv{u}) - \mv{u})
-}_{=:\\mv{phi}(\mv{u})}
+}_{=:\mv{\phi}(\mv{u})}
 + \mv{d}
 ,
 \end{aligned}
@@ -151,23 +277,25 @@ $$
 
 where $\mu\in[0,1]$ and $\mv{d}_\mu:=\mu\mv{d}$. The virtual system is parameterized by $\mu$, which has $\mv{q}(\mu=0,t)=\mv\xi_0$ and $\mv{q}(\mu=1,t)=\mv\xi_1$.
 
-Note the the feasible solutions of the virtual $\mv{q}$  system in [[#^9d8748]] are $\mv{q}=\mv{x}$ and $\mv{q}=\mv{x}_d$. That is, the two solutions will converged, if the virtual system is contracting.
-
-Assume that the contraction metric $\mm{M}$ satisfies the contraction condition presented in []. Then the following theorem can be used to ...
-> [!Theorem]
-> If the system [[#^9d8748]] is contracting with contraction metric $\mm{M}$ and decay rate $\alpha$, *i.e.,* $\mm{M}\mathbb{A}+\mathbb{A}\mm{M}-\mm{M}\mm{B}\mm{R}^{-1}\mm{B}^\top\mm{M}\le-2\alpha\mm{M}$, and $\Theta\mv{d}\in\mathcal{L}_\infty$ and $\exists\underline{m},\overline{m}\in\R_{>0}$, and $\exists\overline{d}\in\R_{\ge0}$, subject to $\overline{d}=\sup_{\mv{x},t}\norm{\mv{d}}$, and $\underline{m}\mm{I}\le \mm{M}\le\overline{m}\mm{I}$.
-> Then, we have the following relation: 
-> $$
-> \norm{\xi_1(t)-\xi_0(t)}
-> \le
-> 
-> $$
-> .....
-
-`\begin{proof}`
-According the [], we have $\mm{M}=\mm{\Theta}^\top\mm{\Theta}$. The 
-
-`\end{proof}`
+If the perturbed system [[#^9d8748]] is contracting with respect to [[#^4b076f]],  Accordingly to [[#^c3ed0a]], the steady error of [[#^9d8748]] (*i.e.,* $\norm{\mv{x}-\mv{x}_d}$) can be obtained as follows:
+$$
+\norm{\mv{x}-\mv{x}_d}
+\le 
+...
++
+\sup(\mm{B}\mv{\phi}+\mv{d})
+\tfrac{1}{\alpha}
+\sqrt{
+\tfrac{\overline{m}}{\underline{m}}
+}
+(1-\exp(-\alpha t))
+.
+$$
+Therefore, saturation should be handled and $\mm{M}$ should be carefully selected such that $\tfrac{\overline{m}}{\underline{m}}$.
+Then, we have the following optimization problem:
+$$
+\ddtt\mm{M}+2\mysym(\mm{M}\mathbb{A})+\mm{M}\mm{B}\mm{R}^{-1}\mm{B}^\top\mm{M}\le -2\alpha\mm{M}
+$$
 
 
 ### 3.2 Saturation Handling

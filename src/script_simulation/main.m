@@ -1,39 +1,4 @@
 
-
-%{
-    유세선 교수님께,
-
-    LMI Solver:
-        - cvx 설치가 되지 않네요... ㅎㅎ (다운로드 페이지에 오류 발생합니다.)
-            - https://cvxr.com/cvx/doc/install.html#supported-platforms
-        - 그렇기 때문에 아래 두가지 설치합니다.
-            - YALMIP: https://yalmip.github.io
-            - SeDuMi: https://github.com/sqlp/sedumi
-        - 본 파일의 경로에 위치 시켜주시면 되겠습니다.
-        - 혹은 MOSEK을 사용할 수 있습니다.
-            - 아카데믹 라이센스를 받고 사용하면 됩니다.
-            - 일단은 SeDuMi 기준으로 작성하였고, NCM_ctrl.m의 ops 변수에서 선택할 수 있습니다.
-
-    사용법:
-        - 본 파일을 실행하면 됩니다.
-        - 먼저 NCM_init.m으로 NCM 구조체를 초기화합니다.
-        - 그 후 매 스텝마다 NCM_ctrl.m을 호출하여 NCM을 실행합니다.
-        - 마지막으로 plotter.m을 호출하여 결과를 시각화합니다.
-
-    추가 참고:
-        - NCM code: https://github.com/AstroHiro/ncm/tree/master
-        - NCM paper: https://arxiv.org/abs/2006.04361
-
-    마지막 미팅에 대하여 수정사항
-        - BSC의 처참한 성능은 시스템에 비해 너무 느린 샘플 주기였습니다.
-            - 10배 증가
-        - reference가 sin파로 하니 초기 속도가 0이 아니어서 cos(.)-1로 변경하였습니다.
-
-
-    유명석 올림; 01 Aug 2025
-%}
-
-
 %% PATH
 addpath(genpath([pwd filesep 'YALMIP-master']));
 addpath(genpath([pwd filesep 'sedumi']));
