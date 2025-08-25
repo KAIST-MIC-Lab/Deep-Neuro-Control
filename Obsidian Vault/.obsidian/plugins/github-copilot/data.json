@@ -1,0 +1,38 @@
+{
+  "nodePath": "/opt/homebrew/bin/node",
+  "nodePathUpdatedToNode20": true,
+  "enabled": false,
+  "hotkeys": {
+    "accept": "Tab",
+    "cancel": "Escape",
+    "request": "Cmd-Shift-/",
+    "partial": "Cmd-Shift-.",
+    "next": "Cmd-Shift-ArrowDown",
+    "disable": "Cmd-Shift-ArrowRight"
+  },
+  "suggestionDelay": 500,
+  "debug": false,
+  "onlyOnHotkey": false,
+  "onlyInCodeBlock": false,
+  "exclude": [],
+  "deviceSpecificSettings": [
+    "nodePath"
+  ],
+  "useDeviceSpecificSettings": false,
+  "proxy": "",
+  "chatSettings": {
+    "deviceCode": null,
+    "pat": null,
+    "accessToken": {
+      "token": null,
+      "expiresAt": null
+    },
+    "selectedModel": {
+      "label": "Claude Sonnet 4",
+      "value": "claude-sonnet-4"
+    }
+  },
+  "systemPrompt": "You are GitHub Copilot, an AI assistant. You are helping the user with their tasks in Obsidian.",
+  "invertEnterSendBehavior": false,
+  "extraCACerts": ""
+}

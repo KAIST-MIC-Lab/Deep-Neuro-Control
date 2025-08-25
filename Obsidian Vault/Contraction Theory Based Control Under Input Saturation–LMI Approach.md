@@ -233,7 +233,7 @@ $$
 
 ^cdaa47
 
-The control law $\mv{u}$ is defined with contraction metric $mm{M}$ as follows:
+The control law $\mv{u}$ is defined with contraction metric $\mm{M}$ as follows:
 $$
 \mv{u} = \mv{u}_d - \mm{R}^{-1}\mm{B}^\top\mm{M}(\mv{x}-\mv{x}_d)
 ,
@@ -297,19 +297,72 @@ $$
 \ddtt\mm{M}+2\mysym(\mm{M}\mathbb{A})+\mm{M}\mm{B}\mm{R}^{-1}\mm{B}^\top\mm{M}\le -2\alpha\mm{M}
 $$
 
+^92bbd5
+
+To reformulate [[#^92bbd5]] into LMI from BMI, we pre-and post-multiply $\mm{W}:=\mm{M}^{-1}$ to [[#^92bbd5]]. 
 
 ### 3.2 Saturation Handling
-In this study, we use *sector condition* to formulate the constraint into inequality condition. First, let us consider following saturation constraint:
+We consider the following input saturation constraint:
 $$
+\norm{\mv{u}}
+=
+\norm{\mv{u}_d-\mm{R}^{-1}\mm{B}^\top\mm{M}(\mv{x}-\mv{x}_d)}
+\le
+\overline{u}
+.
+$$
+However, ...
+$$
+\left(\mv{u}_d-\mm{R}^{-1}\mm{B}^\top\mm{M}(\mv{x}-\mv{x}_d\right)^\top
+\left(\mv{u}_d-\mm{R}^{-1}\mm{B}^\top\mm{M}(\mv{x}-\mv{x}_d\right)
+\le
+\overline{u}^2
+.
+$$
+Therefore, ...
+$$
+\begin{bmatrix}
+\overline{u}^2 & \left(\mv{u}_d - \mm{R}^{-1}\mm{B}^\top\mm{M}(\mv{x}-\mv{x}_d\right)^\top \\
+\star & \mm{I}
+\end{bmatrix}
+\succeq
+0
 
 $$
-Then, the following constraint can be obtained:
-$$
 
+
+Multiply $\mm{T}=\mydiag(\mm{I},\mm{W}(\mm{R}^{-1}\mm{B}^{\top})^{-1})$ 
+$$
+\begin{bmatrix}
+\overline{u}^2 & \left(\mm{W}(\mm{R}^{-1}\mm{B}^\top)^{-1}\mv{u}_d - (\mv{x}-\mv{x}_d\right)^\top \\
+\star & 
+\underbrace{
+\mm{W}(\mm{R}^{-1}\mm{B}^\top)^{-1}(\mm{R}^{-1}\mm{B}^\top)\mm{W}
+}_{=:\mm{X}}
+\end{bmatrix}
+\succeq
+0
+$$
+Then the constraint is ...
+$$
+\begin{aligned}
+\begin{bmatrix}
+\overline{u}^2 & \left(\mm{W}(\mm{R}^{-1}\mm{B}^\top)^{-1}\mv{u}_d - (\mv{x}-\mv{x}_d\right)^\top \\
+\star & \mm{X}
+\end{bmatrix}
+\succeq
+0
+,\quad
+&
+\mm{X}
+\succeq
+\mm{W}(\mm{R}^{-1}\mm{B}^\top)^{-1}(\mm{R}^{-1}\mm{B}^\top)\mm{W}
+
+\end{aligned}
 $$
 
 ## 4 Numerical Validation
 
-
-
 ## 5 Conclusion
+In this study, we 
+Copilot is 

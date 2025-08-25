@@ -1,0 +1,16 @@
+{
+  "conversations": [
+    {
+      "id": "1756095478533",
+      "title": "New Conversation",
+      "messages": [],
+      "createdAt": 1756095478533,
+      "updatedAt": 1756095478533,
+      "model": {
+        "label": "Claude Sonnet 4",
+        "value": "claude-sonnet-4"
+      }
+    }
+  ],
+  "activeConversationId": "1756095478533"
+}

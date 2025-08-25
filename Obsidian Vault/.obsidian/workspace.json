@@ -35,7 +35,7 @@
               "type": "markdown",
               "state": {
                 "file": "Contraction Theory Based Control Under Input Saturation–LMI Approach.md",
-                "mode": "source",
+                "mode": "preview",
                 "source": false,
                 "backlinks": false
               },
@@ -172,9 +172,19 @@
               "icon": "lucide-list",
               "title": "Outline of Contraction Theory Based Control Under Input Saturation–LMI Approach"
             }
+          },
+          {
+            "id": "8f482ce3fba07a3b",
+            "type": "leaf",
+            "state": {
+              "type": "github-copilot-chat-view",
+              "state": {},
+              "icon": "bot-message-square",
+              "title": "Copilot Chat"
+            }
           }
         ],
-        "currentTab": 3
+        "currentTab": 4
       }
     ],
     "direction": "horizontal",
