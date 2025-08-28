@@ -105,7 +105,7 @@ for t_idx = 1:1:num_t
             B = param.B;
             u = ud - ncm.inv_R*B' * inv(ncm.W_bar/ncm.mu) * (x-xd);
 
-            % max_u = 2;
+            max_u = 2;
             % u = max(min(u,max_u), -max_u);
 
             % update controller
