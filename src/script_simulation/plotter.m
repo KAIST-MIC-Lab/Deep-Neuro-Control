@@ -144,7 +144,8 @@ ax.FontName = 'Times New Roman';
 % ============================================
 nexttile;
 for idx = 1:1:num_sample
-    plot(t, sys{idx}.u_hist(2,:), "Color", "blue", "LineWidth", line_width, "LineStyle", "-"); hold on
+    plot(t, sys{idx}.u_hist(2,:), "Color", "blue", "LineWidth", line_width, "LineStyle", "--"); hold on
+    plot(t, sys{idx}.uSat_hist(2,:), "Color", "blue", "LineWidth", line_width, "LineStyle", "-"); hold on
 end
 plot(t, ud_hist(2,:), "Color", "red", "LineWidth", line_width, "LineStyle", "--"); hold on
 
@@ -253,3 +254,33 @@ ax = gca;
 ax.FontSize = font_size; 
 ax.FontName = 'Times New Roman';
 
+
+%%
+figure(2); clf; 
+% hF = gcf; 
+% hF.Position(3:4) = [1600, 800];
+tl = tiledlayout(2, 4, 'Padding', 'none', 'TileSpacing', 'compact');
+
+nexttile;
+% ============================================
+%     Tracking error 1
+% ============================================
+
+for idx = 1:1:num_sample
+    err = sys{idx}.x_hist(1,:)-xd_hist(1,:);
+    plot(t, err, "Color", "blue", "LineWidth", line_width, "LineStyle", "-"); hold on
+end
+
+grid on; grid minor;
+xlabel('Time / s', 'FontSize', font_size, 'Interpreter', 'latex');
+ylabel('$x_1$', 'FontSize', font_size, 'Interpreter', 'latex');
+maxVal = max(err); minVal = min(err); 
+len = maxVal-minVal; ratio = .1;
+if len ~= 0
+    ylim([minVal-len*ratio maxVal+len*ratio]);
+end
+xlim([0 T])
+
+ax = gca;
+ax.FontSize = font_size; 
+ax.FontName = 'Times New Roman';

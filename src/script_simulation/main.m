@@ -71,6 +71,7 @@ for idx = 1:1:num_sample
     sys{idx}.x_hist = zeros(num_x, num_t);   % state history 
     sys{idx}.x_non_hist = zeros(num_x, num_t); % state (with ud) history
     sys{idx}.u_hist = zeros(num_u, num_t);   % input history  
+    sys{idx}.uSat_hist = zeros(num_u, num_t);   
 
     sys{idx}.X_hist = zeros(1, num_t);       % NCM: ratio (SS error)
     sys{idx}.optDone_hist = zeros(1, num_t); % NCM: optimization result flag
@@ -106,13 +107,15 @@ for t_idx = 1:1:num_t
             u = ud - ncm.inv_R*B' * inv(ncm.W_bar/ncm.mu) * (x-xd);
 
             max_u = 2;
-            % u = max(min(u,max_u), -max_u);
+            % uSat = max(min(u,max_u), -max_u);
+            uSat = u;
 
             % update controller
             sys{c_idx}.ncm = ncm;
             sys{c_idx}.x = x;
             sys{c_idx}.x_non = x_non;
             sys{c_idx}.u = u;
+            sys{c_idx}.uSat = uSat;
 
             % report on console
             fprintf("\tControl at t = %.4f, flag: %d\n", t(t_idx), ncm.optDone)
@@ -126,7 +129,7 @@ for t_idx = 1:1:num_t
 
     % disturbance
     d_MAX = 1;  % maximum disturbance
-    d_func = @(x2) d_MAX * sign(x2);  
+    d_func = @(x2) -1 * d_MAX * sign(x2);  
 
     % step forward
     for c_idx = 1:1:num_sample
@@ -134,12 +137,13 @@ for t_idx = 1:1:num_t
         sys{idx}.x_hist(:, t_idx) = x;
         sys{idx}.x_non_hist(:, t_idx) = x_non;
         sys{idx}.u_hist(:, t_idx) = u;
+        sys{idx}.uSat_hist(:, t_idx) = uSat;
         sys{idx}.X_hist(t_idx) = ncm.X;  % controller gain
         sys{idx}.optDone_hist(t_idx) = ncm.optDone;  % optimization done flag
         sys{idx}.M_hist(:, t_idx) = norm(inv(ncm.W_bar/ncm.mu));
         sys{idx}.mu_hist(:, t_idx) = ncm.mu;
         
-        sys{c_idx}.x = system_step(dt, sys{c_idx}.x, sys{c_idx}.u, d_func(sys{c_idx}.x(2)), param);
+        sys{c_idx}.x = system_step(dt, sys{c_idx}.x, sys{c_idx}.uSat, d_func(sys{c_idx}.x(2)), param);
         sys{c_idx}.x_non = system_step(dt, sys{c_idx}.x_non, ud, d_func(sys{c_idx}.x_non(2)), param);
     end
     xd = system_step(dt, xd, ud, 0, param);

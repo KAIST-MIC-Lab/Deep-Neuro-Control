@@ -363,6 +363,27 @@ $$
 
 ## 4 Numerical Validation
 
+1. (proposed) contracion based control with saturation consideration
+	1. 외란이 큼
+	2. 추종오차 크게 발생
+	3. 메트릭 겁나게 커짐
+	4. 포화 발생 -> 핸들링
+	5. 추종오차 크게 남지만 
+	6. 메트릭은 커지지 않음
+	7. 정상상태 오차 관찰 <- 이론적인 바운드 내로
+2. contraction based control 
+	1. 외란이 큼
+	2. 추종오차 크게 발생
+	3. 메트릭 겁나게 커짐
+	4. 포화 발생
+	5. 추종오차 해소 안됨
+	6. 메트릭 더 커짐
+	7. 포화 더됨
+
+시나리오
+	1. 외란을 키우기
+	2. external disturbacne
+
 ## 5 Conclusion
 In this study, we 
 Copilot is 

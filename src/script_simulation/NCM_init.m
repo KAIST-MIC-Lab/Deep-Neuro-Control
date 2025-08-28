@@ -9,7 +9,7 @@ function ncm = NCM_init(ctrl_dt)
     ncm.d_MAX = 1;      % maximum disturbance (not used in this version)
 
     % initial values
-    ncm.mu = 1e0;  
+    ncm.mu = 1e1;  
     ncm.W_bar = 1e0*eye(ncm.x_num);  
     % ncm.W_bar = ncm.mu*eye(ncm.x_num);  
     ncm.X = 1e1;

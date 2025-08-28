@@ -1,4 +1,4 @@
-function ncm = NCM_ctrl(ncm, x, xd, ud, param)
+    function ncm = NCM_ctrl(ncm, x, xd, ud, param)
     
     % for initial control (no CV-STEM)
     if ncm.init 
@@ -66,13 +66,13 @@ function ncm = NCM_ctrl(ncm, x, xd, ud, param)
         % % X == mu/m_min;
     ];
 
-    % max_u = 1.25;
-    % con = [con,
-    %     [max_u^2  (W_bar*inv(inv_R*B')*ud-(x-xd))'
-    %     (W_bar*inv(inv_R*B')*ud-(x-xd)) AUX] >= 0,
-    %     [AUX (W_bar*inv(inv_R*B'))'
-    %     (W_bar*inv(inv_R*B')) eye(2)] >= 0,
-    % ];
+    max_u = 1.25;
+    con = [con;
+        [max_u^2  (W_bar*inv(inv_R*B')*ud-(x-xd))'
+        (W_bar*inv(inv_R*B')*ud-(x-xd)) AUX] >= 0;
+        [AUX (W_bar)'
+        (W_bar) inv(inv_R*B')*inv(inv_R*B')'] >= 0,
+    ];
 
     ops = sdpsettings('verbose', 0);
     ops = sdpsettings(ops, 'debug',0);

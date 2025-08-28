@@ -1,6 +1,6 @@
 {
   "main": {
-    "id": "d310cf834f09ef1e",
+    "id": "e2a2968db14c17af",
     "type": "split",
     "children": [
       {
@@ -51,15 +51,15 @@
     "direction": "vertical"
   },
   "left": {
-    "id": "afc490a82fda8f31",
+    "id": "5fedda6c639274a2",
     "type": "split",
     "children": [
       {
-        "id": "5a48a6a8e8db606f",
+        "id": "742fac4894fee8d6",
         "type": "tabs",
         "children": [
           {
-            "id": "c2c5511802c9ca96",
+            "id": "9b422d2bf95f3a44",
             "type": "leaf",
             "state": {
               "type": "file-explorer",
@@ -72,7 +72,7 @@
             }
           },
           {
-            "id": "e5bd086da2e857b3",
+            "id": "4b63347b86b7650b",
             "type": "leaf",
             "state": {
               "type": "search",
@@ -89,7 +89,7 @@
             }
           },
           {
-            "id": "d1d2172216c72013",
+            "id": "d898b1c97933be2d",
             "type": "leaf",
             "state": {
               "type": "bookmarks",
@@ -102,18 +102,18 @@
       }
     ],
     "direction": "horizontal",
-    "width": 201.5
+    "width": 300
   },
   "right": {
-    "id": "2ab1a81649331b46",
+    "id": "8715c639365aee53",
     "type": "split",
     "children": [
       {
-        "id": "7e6d3e4abc113d1c",
+        "id": "d13f0224199fd254",
         "type": "tabs",
         "children": [
           {
-            "id": "bb0c8885f0f2ca69",
+            "id": "390a92e1284ec639",
             "type": "leaf",
             "state": {
               "type": "backlink",
@@ -125,14 +125,14 @@
                 "showSearch": false,
                 "searchQuery": "",
                 "backlinkCollapsed": false,
-                "unlinkedCollapsed": false
+                "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
               "title": "Backlinks for Contraction Theory Based Control Under Input Saturation–LMI Approach"
             }
           },
           {
-            "id": "5f14d2f5c8e4c5ee",
+            "id": "6fdee4eb77e0dd86",
             "type": "leaf",
             "state": {
               "type": "outgoing-link",
@@ -146,14 +146,14 @@
             }
           },
           {
-            "id": "0b42d4fa39566bad",
+            "id": "da04e55af0e0764e",
             "type": "leaf",
             "state": {
               "type": "tag",
               "state": {
                 "sortOrder": "frequency",
                 "useHierarchy": true,
-                "showSearch": true,
+                "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-tags",
@@ -161,13 +161,13 @@
             }
           },
           {
-            "id": "81daed21cdac30f3",
+            "id": "ceea48209ac7af0c",
             "type": "leaf",
             "state": {
               "type": "outline",
               "state": {
                 "file": "Contraction Theory Based Control Under Input Saturation–LMI Approach.md",
-                "followCursor": true,
+                "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },

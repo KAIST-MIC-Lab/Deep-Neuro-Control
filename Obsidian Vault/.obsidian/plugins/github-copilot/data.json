@@ -1,7 +1,7 @@
 {
   "nodePath": "/opt/homebrew/bin/node",
   "nodePathUpdatedToNode20": true,
-  "enabled": false,
+  "enabled": true,
   "hotkeys": {
     "accept": "Tab",
     "cancel": "Escape",
