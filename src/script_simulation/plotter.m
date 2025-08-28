@@ -23,8 +23,8 @@ fig_width = 450;
 %% MAIN PLOT FUNCTIONS
 
 figure(1); clf; 
-hF = gcf; 
-hF.Position(3:4) = [1600, 800];
+% hF = gcf; 
+% hF.Position(3:4) = [1600, 800];
 tl = tiledlayout(2, 4, 'Padding', 'none', 'TileSpacing', 'compact');
 
 

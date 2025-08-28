@@ -1,34 +1,11 @@
-% ********************************************
-%
-%   Hey! You finally reached here.
-%
-%   Most people typically use Simulink without MATLAB scripts.
-%   However, using Simulink with a MATLAB script allows you to run simulations in the MATLAB environment and easily save the results in a .mat file for further analysis.
-%   I created this example to illustrate how I use Simulink with MATLAB scripts.
-%   You can see the following features:
-%   - The Simulink simulation can be controlled by a MATLAB script.
-%        (You can run the simulation even without opening the Simulink model.)
-%   - The parameters in Simulink can be modified using a MATLAB script.
-%   - The results of the Simulink simulation can be exported to the MATLAB workspace.
-%
-%   To try this example, follow these steps:
-%   1. Run this script to start Simulink simulation (with RUN_FLAG = 1).
-%   2. Check the results in the MATLAB workspace. (sim_result)
-%   3. Save the results as a .mat file (with RESULT_SAVE_FLAG = 1).
-%   4. Check the saved file in the results folder.
-%   5. Run the plotter_individual.m script to plot the results.
-%
-%   Good luck!
-%
-%                               Myeongseok Ryu
-%  	    				dding_98@gm.gist.ac.kr
-%                                  09.Feb.2025
-%
-% ********************************************
-
 %% FASTEN YOUR SEATBELT
 clear
 
+
+addpath(genpath([pwd filesep 'YALMIP-master']));
+addpath(genpath([pwd filesep 'sedumi']));
+
+%%
 RUN_FLAG = 0;           % run the simulink simulation
 RESULT_SAVE_FLAG = 0;   % save the result as a .mat file in the results folder
 
@@ -36,8 +13,8 @@ slx_name = "main.slx";  % simulink file name
 
 %% SIMULATION SETTING
 T = 10;                 % simulation time
-ctrl_dt = 1e-4;         % controller sampling time
-dt = ctrl_dt * 1;       % simulation sampling time
+ctrl_dt = 1/1e3;         % controller sampling time
+dt = 1/20e3;       % simulation sampling time
 t = 0:dt:T;             % time vector
 
 %% REPORT SETTING
@@ -49,11 +26,13 @@ fprintf("Simulation dt    : %.2e\n", dt)
 fprintf("\n")
 
 %% INITIAL CONDITION
-x = [0;0];              % initial state
+x = [0;0;0;0];              % initial state
 u = [0;0];              % initial input 
 
-%% CONTROLLER LOAD
-K = diag([2; 3]);       % controller gain
+%% CONTROLLER
+x_num = 3;
+W_init = zeros(x_num);
+X_init = 1;
 
 %% MAIN SIMULATION RUN
 if RUN_FLAG

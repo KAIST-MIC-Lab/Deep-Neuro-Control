@@ -4,7 +4,7 @@ addpath(genpath([pwd filesep 'YALMIP-master']));
 addpath(genpath([pwd filesep 'sedumi']));
 addpath(genpath([pwd filesep 'mosek/11.0/tools/platform/osxaarch64/bin']));
 addpath(genpath([pwd filesep 'mosek/11.0/toolbox/r2022bom']));
-
+% C:\Program Files\Mosek\11.0\tools\platform\win64x86\bin
 %% FASTEN YOUR SEATBELT
 clear
 RESULT_SAVE_FLAG = 0;   % save the result as a .mat file in the results folder

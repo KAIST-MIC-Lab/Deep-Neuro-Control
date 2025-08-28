@@ -52,6 +52,11 @@ function ncm = NCM_ctrl(ncm, x, xd, ud, param)
     eps = 0e-1;
     m_min = 1e-12;
 
+    % AUXILIARY CONTRAINT
+    max_u = 0.2*[1;1];
+    e = x-xd;
+    m_max = 10;
+
     % constraints
     con = [
         -(W_bar-pre_W_bar)/dt + (W_bar*SDC' + SDC*W_bar) - 2*B*inv_R*B' <= -2*alpha*W_bar - eps*eye(x_num);
@@ -75,8 +80,8 @@ function ncm = NCM_ctrl(ncm, x, xd, ud, param)
     % ops = sdpsettings(ops, 'solver','mosek');
     
     ops = sdpsettings(ops,'solver', 'sedumi');
-    ops = sdpsettings(ops,'sedumi.eps', 1e-8);
-    ops = sdpsettings(ops, 'sedumi.cg.maxiter', 1000);
+    % ops = sdpsettings(ops,'sedumi.eps', 1e-1);
+    % ops = sdpsettings(ops, 'sedumi.cg.maxiter', 1000);
 
     % optimize!
     sol = optimize(con, obj, ops);
