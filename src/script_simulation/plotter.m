@@ -20,192 +20,193 @@ fig_width = 450;
 % fig_height = 300; 
 % fig_width = 800;
 
-%% MAIN PLOT FUNCTIONS
+%% COLORS
+c_list = [
+    0 0 1       % BLUE
+    0 1 1       % CYAN
+    .5 .5 .5    % GRAY
+];
 
+%% MAIN PLOT FUNCTIONS
 figure(1); clf; 
 % hF = gcf; 
 % hF.Position(3:4) = [1600, 800];
 tl = tiledlayout(2, 4, 'Padding', 'none', 'TileSpacing', 'compact');
 
+% ============================================
+%     STATE VARIABLE
+% ============================================
+for x_idx = 1:1:num_x
+    nexttile;
+
+    maxVal = 0; minVal = 0;
+    for idx = 1:1:num_sample
+        c = c_list(idx, :);
+
+        plot(t, sys{idx}.x_hist(x_idx,:), "Color", c, "LineWidth", line_width, "LineStyle", "-"); hold on
+        plot(t, sys{idx}.x_non_hist(x_idx,:), "Color", c, "LineWidth", line_width, "LineStyle", "--"); hold on
+
+        maxVal = max(maxVal, max([sys{idx}.x_hist(x_idx,:), sys{idx}.x_non_hist(x_idx,:), xd_hist(x_idx,:)]));
+        minVal = min(minVal, min([sys{idx}.x_hist(x_idx,:), sys{idx}.x_non_hist(x_idx,:), xd_hist(x_idx,:)]));
+    end
+    plot(t, xd_hist(x_idx,:), "Color", "red", "LineWidth", line_width, "LineStyle", "--"); hold on
+
+    grid on; grid minor;
+    xlabel('Time / s', 'FontSize', font_size, 'Interpreter', 'latex');
+    ylabel("$x_"+x_idx+"$", 'FontSize', font_size, 'Interpreter', 'latex');
+    len = maxVal-minVal; ratio = .1;
+    if len ~= 0; ylim([minVal-len*ratio maxVal+len*ratio]);  end
+    xlim([0 T])
+
+    ax = gca;
+    ax.FontSize = font_size; 
+    ax.FontName = 'Times New Roman';
+end
+
 
 % ============================================
-%     State(Ref vs Obs) 1
+%     STATE VARIABLE (Bird-eye view)
 % ============================================
 nexttile;
-
 for idx = 1:1:num_sample
-    plot(t, sys{idx}.x_hist(1,:), "Color", "blue", "LineWidth", line_width, "LineStyle", "-"); hold on
-    plot(t, sys{idx}.x_non_hist(1,:), "Color", "cyan", "LineWidth", line_width, "LineStyle", "-"); hold on
+    c = c_list(idx, :);
+
+    plot(sys{idx}.x_hist(1,:), sys{idx}.x_hist(2,:), "Color", c, "LineWidth", line_width, "LineStyle", "-"); hold on
+    plot(sys{idx}.x_non_hist(1,:), sys{idx}.x_non_hist(2,:), "Color", c, "LineWidth", line_width, "LineStyle", "--"); hold on
 end
-plot(t, xd_hist(1,:), "Color", "red", "LineWidth", line_width, "LineStyle", "--"); hold on
+plot(xd_hist(1,:), xd_hist(2,:), "Color", "red", "LineWidth", line_width, "LineStyle", "--"); hold on
+
 
 grid on; grid minor;
-xlabel('Time / s', 'FontSize', font_size, 'Interpreter', 'latex');
-ylabel('$x_1$', 'FontSize', font_size, 'Interpreter', 'latex');
-maxVal = max(xd_hist(1,:)); minVal = min(xd_hist(1,:)); 
-len = maxVal-minVal; ratio = .1;
-if len ~= 0
-    ylim([minVal-len*ratio maxVal+len*ratio]);
-end
-xlim([0 T])
-
-ax = gca;
-ax.FontSize = font_size; 
-ax.FontName = 'Times New Roman';
-
-% ============================================
-%     State(Ref vs Obs) 2
-% ============================================
-nexttile;
-for idx = 1:1:num_sample
-    plot(t, sys{idx}.x_hist(2,:), "Color", "blue", "LineWidth", line_width, "LineStyle", "-"); hold on
-    plot(t, sys{idx}.x_non_hist(2,:), "Color", "cyan", "LineWidth", line_width, "LineStyle", "-"); hold on
-end
-plot(t, xd_hist(2,:), "Color", "red", "LineWidth", line_width, "LineStyle", "--"); hold on
-grid on; grid minor;
-xlabel('Time / s', 'FontSize', font_size, 'Interpreter', 'latex');
+xlabel('$x_1$', 'FontSize', font_size, 'Interpreter', 'latex');
 ylabel('$x_2$', 'FontSize', font_size, 'Interpreter', 'latex');
-maxVal = max(xd_hist(2,:)); minVal = min(xd_hist(2,:)); 
-len = maxVal-minVal; ratio = .1;
-if len ~= 0
-    ylim([minVal-len*ratio maxVal+len*ratio]);
-end
-xlim([0 T])
-
-ax = gca;
-ax.FontSize = font_size; 
-ax.FontName = 'Times New Roman';
-
-% ============================================
-%     State(Ref vs Obs) 3
-% ============================================
-% nexttile;
-% plot(t, x_hist(3,:), "Color", "blue", "LineWidth", line_width, "LineStyle", "-"); hold on
-% plot(t, x_non_hist(3,:), "Color", "cyan", "LineWidth", line_width, "LineStyle", "-"); hold on
-% plot(t, xd_hist(3,:), "Color", "red", "LineWidth", line_width, "LineStyle", "--"); hold on
-
-% grid on; grid minor;
-% xlabel('Time / s', 'FontSize', font_size, 'Interpreter', 'latex');
-% ylabel('$x_3$', 'FontSize', font_size, 'Interpreter', 'latex');
-% maxVal = max(xd_hist(3,:)); minVal = min(xd_hist(3,:)); 
 % len = maxVal-minVal; ratio = .1;
-% ylim([minVal-len*ratio maxVal+len*ratio]);
-% xlim([0 T])
-
-% ax = gca;
-% ax.FontSize = font_size; 
-% ax.FontName = 'Times New Roman';
-
-% ============================================
-%     State(Ref vs Obs) 4
-% ============================================
-% nexttile;
-% plot(t, x_hist(4,:), "Color", "blue", "LineWidth", line_width, "LineStyle", "-"); hold on
-% plot(t, x_non_hist(4,:), "Color", "cyan", "LineWidth", line_width, "LineStyle", "-"); hold on
-% plot(t, xd_hist(4,:), "Color", "red", "LineWidth", line_width, "LineStyle", "--"); hold on
-
-% grid on; grid minor;
-% xlabel('Time / s', 'FontSize', font_size, 'Interpreter', 'latex');
-% ylabel('$x_4$', 'FontSize', font_size, 'Interpreter', 'latex');
-% maxVal = max(xd_hist(4,:)); minVal = min(xd_hist(4,:)); 
-% len = maxVal-minVal; ratio = .1;
-% ylim([minVal-len*ratio maxVal+len*ratio]);
-% xlim([0 T])
-
-% ax = gca;
-% ax.FontSize = font_size; 
-% ax.FontName = 'Times New Roman';
-
-% ============================================
-%     Control input 1
-% ============================================
-nexttile;
-for idx = 1:1:num_sample
-    plot(t, sys{idx}.u_hist(1,:), "Color", "blue", "LineWidth", line_width, "LineStyle", "-"); hold on
-end
-plot(t, ud_hist(1,:), "Color", "red", "LineWidth", line_width, "LineStyle", "--"); hold on
-
-grid on; grid minor;
-xlabel('Time / s', 'FontSize', font_size, 'Interpreter', 'latex');
-ylabel('$u_1$', 'FontSize', font_size, 'Interpreter', 'latex');
-maxVal = max(ud_hist(1,:)); minVal = min(ud_hist(1,:)); 
-len = maxVal-minVal; ratio = .1;
-if len ~= 0
-    ylim([minVal-len*ratio maxVal+len*ratio]);
-end
-xlim([0 T])
+% if len ~= 0
+%     ylim([minVal-len*ratio maxVal+len*ratio]);
+%     xlim([minVal-len*ratio maxVal+len*ratio]);
+% end
 
 ax = gca;
 ax.FontSize = font_size; 
 ax.FontName = 'Times New Roman';
 
 % ============================================
-%     Control input 2
+%     CONTROL INPUT
+% ============================================
+for u_idx = 1:1:num_u
+    nexttile;
+
+    maxVal = 0; minVal = 0;
+    for idx = 1:1:num_sample
+        c = c_list(idx, :);
+
+        plot(t, sys{idx}.u_hist(u_idx,:), "Color", c, "LineWidth", line_width, "LineStyle", "-"); hold on
+        plot(t, sys{idx}.uSat_hist(u_idx,:), "Color", c, "LineWidth", line_width, "LineStyle", "--"); hold on
+
+        maxVal = max(maxVal, max([sys{idx}.u_hist(u_idx,:), sys{idx}.uSat_hist(u_idx,:), ud_hist(u_idx,:)]));
+        minVal = min(minVal, min([sys{idx}.u_hist(u_idx,:), sys{idx}.uSat_hist(u_idx,:), ud_hist(u_idx,:)]));
+    end
+    plot(t, ud_hist(u_idx,:), "Color", "red", "LineWidth", line_width, "LineStyle", "--"); hold on
+
+    grid on; grid minor;
+    xlabel('Time / s', 'FontSize', font_size, 'Interpreter', 'latex');
+    ylabel('$u_1$', 'FontSize', font_size, 'Interpreter', 'latex');
+    len = maxVal-minVal; ratio = .1;
+    if len ~= 0; ylim([minVal-len*ratio maxVal+len*ratio]);  end
+    xlim([0 T])
+
+    ax = gca;
+    ax.FontSize = font_size; 
+    ax.FontName = 'Times New Roman';
+end
+
+% ============================================
+%     CONTROL INPUT LOCI
 % ============================================
 nexttile;
+max_u = param.max_u;
+
 for idx = 1:1:num_sample
-    plot(t, sys{idx}.u_hist(2,:), "Color", "blue", "LineWidth", line_width, "LineStyle", "--"); hold on
-    plot(t, sys{idx}.uSat_hist(2,:), "Color", "blue", "LineWidth", line_width, "LineStyle", "-"); hold on
-end
-plot(t, ud_hist(2,:), "Color", "red", "LineWidth", line_width, "LineStyle", "--"); hold on
+    c = c_list(idx, :);
 
-grid on; grid minor;
-xlabel('Time / s', 'FontSize', font_size, 'Interpreter', 'latex');
-ylabel('$u_2$', 'FontSize', font_size, 'Interpreter', 'latex');
-maxVal = max(ud_hist(2,:)); minVal = min(ud_hist(2,:)); 
-len = maxVal-minVal; ratio = .1;
-if len ~= 0
-    ylim([minVal-len*ratio maxVal+len*ratio]);
+    plot(sys{idx}.u_hist(1,:), sys{idx}.u_hist(2,:), "Color", c, "LineWidth", line_width, "LineStyle", "-"); hold on
+    plot(sys{idx}.uSat_hist(1,:), sys{idx}.uSat_hist(2,:), "Color", c, "LineWidth", line_width, "LineStyle", "--"); hold on
 end
-xlim([0 T])
+plot(ud_hist(1,:), ud_hist(2,:), "Color", "red", "LineWidth", line_width, "LineStyle", "--"); hold on
 
-ax = gca;
-ax.FontSize = font_size; 
-ax.FontName = 'Times New Roman';
-
-% ============================================
-%     Control input loci
-% ============================================
-nexttile;
-for idx = 1:1:num_sample
-    plot(sys{idx}.u_hist(1,:), sys{idx}.u_hist(2,:), "Color", "blue", "LineWidth", line_width, "LineStyle", "-"); hold on
-end
 rad = -pi:0.1:pi;
-plot(sin(rad), cos(rad), "Color", "black")
+plot(max_u*sin(rad), max_u*cos(rad), "Color", "black")
 
 grid on; grid minor;
-% xlabel('Time / s', 'FontSize', font_size, 'Interpreter', 'latex');
-% ylabel('$x_2$', 'FontSize', font_size, 'Interpreter', 'latex');
-% maxVal = max(xd_hist(2,:)); minVal = min(xd_hist(2,:)); 
-maxVal = max_u; minVal = -max_u;
-len = maxVal-minVal; ratio = .1;
-if len ~= 0
-    ylim([minVal-len*ratio maxVal+len*ratio]);
-    xlim([minVal-len*ratio maxVal+len*ratio]);
-end
+xlabel('$u_1$', 'FontSize', font_size, 'Interpreter', 'latex');
+ylabel('$u_2$', 'FontSize', font_size, 'Interpreter', 'latex');
+% len = maxVal-minVal; ratio = .1;
+% if len ~= 0
+%     ylim([minVal-len*ratio maxVal+len*ratio]);
+%     xlim([minVal-len*ratio maxVal+len*ratio]);
+% end
 
 ax = gca;
 ax.FontSize = font_size; 
 ax.FontName = 'Times New Roman';
+
+
+%% 
+figure(2); clf; 
+% hF = gcf; 
+% hF.Position(3:4) = [1600, 800];
+tl = tiledlayout(4, 2, 'Padding', 'none', 'TileSpacing', 'compact');
+
+
+% ============================================
+%     Tracking error 
+% ============================================
+for x_idx = 1:1:num_x
+    nexttile;
+
+    maxVal = 0; minVal = 0;
+    for idx = 1:1:num_sample
+        c = c_list(idx, :);
+
+        err = time_norm(sys{idx}.x_hist-xd_hist);
+        plot(t, err, "Color", c, "LineWidth", line_width, "LineStyle", "-"); hold on
+
+        maxVal = max(maxVal, max(err));
+        minVal = min(minVal, min(err));
+    end
+
+    grid on; grid minor;
+    xlabel('Time / s', 'FontSize', font_size, 'Interpreter', 'latex');
+    ylabel('$x_1$', 'FontSize', font_size, 'Interpreter', 'latex');
+    len = maxVal-minVal; ratio = .1;
+    if len ~= 0; ylim([minVal-len*ratio maxVal+len*ratio]);  end
+    xlim([0 T])
+
+    ax = gca;
+    ax.FontSize = font_size; 
+    ax.FontName = 'Times New Roman';
+end
 
 % ============================================
 %     X
 % ============================================
 nexttile;
-% plot(t, sys{idx}.X_hist(1,:), "Color", "blue", "LineWidth", line_width, "LineStyle", "-"); hold on
+
+maxVal = 0; minVal = 0;
 for idx = 1:1:num_sample
-    plot(t, sys{idx}.M_hist(1,:), "Color", "blue", "LineWidth", line_width, "LineStyle", "-"); hold on
+    c = c_list(idx, :);
+
+    plot(t, sys{idx}.M_hist(1,:), "Color", c, "LineWidth", line_width, "LineStyle", "-"); hold on
+    
+    maxVal = max(maxVal, max(sys{idx}.M_hist(1,:)));
+    minVal = min(minVal, min(sys{idx}.M_hist(1,:)));
 end
 
 grid on; grid minor;
 xlabel('Time / s', 'FontSize', font_size, 'Interpreter', 'latex');
 ylabel('$X$', 'FontSize', font_size, 'Interpreter', 'latex');
-% maxVal = max(X_hist(1,:)); minVal = min(X_hist(1,:)); 
-% maxVal = max(M_hist(1,:)); minVal = min(M_hist(1,:)); 
-% len = maxVal-minVal; ratio = .1;
-% if len ~= 0
-%     ylim([minVal-len*ratio maxVal+len*ratio]);
-% end
+len = maxVal-minVal; ratio = .1;
+if len ~= 0; ylim([minVal-len*ratio maxVal+len*ratio]);  end
 xlim([0 T])
 
 ax = gca;
@@ -216,17 +217,22 @@ ax.FontName = 'Times New Roman';
 %     optDone
 % ============================================
 nexttile;
-plot(t, sys{idx}.optDone_hist(1,:), "Color", "blue", "LineWidth", line_width, "LineStyle", "-"); hold on
+
+maxVal = 0; minVal = 0;
+for idx = 1:1:num_sample
+    c = c_list(idx, :);
+
+    plot(t, sys{idx}.optDone_hist(1,:), "Color", c, "LineWidth", line_width, "LineStyle", "-"); hold on
+
+    maxVal = max(maxVal, max(sys{idx}.optDone_hist(1,:)));
+    minVal = min(minVal, min(sys{idx}.optDone_hist(1,:)));
+end
 
 grid on; grid minor;
 xlabel('Time / s', 'FontSize', font_size, 'Interpreter', 'latex');
 ylabel('Done', 'FontSize', font_size, 'Interpreter', 'latex');
-% maxVal = max(optDone_hist(1,:)); minVal = min(optDone_hist(1,:)); 
-maxVal = 1; minVal = 0; 
 len = maxVal-minVal; ratio = .1;
-% if len ~= 0
-%     ylim([minVal-len*ratio maxVal+len*ratio]);
-% end
+if len ~= 0; ylim([minVal-len*ratio maxVal+len*ratio]);  end
 xlim([0 T])
 
 ax = gca;
@@ -237,50 +243,35 @@ ax.FontName = 'Times New Roman';
 %     mu
 % ============================================
 nexttile;
-plot(t, sys{idx}.mu_hist(1,:), "Color", "blue", "LineWidth", line_width, "LineStyle", "-"); hold on
+
+maxVal = 0; minVal = 0;
+for idx = 1:1:num_sample
+    c = c_list(idx, :);
+
+    plot(t, sys{idx}.mu_hist(1,:), "Color", c, "LineWidth", line_width, "LineStyle", "-"); hold on
+
+    maxVal = max(maxVal, max(sys{idx}.mu_hist(1,:)));
+    minVal = min(minVal, min(sys{idx}.mu_hist(1,:)));
+end
 
 grid on; grid minor;
 xlabel('Time / s', 'FontSize', font_size, 'Interpreter', 'latex');
 ylabel('mu', 'FontSize', font_size, 'Interpreter', 'latex');
-% maxVal = max(optDone_hist(1,:)); minVal = min(optDone_hist(1,:)); 
-maxVal = 1; minVal = 0; 
 len = maxVal-minVal; ratio = .1;
-if len ~= 0
-    ylim([minVal-len*ratio maxVal+len*ratio]);
-end
+if len ~= 0; ylim([minVal-len*ratio maxVal+len*ratio]);  end
 xlim([0 T])
 
 ax = gca;
 ax.FontSize = font_size; 
 ax.FontName = 'Times New Roman';
 
+%% LOCAL FUNCTIONS
+function y = time_norm(x)
+    num_x = size(x, 1);
 
-%%
-figure(2); clf; 
-% hF = gcf; 
-% hF.Position(3:4) = [1600, 800];
-tl = tiledlayout(2, 4, 'Padding', 'none', 'TileSpacing', 'compact');
-
-nexttile;
-% ============================================
-%     Tracking error 1
-% ============================================
-
-for idx = 1:1:num_sample
-    err = sys{idx}.x_hist(1,:)-xd_hist(1,:);
-    plot(t, err, "Color", "blue", "LineWidth", line_width, "LineStyle", "-"); hold on
+    y = zeros(1,size(x,2));
+    for x_idx = 1:1:num_x
+        y = y + x(x_idx,:).^2;
+    end
+    y = sqrt(y);
 end
-
-grid on; grid minor;
-xlabel('Time / s', 'FontSize', font_size, 'Interpreter', 'latex');
-ylabel('$x_1$', 'FontSize', font_size, 'Interpreter', 'latex');
-maxVal = max(err); minVal = min(err); 
-len = maxVal-minVal; ratio = .1;
-if len ~= 0
-    ylim([minVal-len*ratio maxVal+len*ratio]);
-end
-xlim([0 T])
-
-ax = gca;
-ax.FontSize = font_size; 
-ax.FontName = 'Times New Roman';

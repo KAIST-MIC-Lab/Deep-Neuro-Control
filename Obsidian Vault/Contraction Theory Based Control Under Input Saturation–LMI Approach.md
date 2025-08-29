@@ -363,27 +363,73 @@ $$
 
 ## 4 Numerical Validation
 
-1. (proposed) contracion based control with saturation consideration
-	1. 외란이 큼
-	2. 추종오차 크게 발생
-	3. 메트릭 겁나게 커짐
-	4. 포화 발생 -> 핸들링
-	5. 추종오차 크게 남지만 
-	6. 메트릭은 커지지 않음
-	7. 정상상태 오차 관찰 <- 이론적인 바운드 내로
-2. contraction based control 
-	1. 외란이 큼
-	2. 추종오차 크게 발생
-	3. 메트릭 겁나게 커짐
-	4. 포화 발생
-	5. 추종오차 해소 안됨
-	6. 메트릭 더 커짐
-	7. 포화 더됨
 
-시나리오
-	1. 외란을 키우기
-	2. external disturbacne
+
+|                       | C1     | C2              | C3              |
+| --------------------- | ------ | --------------- | --------------- |
+| Contraction Condition | yes    | yes             | yes             |
+| Saturation Handling   | in LMI | penalty (large) | penalty (small) |
+|                       |        |                 |                 |
+Lorenz system
+$$
+\ddtt
+\begin{pmatrix}
+x\\y\\z
+\end{pmatrix}
+=
+\begin{pmatrix}
+\sigma(y-x)
+\\
+x(\rho-z)-y
+\\
+xy-\beta z
+\end{pmatrix}
++
+\begin{pmatrix}
+u_x\\u_y\\u_z
+\end{pmatrix}
++
+\begin{pmatrix}
+d_x\\d_y\\d_z
+\end{pmatrix}
+$$
+SDC
+$$
+\mathbb{A}
+=
+\begin{bmatrix}
+\sigma&-\sigma&0
+\\
+\rho-\tfrac{1}{2}(z+z_d) & -1 & -\tfrac{1}{2}(x+x_d)
+\\
+\tfrac{1}{2}(y+y_d) & \tfrac{1}{2}(x+x_d) & -\beta
+\end{bmatrix}
+$$
+
+### 4.1 Scenario 1: Contraction Property
+- 본 시나리오에서는 contracting system의 거동을 알아본다
+- 아래와 같은 거동을 보이길 기대한다
+	- C1은 saturation 방지가 LMI에서 가능
+	- C2와 C3는 penalty를 이용해서 간접적으로 함
+		- 즉, penalty로 인한 control input에 bias가 존재
+			- C2가 더 작은 control input을 사용할 것임
+	- 이를 통해 C1는 bias없이 제어 성능이 더 좋다는 것을 보임
+- 이를 위해 아래와 같은 시나리오를 선정한다
+	- Contraction property에 집중하기 위하여  포화는 걸리지 않도록한다
+	- 계단 desired input을 사용
+	- 외란을 지속적으로 적용
+### 4.2 Scenario 2: Saturation Handling
+- 본 시나리오는 포화 해결에 집중
+- 아래와 같은 거동을 보이길 기대
+	- C1은 LMI 내부에 saturation handling이 포함
+		- 제약조건을 범하지 않는 contraction condition을 만족하는 contraction metric 사용
+		- 물론 saturation을 범하지 않음으로 성능이 낮아질수있음
+	- C2는 penalty를 이용함으로 saturation violation 빈도가 낮음
+		- 성능이 C1보다 약간 좋을 수도 있음
+	- C3는 penalty가 작기 때문에 satuation이 크게 발생할 수있음
+		- 이로인해 control input이 과도하게 커짐
+- 
+
 
 ## 5 Conclusion
 In this study, we 
-Copilot is 

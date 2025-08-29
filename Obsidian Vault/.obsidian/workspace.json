@@ -1,14 +1,14 @@
 {
   "main": {
-    "id": "e2a2968db14c17af",
+    "id": "d310cf834f09ef1e",
     "type": "split",
     "children": [
       {
-        "id": "b33f81b19a72fc3c",
+        "id": "d1605425174d8bef",
         "type": "tabs",
         "children": [
           {
-            "id": "52fefd6de9384d4e",
+            "id": "176ece987b91c7d8",
             "type": "leaf",
             "state": {
               "type": "markdown",
@@ -24,7 +24,7 @@
                   "showSearch": false,
                   "searchQuery": "",
                   "backlinkCollapsed": false,
-                  "unlinkedCollapsed": true
+                  "unlinkedCollapsed": false
                 }
               },
               "icon": "lucide-file",
@@ -37,15 +37,15 @@
     "direction": "vertical"
   },
   "left": {
-    "id": "5fedda6c639274a2",
+    "id": "afc490a82fda8f31",
     "type": "split",
     "children": [
       {
-        "id": "742fac4894fee8d6",
+        "id": "5a48a6a8e8db606f",
         "type": "tabs",
         "children": [
           {
-            "id": "9b422d2bf95f3a44",
+            "id": "c2c5511802c9ca96",
             "type": "leaf",
             "state": {
               "type": "file-explorer",
@@ -58,7 +58,7 @@
             }
           },
           {
-            "id": "4b63347b86b7650b",
+            "id": "e5bd086da2e857b3",
             "type": "leaf",
             "state": {
               "type": "search",
@@ -75,7 +75,7 @@
             }
           },
           {
-            "id": "d898b1c97933be2d",
+            "id": "d1d2172216c72013",
             "type": "leaf",
             "state": {
               "type": "bookmarks",
@@ -91,15 +91,56 @@
     "width": 200
   },
   "right": {
-    "id": "8715c639365aee53",
+    "id": "2ab1a81649331b46",
     "type": "split",
     "children": [
       {
-        "id": "d13f0224199fd254",
+        "id": "7e6d3e4abc113d1c",
         "type": "tabs",
+        "dimension": 40,
         "children": [
           {
-            "id": "390a92e1284ec639",
+            "id": "003014ba12e0f7b5",
+            "type": "leaf",
+            "state": {
+              "type": "advanced-tables-toolbar",
+              "state": {},
+              "icon": "spreadsheet",
+              "title": "Advanced Tables"
+            }
+          },
+          {
+            "id": "81daed21cdac30f3",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "Contraction Theory Based Control Under Input Saturation–LMI Approach.md",
+                "followCursor": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline of Contraction Theory Based Control Under Input Saturation–LMI Approach"
+            }
+          },
+          {
+            "id": "0b42d4fa39566bad",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": true,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "bb0c8885f0f2ca69",
             "type": "leaf",
             "state": {
               "type": "backlink",
@@ -111,14 +152,14 @@
                 "showSearch": false,
                 "searchQuery": "",
                 "backlinkCollapsed": false,
-                "unlinkedCollapsed": true
+                "unlinkedCollapsed": false
               },
               "icon": "links-coming-in",
               "title": "Backlinks for Contraction Theory Based Control Under Input Saturation–LMI Approach"
             }
           },
           {
-            "id": "6fdee4eb77e0dd86",
+            "id": "5f14d2f5c8e4c5ee",
             "type": "leaf",
             "state": {
               "type": "outgoing-link",
@@ -129,21 +170,6 @@
               },
               "icon": "links-going-out",
               "title": "Outgoing links from Contraction Theory Based Control Under Input Saturation–LMI Approach"
-            }
-          },
-          {
-            "id": "da04e55af0e0764e",
-            "type": "leaf",
-            "state": {
-              "type": "tag",
-              "state": {
-                "sortOrder": "frequency",
-                "useHierarchy": true,
-                "showSearch": false,
-                "searchQuery": ""
-              },
-              "icon": "lucide-tags",
-              "title": "Tags"
             }
           },
           {
@@ -166,15 +192,15 @@
               "title": "Copilot Chat"
             }
           }
-        ],
-        "currentTab": 4
+        ]
       },
       {
-        "id": "54ae256b8553deed",
+        "id": "ce97ae0c6b97318c",
         "type": "tabs",
+        "dimension": 60,
         "children": [
           {
-            "id": "ceea48209ac7af0c",
+            "id": "1220fce76ed5251a",
             "type": "leaf",
             "state": {
               "type": "outline",
@@ -192,7 +218,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 218.5
+    "width": 254.5
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -202,17 +228,18 @@
       "daily-notes:Open today's daily note": false,
       "templates:Insert template": false,
       "command-palette:Open command palette": false,
-      "periodic-notes:Open this week": false,
       "bases:Create new base": false,
-      "obsidian42-brat:BRAT": true
+      "obsidian42-brat:BRAT": false,
+      "table-editor-obsidian:Advanced Tables Toolbar": false,
+      "periodic-notes:Open this week": false
     }
   },
-  "active": "52fefd6de9384d4e",
+  "active": "176ece987b91c7d8",
   "lastOpenFiles": [
-    "2025-W35.md",
-    "Untitled.base",
-    "Untitled.canvas",
     "Contraction Theory Based Control Under Input Saturation–LMI Approach.md",
+    "2025-W35.md",
+    "Untitled.canvas",
+    "Untitled.base",
     "2025-08-23.md",
     "Welcome.md",
     "create a link.md",

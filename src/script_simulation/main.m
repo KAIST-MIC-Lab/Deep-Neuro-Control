@@ -5,6 +5,7 @@ addpath(genpath([pwd filesep 'sedumi']));
 addpath(genpath([pwd filesep 'mosek/11.0/tools/platform/osxaarch64/bin']));
 addpath(genpath([pwd filesep 'mosek/11.0/toolbox/r2022bom']));
 % C:\Program Files\Mosek\11.0\tools\platform\win64x86\bin
+
 %% FASTEN YOUR SEATBELT
 clear
 RESULT_SAVE_FLAG = 0;   % save the result as a .mat file in the results folder
@@ -12,17 +13,24 @@ FIGURE_PLOT_FLAG = 1;   % plot the result
 FIGURE_SAVE_FLAG = 0;   % save the figure as .png and .eps
 
 %% SIMULATION SETTING
-T = 10;                 % simulation time
-% ctrl_dt = 1e-3;         % controller sampling time
+T = 15;                 % simulation time
+% ctrl_dt = 1e-3;       % controller sampling time
 ctrl_dt = 1e-2;         % controller sampling time
 % dt = 1/20e3;
 dt = 1e-3;
-rpt_dt = 1e-1;             % report time (on console)
+rpt_dt = 1e-1;          % report time (on console)
 t = 0:dt:T;             % time vector
 
 %% SM PARAMETERS
 param.A = [-2 1; -1 -0.5];
 param.B = [1 0; 0 1];
+param.max_u = 1.5;
+
+% disturbance
+d_MAX = 0.2 ;  % maximum disturbance
+% d_func = @(t, x) [-tanh(x(1)); -1 * d_MAX * sign(x(2))];
+% d_func = @(t, x) [0;0];
+d_func = @(t, x) [sin(t);-cos(t)] * d_MAX;
 
 %% REPORT SETTING
 fprintf("\n")
@@ -37,37 +45,39 @@ fprintf("FIGURE_PLOT_FLAG : %d\n", FIGURE_PLOT_FLAG)
 fprintf("FIGURE_SAVE_FLAG : %d\n", FIGURE_SAVE_FLAG)
 
 %% SYSTEM AND REFERENCE DEFINITION
-init_list = [
-    [0;0]
-];
+sys{1}.x = [1;0];
+sys{1}.x_non = sys{1}.x;
+sys{1}.ctrl_opt = 1;
+sys{1}.u = [0;0];
 
-sys = [];
-for idx = 1:1:size(init_list, 2)
-    sys{idx}.x = init_list(:, idx);
-    sys{idx}.x_non = init_list(:, idx); % without controller (only feedforward)
-    sys{idx}.u = transpose([0,0]);
-end
+sys{2}.x = [1;0];
+sys{2}.x_non = sys{2}.x;
+sys{2}.ctrl_opt = 2;
+sys{2}.u = [0;0];
 
-xd = transpose([0,0]);
+sys{3}.x = [1;0];
+sys{3}.x_non = sys{3}.x;
+sys{3}.ctrl_opt = 3;
+sys{3}.u = [0;0];
+
+xd = [0;0];
 grad = @system_grad;
 
 %% REFERENCE DEFINITION (will be tracked by BSC)
-ud_func = @(t) [sin(t); cos(t)];
+% ud_func = @(t) [sin(t); cos(t)];
+ud_func = @(t) [heaviside(t-5); heaviside(t-5)];
 
 %% 
-num_x = size(init_list, 1);      % number of states
+num_x = length(xd);      % number of states
 num_u = length(ud_func(0));      % number of inputs
 num_t = length(t);      % number of time steps
 
-num_sample = size(init_list, 2); % number of initial conditions
+num_sample = length(sys); % number of initial conditions
 
-%% CONTROLLER LOAD
+%% SAMPLE SETTING
 for idx = 1:1:num_sample
-    sys{idx}.ncm = NCM_init(ctrl_dt);
-end
+    sys{idx}.ncm = NCM_init(ctrl_dt, sys{idx}.ctrl_opt);  % NCM controller initialization
 
-%% RECORDER SETTING
-for idx = 1:1:num_sample
     sys{idx}.x_hist = zeros(num_x, num_t);   % state history 
     sys{idx}.x_non_hist = zeros(num_x, num_t); % state (with ud) history
     sys{idx}.u_hist = zeros(num_u, num_t);   % input history  
@@ -87,14 +97,11 @@ fprintf("SIMULATION RUNNING...\n")
 
 for t_idx = 1:1:num_t
 
-    % compute desired control input (BSC)
-    % ud = BSC_input(xd, xd_func(t(t_idx)), dxd_func(t(t_idx)), ddxd_func(t(t_idx)), param);
+    % compute desired control input 
     ud = ud_func(t(t_idx));
 
     % Control Decision
-    % if t_idx==1 || rem(t(t_idx)/dt, ctrl_dt/dt) == 0
     if mod(t_idx, round(ctrl_dt/dt)) == 1
-    
         for c_idx = 1:1:num_sample
             x = sys{c_idx}.x;
             x_non = sys{c_idx}.x_non;
@@ -106,46 +113,42 @@ for t_idx = 1:1:num_t
             B = param.B;
             u = ud - ncm.inv_R*B' * inv(ncm.W_bar/ncm.mu) * (x-xd);
 
-            max_u = 2;
+            max_u = param.max_u;
             % uSat = max(min(u,max_u), -max_u);
-            uSat = u;
+            if norm(u) > max_u; uSat = u/norm(u)*max_u; else; uSat = u; end
+            % uSat = u;
 
             % update controller
             sys{c_idx}.ncm = ncm;
-            sys{c_idx}.x = x;
-            sys{c_idx}.x_non = x_non;
             sys{c_idx}.u = u;
             sys{c_idx}.uSat = uSat;
 
             % report on console
             fprintf("\tControl at t = %.4f, flag: %d\n", t(t_idx), ncm.optDone)
     
-
         end
+    end
+
+    % step forward
+    for c_idx = 1:1:num_sample
+        % record to history
+        sys{c_idx}.x_hist(:, t_idx) = sys{c_idx}.x;
+        sys{c_idx}.x_non_hist(:, t_idx) = sys{c_idx}.x_non;
+        sys{c_idx}.u_hist(:, t_idx) = sys{c_idx}.u;
+        sys{c_idx}.uSat_hist(:, t_idx) = sys{c_idx}.uSat;
+
+        sys{c_idx}.X_hist(t_idx) = ncm.X;  % controller gain
+        sys{c_idx}.optDone_hist(t_idx) = ncm.optDone;  % optimization done flag
+        sys{c_idx}.M_hist(:, t_idx) = norm(inv(ncm.W_bar/ncm.mu));
+        sys{c_idx}.mu_hist(:, t_idx) = ncm.mu;
+
+        sys{c_idx}.x = system_step(dt, sys{c_idx}.x, sys{c_idx}.uSat, d_func(t(t_idx), sys{c_idx}.x), param);
+        sys{c_idx}.x_non = system_step(dt, sys{c_idx}.x_non, ud, d_func(t(t_idx), sys{c_idx}.x_non), param);
     end
 
     xd_hist(:, t_idx) = xd;
     ud_hist(:, t_idx) = ud;
 
-    % disturbance
-    d_MAX = 1;  % maximum disturbance
-    d_func = @(x2) -1 * d_MAX * sign(x2);  
-
-    % step forward
-    for c_idx = 1:1:num_sample
-        % record to history
-        sys{idx}.x_hist(:, t_idx) = x;
-        sys{idx}.x_non_hist(:, t_idx) = x_non;
-        sys{idx}.u_hist(:, t_idx) = u;
-        sys{idx}.uSat_hist(:, t_idx) = uSat;
-        sys{idx}.X_hist(t_idx) = ncm.X;  % controller gain
-        sys{idx}.optDone_hist(t_idx) = ncm.optDone;  % optimization done flag
-        sys{idx}.M_hist(:, t_idx) = norm(inv(ncm.W_bar/ncm.mu));
-        sys{idx}.mu_hist(:, t_idx) = ncm.mu;
-        
-        sys{c_idx}.x = system_step(dt, sys{c_idx}.x, sys{c_idx}.uSat, d_func(sys{c_idx}.x(2)), param);
-        sys{c_idx}.x_non = system_step(dt, sys{c_idx}.x_non, ud, d_func(sys{c_idx}.x_non(2)), param);
-    end
     xd = system_step(dt, xd, ud, 0, param);
 
     % report on console
@@ -157,14 +160,14 @@ end
 fprintf("SIMULATION is Terminated\n")
 
 %% RESULT REPORT AND SAVE
-whatTimeIsIt = string(datetime('now','Format','d-MMM-y_HH-mm-ss'));
+whatTimeIsIt = string(datetime('now','Format','d-MM-y_HH-mm-ss'));
 
 if RESULT_SAVE_FLAG
     fprintf("\n")
     fprintf("RESULT SAVING...\n")
 
     saveName = "results/"+whatTimeIsIt+".mat";
-    save(saveName, 'x_hist', 'u_hist', 'r_hist', 't')
+    save(saveName, 'sys', 'param', 't')
 
     fprintf("RESULT is Saved as \n \t%s\n", saveName)
 end

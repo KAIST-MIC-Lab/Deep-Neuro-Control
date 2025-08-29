@@ -1,5 +1,6 @@
 {
   "accentColor": "#0000ff",
   "showRibbon": true,
-  "textFontFamily": "Times New Roman"
+  "textFontFamily": "Times New Roman",
+  "theme": "moonstone"
 }
