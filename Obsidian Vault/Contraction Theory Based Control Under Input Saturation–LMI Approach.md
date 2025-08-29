@@ -233,6 +233,8 @@ $$
 
 ^cdaa47
 
+
+
 The control law $\mv{u}$ is defined with contraction metric $\mm{M}$ as follows:
 $$
 \mv{u} = \mv{u}_d - \mm{R}^{-1}\mm{B}^\top\mm{M}(\mv{x}-\mv{x}_d)

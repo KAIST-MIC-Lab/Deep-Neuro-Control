@@ -71,15 +71,15 @@ nexttile;
 for idx = 1:1:num_sample
     c = c_list(idx, :);
 
-    plot(sys{idx}.x_hist(1,:), sys{idx}.x_hist(2,:), "Color", c, "LineWidth", line_width, "LineStyle", "-"); hold on
-    plot(sys{idx}.x_non_hist(1,:), sys{idx}.x_non_hist(2,:), "Color", c, "LineWidth", line_width, "LineStyle", "--"); hold on
+    plot3(sys{idx}.x_hist(1,:), sys{idx}.x_hist(2,:), sys{idx}.x_hist(3,:), "Color", c, "LineWidth", line_width, "LineStyle", "-"); hold on
+    plot3(sys{idx}.x_non_hist(1,:), sys{idx}.x_non_hist(2,:), sys{idx}.x_non_hist(3,:), "Color", c, "LineWidth", line_width, "LineStyle", "--"); hold on
 end
-plot(xd_hist(1,:), xd_hist(2,:), "Color", "red", "LineWidth", line_width, "LineStyle", "--"); hold on
-
+plot3(xd_hist(1,:), xd_hist(2,:), xd_hist(3,:), "Color", "red", "LineWidth", line_width, "LineStyle", "--"); hold on
 
 grid on; grid minor;
 xlabel('$x_1$', 'FontSize', font_size, 'Interpreter', 'latex');
 ylabel('$x_2$', 'FontSize', font_size, 'Interpreter', 'latex');
+zlabel('$x_3$', 'FontSize', font_size, 'Interpreter', 'latex');
 % len = maxVal-minVal; ratio = .1;
 % if len ~= 0
 %     ylim([minVal-len*ratio maxVal+len*ratio]);
@@ -129,17 +129,18 @@ max_u = param.max_u;
 for idx = 1:1:num_sample
     c = c_list(idx, :);
 
-    plot(sys{idx}.u_hist(1,:), sys{idx}.u_hist(2,:), "Color", c, "LineWidth", line_width, "LineStyle", "-"); hold on
-    plot(sys{idx}.uSat_hist(1,:), sys{idx}.uSat_hist(2,:), "Color", c, "LineWidth", line_width, "LineStyle", "--"); hold on
+    plot3(sys{idx}.u_hist(1,:), sys{idx}.u_hist(2,:), sys{idx}.u_hist(3,:), "Color", c, "LineWidth", line_width, "LineStyle", "-"); hold on
+    plot3(sys{idx}.uSat_hist(1,:), sys{idx}.uSat_hist(2,:), sys{idx}.uSat_hist(3,:), "Color", c, "LineWidth", line_width, "LineStyle", "--"); hold on
 end
-plot(ud_hist(1,:), ud_hist(2,:), "Color", "red", "LineWidth", line_width, "LineStyle", "--"); hold on
+plot3(ud_hist(1,:), ud_hist(2,:), ud_hist(3,:), "Color", "red", "LineWidth", line_width, "LineStyle", "--"); hold on
 
 rad = -pi:0.1:pi;
-plot(max_u*sin(rad), max_u*cos(rad), "Color", "black")
+plot3(max_u*sin(rad), max_u*cos(rad), zeros(size(rad)), "Color", "black")
 
 grid on; grid minor;
 xlabel('$u_1$', 'FontSize', font_size, 'Interpreter', 'latex');
 ylabel('$u_2$', 'FontSize', font_size, 'Interpreter', 'latex');
+zlabel('$u_3$', 'FontSize', font_size, 'Interpreter', 'latex');
 % len = maxVal-minVal; ratio = .1;
 % if len ~= 0
 %     ylim([minVal-len*ratio maxVal+len*ratio]);

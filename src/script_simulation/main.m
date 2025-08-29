@@ -13,24 +13,23 @@ FIGURE_PLOT_FLAG = 1;   % plot the result
 FIGURE_SAVE_FLAG = 0;   % save the figure as .png and .eps
 
 %% SIMULATION SETTING
-T = 15;                 % simulation time
-% ctrl_dt = 1e-3;       % controller sampling time
+T = 3;                 % simulation time
 ctrl_dt = 1e-2;         % controller sampling time
-% dt = 1/20e3;
 dt = 1e-3;
 rpt_dt = 1e-1;          % report time (on console)
 t = 0:dt:T;             % time vector
 
 %% SM PARAMETERS
-param.A = [-2 1; -1 -0.5];
-param.B = [1 0; 0 1];
-param.max_u = 1.5;
+param.sig = 10;
+param.rho = 28;
+param.beta = 8/3;
+
+param.B = eye(3);
+param.max_u = 1e2;
 
 % disturbance
-d_MAX = 0.2 ;  % maximum disturbance
-% d_func = @(t, x) [-tanh(x(1)); -1 * d_MAX * sign(x(2))];
-% d_func = @(t, x) [0;0];
-d_func = @(t, x) [sin(t);-cos(t)] * d_MAX;
+d_MAX = 0.2 ;  % maximum disturbance;
+d_func = @(t, x) [sin(t);-cos(t);sin(t)] * d_MAX;
 
 %% REPORT SETTING
 fprintf("\n")
@@ -45,27 +44,27 @@ fprintf("FIGURE_PLOT_FLAG : %d\n", FIGURE_PLOT_FLAG)
 fprintf("FIGURE_SAVE_FLAG : %d\n", FIGURE_SAVE_FLAG)
 
 %% SYSTEM AND REFERENCE DEFINITION
-sys{1}.x = [1;0];
+sys{1}.x = [1;0;0];
 sys{1}.x_non = sys{1}.x;
 sys{1}.ctrl_opt = 1;
-sys{1}.u = [0;0];
+sys{1}.u = [0;0;0];
 
-sys{2}.x = [1;0];
+sys{2}.x = [1;0;0];
 sys{2}.x_non = sys{2}.x;
 sys{2}.ctrl_opt = 2;
-sys{2}.u = [0;0];
+sys{2}.u = [0;0;0];
 
-sys{3}.x = [1;0];
+sys{3}.x = [1;0;0];
 sys{3}.x_non = sys{3}.x;
 sys{3}.ctrl_opt = 3;
-sys{3}.u = [0;0];
+sys{3}.u = [0;0;0];
 
-xd = [0;0];
+xd = [1;0;0];
 grad = @system_grad;
 
 %% REFERENCE DEFINITION (will be tracked by BSC)
 % ud_func = @(t) [sin(t); cos(t)];
-ud_func = @(t) [heaviside(t-5); heaviside(t-5)];
+ud_func = @(t) [heaviside(t-1); heaviside(t-1); heaviside(t-1)];
 
 %% 
 num_x = length(xd);      % number of states
@@ -125,7 +124,6 @@ for t_idx = 1:1:num_t
 
             % report on console
             fprintf("\tControl at t = %.4f, flag: %d\n", t(t_idx), ncm.optDone)
-    
         end
     end
 
@@ -153,7 +151,7 @@ for t_idx = 1:1:num_t
 
     % report on console
     if mod(t_idx, round(rpt_dt/dt)) == 1
-        fprintf('Simulation Time: %.4f\n', t(t_idx))
+        fprintf('Simulation Time: %.3f\n', t(t_idx))
     end
 end
 
