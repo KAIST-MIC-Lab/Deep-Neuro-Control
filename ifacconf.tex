@@ -118,11 +118,11 @@ letters, not all uppercase.}
 
 \begin{abstract}                % Abstract of 50--100 words
    Besides the traditional Lyapunov stability theory, contraction theory offers a interesting perspective on the stability of nonlinear systems.
-   It allows us to analyze the stability of systems by examining the convergence of trajectories.
+   It allows us analyze the stability of systems by examining the convergence of trajectories.
    The recent development of contraction theory based control has introduced computational efficient methods for obtaining contraction metrics using linear matrix inequalities (LMIs).
    In this paper, the contraction theory based control strategy is extended to account for input saturation by incorporating saturation constraints into the LMI framework for contraction metric calculation.
    The proposed method calculates the contraction metrics while ensuring the satisfaction of input saturation constraints and uses as a feedback mechanism to adjust the control inputs.
-   The proposed method is demonstrated its effectiveness through numerical simulations using \cred{Lorenz system}.
+   The proposed method is demonstrated its effectiveness through numerical simulations via \cred{Lorenz system}.
 \end{abstract}
 
 \begin{keyword}
@@ -161,7 +161,7 @@ In this paper, we use the following notation:
 \end{itemize}
 
 To the best of our knowledge, there has been no previous work that considers the input saturation in LMI frameworks for contraction metrics.
-Hence, the main objective of this paper is to extend the contraction theory based control strategy to account for input saturation simultaneously.
+Hence, the main objective of this paper is to extend the contraction theory based control strategy to account for input saturation simultaneously in the LMI framework.
 
 \subsection{Contributions}
 
@@ -170,11 +170,13 @@ The main contributions of this paper are
    \item The contraction metric is obtained by using linear matrix inequalities (LMI) which simplifies the calculation of the contraction metric;
    \item Saturation is incorporated into the LMI framework for contraction metric calculation;
    \item ...; and
-   \item The effectiveness and the feasibility of the contraction theory based control is validated in Lorenz system.
+   \item The effectiveness and the feasibility of the proposed method is validated through numerical simulations via \cred{Lorenz system}.
 \end{itemize}
 
 
 \section{Preliminaries}
+
+Before presenting the proposed method, we first review the contraction theory and related theorems.
 
 \subsection{Contraction Theory} \label{sec:sub:contraction}
 
@@ -325,7 +327,7 @@ where $\mv{x}_d\in\R^n$ is the desired state vector and $\mv{u}_d\in\R^n$ is the
 
 Finally, the control objective is to design a control input $\mv{u}$ such that the system trajectories of the system \eqref{eq:desired:sys} and the desired system \eqref{eq:desired:sys} converges, under the existences of the disturbances $\mv{d}$ and input saturation $\mysat(\cdot)$.
 
-\section{Contraction Theory Based Control}
+\section{Main Results}
 
 Following the control design in \cite{Tsukamoto:2021af}, state-dependent coefficient (SDC) formulation \cite{Dani:2015aa} is used to represent the error dynamics \MSRY{more details}.
 The SDC $\mathbb{A}:=\mathbb{A}(\mv{x},\mv{x}_d)$ is defined as follows:
@@ -519,6 +521,14 @@ Finally, the contraction metric can be obtained by solving the following LMI pro
    \end{aligned}
 \end{equation}
 
+\subsection{Numerical Methods For LMI}
+
+\begin{itemize}
+   \item Discretize $\ddtt\mv{M}$
+   \item LMI solver
+   \item Tuning methods
+\end{itemize}
+
 
 \section{Validations}
 
@@ -554,7 +564,7 @@ We employed the Lorenz system \MSRY{REF} to validate the proposed method which i
    }_{=:\mv{d}}
    ,
 \end{equation}
-where $\sigma=10$, $\rho=28$, and $\beta=8/3$ are system parameters.
+where $\sigma=10$, $\rho=28$, and $\beta=\tfrac{8}{3}$ are system parameters.
 
 
 
