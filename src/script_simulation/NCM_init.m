@@ -3,7 +3,7 @@ function ncm = NCM_init(ctrl_dt, ctrl_opt)
     % default parameters
     ncm.init = 1;       % initialization flag
     ncm.dt = ctrl_dt;   % control time step
-    ncm.x_num = 2;      % number of state variables
+    ncm.x_num = 3;      % number of state variables
 
     ncm.alpha = 1e0;   % decay rate (contracting)
     ncm.d_MAX = 1;      % maximum disturbance (not used in this version)
@@ -15,22 +15,24 @@ function ncm = NCM_init(ctrl_dt, ctrl_opt)
     ncm.X = 1e1;
 
     % control gains
-    R = diag([1e0, 1e0])*1e0;
+    R = diag([1e0 1e0 1e0])*1e0;
     ncm.inv_R = inv(R);  
 
     switch ctrl_opt
-        case 1
+        case 1 % proposed
             ncm.cstr_on = 1;
+
+            ncm.AUX = eye(ncm.x_num);
             
-        case 2
+        case 2 % large penalty -> poor tracking
             ncm.cstr_on = 0;
 
-            ncm.lbd = 1e-2; % penalty term for metric amplitude
+            ncm.lbd = 1e-0 ; % penalty term
         
-        case 3
+        case 3 % small penalty -> better but satuatrion occurs
             ncm.cstr_on = 0;
 
-            ncm.lbd = 0e-6; % penalty term for metric amplitude
+            ncm.lbd = 1e-3; % penalty term
         
         otherwise
             error("Invalid control option")

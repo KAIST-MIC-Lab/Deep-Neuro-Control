@@ -14,6 +14,8 @@
 \usepackage{amssymb}
 \usepackage[dvipsnames]{xcolor}
 
+\usepackage{subfig}
+\usepackage{tikz}
 % ============================================
 %         GENERAL MACROS
 % ============================================
@@ -118,8 +120,8 @@ letters, not all uppercase.}
 
 \begin{abstract}                % Abstract of 50--100 words
    Besides the traditional Lyapunov stability theory, contraction theory offers a interesting perspective on the stability of nonlinear systems.
-   It allows us analyze the stability of systems by examining the convergence of trajectories.
-   The recent development of contraction theory based control has introduced computational efficient methods for obtaining contraction metrics using linear matrix inequalities (LMIs).
+   It allows us analyze the system stability by examining the convergence of trajectories.
+   The recent development of the contraction theory based control has introduced computational efficient methods for obtaining contraction metrics using linear matrix inequalities (LMIs).
    In this paper, the contraction theory based control strategy is extended to account for input saturation by incorporating saturation constraints into the LMI framework for contraction metric calculation.
    The proposed method calculates the contraction metrics while ensuring the satisfaction of input saturation constraints and uses as a feedback mechanism to adjust the control inputs.
    The proposed method is demonstrated its effectiveness through numerical simulations via \cred{Lorenz system}.
@@ -187,7 +189,7 @@ Consider that we have the following deterministic nonlinear system:
    \mv{f}(\mv{x},t)
    .
 \end{equation}
-The contraction theory starts with the definition of \textit{differential dynamics} of the system \eqref{eq:sys} using \textit{differential displacement} $\delta\mv{x}$ \cite[Chap 4]{Kirk:2004aa}, which is defined as follows:
+The contraction theory \cred{starts} with the definition of \textit{differential dynamics} of the system \eqref{eq:sys} using \textit{differential displacement} $\delta\mv{x}$ \cite[Chap 4]{Kirk:2004aa}, which is defined as follows:
 \begin{equation}
    \ddtt{\delta\mv{x}}
    =
@@ -196,7 +198,9 @@ The contraction theory starts with the definition of \textit{differential dynami
 \end{equation}
 The differential displacement $\delta\mv{x}$ is the infinitesimal displacement at \textit{fixed time}.
 
-The contraction property of the system \eqref{eq:sys} can be analyzed using the Lyapunov function $V:=V(\mv{x},t)=\tfrac{1}{2}\delta\mv{x}^\top \mm{M} \delta\mv{x}$, where $\overline{m}\mm{I}\succeq\mm{M}(\mv{x},\mv{x_d},t)=\mm{M}^\top\succeq\underline{m}\mm{I}$ with $\overline{m},\underline{m}\in\R_{>0}$ denotes the \textit{contraction metric}.
+The contraction property of the system \eqref{eq:sys} can be analyzed using the Lyapunov function $V:=V(\mv{x},t)=\tfrac{1}{2}\delta\mv{x}^\top \mm{M} \delta\mv{x}$, where $\mm{M}:=\mm{M}(\mv{x},\mv{x}_d,t)\in\R^{n\times n}$ is a symmetric positive defionite matr
+
+$\overline{m}\mm{I}\succeq\mm{M}(\mv{x},\mv{x_d},t)=\mm{M}^\top\succeq\underline{m}\mm{I}$ with $\overline{m},\underline{m}\in\R_{>0}$ denotes the \textit{contraction metric}.
 For the system \eqref{eq:sys} to be contracting, the following condition must hold:
 \begin{equation} \label{eq:contraction:condition}
    \ddtt\mm{M} 
@@ -568,9 +572,47 @@ where $\sigma=10$, $\rho=28$, and $\beta=\tfrac{8}{3}$ are system parameters.
 
 
 
+% \begin{figure}[t]
+%     \centering
+%         \includegraphics[width=.99\linewidth]
+%         % \includegraphics[width=\figSizeOneCol\linewidth]
+%         {
+%             src/figures/exp_set.drawio.png
+%         }%
+%     \caption{
+%         Experimental setup of the two-link robotic manipulator used for real-time validation.
+%     }
+%     \label{fig:ctrl:exp:set}
+% \end{figure}
 
 
 \subsection{Scenario 1: Contraction Property}
+
+
+\begin{figure*}[t]
+   \centering
+   \subfloat[Tracking performance of $1$st joint angle $q_1$.]{
+   %   \includegraphics
+      \includegraphics[width=0.99\linewidth]
+      {
+      % fig/Fig1.pdf
+      src/script_simulation/figures/compare/Fig1.eps
+      }%
+      \label{fig:ctrl:result:q1}}
+   \vfill
+   \subfloat[Tracking performance of $2$nd joint angle $q_2$.]{
+      \includegraphics[width=0.99\linewidth]
+      {
+      % src/measurement/figures/compare/Fig11.eps
+      src/script_simulation/figures/compare/Fig2.eps
+      }%
+      \label{fig:ctrl:result:q2}}
+   \caption{
+   Real-time implementation results of (C$_1$) \protect\colorLine{blue}{solid}, (C$_2$) \protect\colorLine{cyan}{solid}, (C$_3$) \protect\colorLine{gray}{solid}, (C$_4$) \protect\colorLine{magenta}{solid}, and desired trajectory $x_d$ \protect\colorLine{red}{dashed}.
+}
+\label{fig:ctrl:result}
+\end{figure*}
+
 
 \subsection{Scenario 2: Saturation Handling}
 

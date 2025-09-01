@@ -16,6 +16,8 @@ FIGURE_SAVE_FLAG = 0;   % save the figure as .png and .eps
 T = 3;                 % simulation time
 ctrl_dt = 1e-2;         % controller sampling time
 dt = 1e-3;
+% ctrl_dt = 1e-3;         % controller sampling time
+% dt = 1e-4;
 rpt_dt = 1e-1;          % report time (on console)
 t = 0:dt:T;             % time vector
 
@@ -24,12 +26,16 @@ param.sig = 10;
 param.rho = 28;
 param.beta = 8/3;
 
+% param.B = rand(3) + eye(3)*3;
 param.B = eye(3);
-param.max_u = 1e2;
+param.max_u = 1.5e2;
 
 % disturbance
-d_MAX = 0.2 ;  % maximum disturbance;
-d_func = @(t, x) [sin(t);-cos(t);sin(t)] * d_MAX;
+d_MAX = 50;  % maximum disturbance;
+% d_func = @(t, x) [sin(t);-cos(t);sin(t)] * d_MAX;
+% d_func = @(t, x) [1;1;1] * heaviside(t-1.5) * d_MAX;
+d_func = @(t, x) [1;1;1] * (heaviside(t-1.5)-heaviside(t-1.5+dt))/dt * d_MAX;
+
 
 %% REPORT SETTING
 fprintf("\n")
@@ -44,31 +50,32 @@ fprintf("FIGURE_PLOT_FLAG : %d\n", FIGURE_PLOT_FLAG)
 fprintf("FIGURE_SAVE_FLAG : %d\n", FIGURE_SAVE_FLAG)
 
 %% SYSTEM AND REFERENCE DEFINITION
-sys{1}.x = [1;0;0];
+sys{1}.x = [15;10;20];
 sys{1}.x_non = sys{1}.x;
 sys{1}.ctrl_opt = 1;
 sys{1}.u = [0;0;0];
 
-sys{2}.x = [1;0;0];
+sys{2}.x = [15;10;20];
 sys{2}.x_non = sys{2}.x;
 sys{2}.ctrl_opt = 2;
 sys{2}.u = [0;0;0];
-
-sys{3}.x = [1;0;0];
+% 
+sys{3}.x = [15;10;20];
 sys{3}.x_non = sys{3}.x;
 sys{3}.ctrl_opt = 3;
 sys{3}.u = [0;0;0];
 
-xd = [1;0;0];
+xd = [1;-3;5];
 grad = @system_grad;
 
 %% REFERENCE DEFINITION (will be tracked by BSC)
-% ud_func = @(t) [sin(t); cos(t)];
-ud_func = @(t) [heaviside(t-1); heaviside(t-1); heaviside(t-1)];
+
+% ud_func = @(t, xd) [sin(t); cos(t); -cos(t)]*0.1;
+ud_func = @(t, x)  inv(param.B) * (- system_func(x, param) - 2*(x-[8.485;8.485;27]));
 
 %% 
 num_x = length(xd);      % number of states
-num_u = length(ud_func(0));      % number of inputs
+num_u = length(ud_func(0, xd));      % number of inputs
 num_t = length(t);      % number of time steps
 
 num_sample = length(sys); % number of initial conditions
@@ -77,7 +84,7 @@ num_sample = length(sys); % number of initial conditions
 for idx = 1:1:num_sample
     sys{idx}.ncm = NCM_init(ctrl_dt, sys{idx}.ctrl_opt);  % NCM controller initialization
 
-    sys{idx}.x_hist = zeros(num_x, num_t);   % state history 
+    sys{idx}.x_hist = zeros(num_x, num_t);                  % state history 
     sys{idx}.x_non_hist = zeros(num_x, num_t); % state (with ud) history
     sys{idx}.u_hist = zeros(num_u, num_t);   % input history  
     sys{idx}.uSat_hist = zeros(num_u, num_t);   
@@ -97,7 +104,7 @@ fprintf("SIMULATION RUNNING...\n")
 for t_idx = 1:1:num_t
 
     % compute desired control input 
-    ud = ud_func(t(t_idx));
+    ud = ud_func(t(t_idx), xd);
 
     % Control Decision
     if mod(t_idx, round(ctrl_dt/dt)) == 1
@@ -110,7 +117,8 @@ for t_idx = 1:1:num_t
             ncm = NCM_ctrl(ncm, x, xd, ud, param);  % controller call
             
             B = param.B;
-            u = ud - ncm.inv_R*B' * inv(ncm.W_bar/ncm.mu) * (x-xd);
+            % u = ud - ncm.inv_R*B' * inv(ncm.W_bar/ncm.mu) * (x-xd);
+            u = ud - ncm.inv_R*B' * ncm.mu * (ncm.W_bar \ (x-xd));
 
             max_u = param.max_u;
             % uSat = max(min(u,max_u), -max_u);
@@ -123,7 +131,7 @@ for t_idx = 1:1:num_t
             sys{c_idx}.uSat = uSat;
 
             % report on console
-            fprintf("\tControl at t = %.4f, flag: %d\n", t(t_idx), ncm.optDone)
+            % fprintf("\tControl at t = %.4f, flag: %d\n", t(t_idx), ncm.optDone)
         end
     end
 
@@ -151,7 +159,7 @@ for t_idx = 1:1:num_t
 
     % report on console
     if mod(t_idx, round(rpt_dt/dt)) == 1
-        fprintf('Simulation Time: %.3f\n', t(t_idx))
+        fprintf('Simulation Time: %.3f (%.2f %%)\n', t(t_idx), t_idx/num_t*100);
     end
 end
 
@@ -165,7 +173,7 @@ if RESULT_SAVE_FLAG
     fprintf("RESULT SAVING...\n")
 
     saveName = "results/"+whatTimeIsIt+".mat";
-    save(saveName, 'sys', 'param', 't')
+    save(saveName, 'sys', 'param', 't', 'xd_hist', 'ud_hist')
 
     fprintf("RESULT is Saved as \n \t%s\n", saveName)
 end
@@ -200,12 +208,24 @@ beep()
 
 %% LOCAL FUNCTION
 function x = system_step(dt, x, u, d, param)
-    %%
-    A = param.A;
+    % Compute system dynamics
+    f = system_func(x, param);
     B = param.B;
 
     %%   
-    grad = A*x + B*u + d;
+    grad = f + B*u + d;
     x = x + grad * dt;
 
+end
+
+function f = system_func(x, param)
+    lr_x = x(1); lr_y = x(2); lr_z = x(3);
+    sig = param.sig; rho = param.rho; beta = param.beta;
+
+    %%
+    f = [
+        sig*(lr_y - lr_x);
+        lr_x*(rho-lr_z)-lr_y;
+        lr_x*lr_y-beta*lr_z
+        ];
 end

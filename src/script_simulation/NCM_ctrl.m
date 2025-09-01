@@ -11,7 +11,8 @@
     %% FROM STRUCTURE TO LOCAL VARIABLES
     dt = ncm.dt;
     x_num = ncm.x_num;
-    
+    mu = ncm.mu;
+
     alpha = ncm.alpha; 
     inv_R = ncm.inv_R;  
 
@@ -19,37 +20,52 @@
         lbd = ncm.lbd;  
     end
 
+    pre_W_bar = ncm.W_bar;
+
+    sig = param.sig;
+    rho = param.rho;
+    beta = param.beta;
+
     %% INPUT MATRIX and SDC CALCULATION
-    SDC = param.A;
+    SDC = [
+        -sig                     sig                0;
+        rho-.5*(x(3)+xd(3))     -1                  -.5*(x(1)+xd(1));
+        .5*(x(2)+xd(2))         .5*(x(1)+xd(1))     -beta
+    ];
     B = param.B;
 
     %% OPTIMIZATION PROBLEM DEFINITION
     W_bar = sdpvar(x_num ,x_num);
     X = sdpvar(1,1);
-    mu = sdpvar(1,1);
+    if ncm.cstr_on == 1
+        AUX = sdpvar(x_num, x_num);
+
+        mu = sdpvar(1,1);
+        assign(mu, ncm.mu);
+
+        assign(AUX, ncm.AUX);
+    else
+    % end
+        mu = sdpvar(1,1);
+        assign(mu, ncm.mu);
+
+    end
 
     assign(W_bar, pre_W_bar);
     assign(X, ncm.X);
-    assign(mu, ncm.mu);
-    
-    pre_W_bar = ncm.W_bar;
-
-    if ncm.cstr_on == 0
-        AUX = sdpvar(x_num, x_num);
-
-        assign(AUX, ncm.AUX);
-    end
 
     % objective function
     if ncm.cstr_on == 0
         obj = X + lbd * mu;
     else
-        obj = X + trace(AUX);
+        lbd = 1e-2;
+        % obj = X + trace(AUX);
+        obj = X + trace(AUX)+ lbd * mu;
     end
     
     % constraints
     con = [
-        -(W_bar-pre_W_bar)/dt + (W_bar*SDC' + SDC*W_bar) - 2*mu*B*inv_R*B' <= -2*alpha*W_bar - eps*eye(x_num);
+        -(W_bar-pre_W_bar)/dt + (W_bar*SDC' + SDC*W_bar) - 2*mu*B*inv_R*B' <= -2*alpha*W_bar;
         eye(x_num) <= W_bar;
         W_bar <= X * eye(x_num);
     ];
@@ -83,18 +99,24 @@
     if sol.problem ~= 0
     % if false
         ncm.X = ncm.X;
-        ncm.mu = ncm.mu;
         ncm.W_bar = pre_W_bar;  % keep the previous value
         ncm.optDone = sol.problem;
         % warning('YALMIP Error: %s', yalmiperror);
+
+        if ncm.cstr_on == 0
+            ncm.mu = ncm.mu;
+        end
     else
         ncm.X = value(X);
-        ncm.mu = value(mu);
         ncm.W_bar = value(W_bar);
         ncm.optDone = sol.problem;
 
         if ncm.cstr_on == 1
             ncm.AUX = value(AUX);
+            ncm.mu = value(mu);
+
+        else
+            ncm.mu = value(mu);
         end
     end
 

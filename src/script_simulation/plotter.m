@@ -89,6 +89,9 @@ zlabel('$x_3$', 'FontSize', font_size, 'Interpreter', 'latex');
 ax = gca;
 ax.FontSize = font_size; 
 ax.FontName = 'Times New Roman';
+% pbaspect([1 1 1])
+axis equal
+% axis square
 
 % ============================================
 %     CONTROL INPUT
@@ -110,7 +113,7 @@ for u_idx = 1:1:num_u
 
     grid on; grid minor;
     xlabel('Time / s', 'FontSize', font_size, 'Interpreter', 'latex');
-    ylabel('$u_1$', 'FontSize', font_size, 'Interpreter', 'latex');
+    ylabel("$u_"+u_idx+"$", 'FontSize', font_size, 'Interpreter', 'latex');
     len = maxVal-minVal; ratio = .1;
     if len ~= 0; ylim([minVal-len*ratio maxVal+len*ratio]);  end
     xlim([0 T])
@@ -132,10 +135,14 @@ for idx = 1:1:num_sample
     plot3(sys{idx}.u_hist(1,:), sys{idx}.u_hist(2,:), sys{idx}.u_hist(3,:), "Color", c, "LineWidth", line_width, "LineStyle", "-"); hold on
     plot3(sys{idx}.uSat_hist(1,:), sys{idx}.uSat_hist(2,:), sys{idx}.uSat_hist(3,:), "Color", c, "LineWidth", line_width, "LineStyle", "--"); hold on
 end
-plot3(ud_hist(1,:), ud_hist(2,:), ud_hist(3,:), "Color", "red", "LineWidth", line_width, "LineStyle", "--"); hold on
+[x y z] = sphere(128);
+h = surfl(max_u*x, max_u*y, max_u*z); 
+set(h, 'FaceColor', [.5 .5 .5], 'FaceAlpha', 0.1, 'EdgeColor', 'none')
+% shading interp
+% plot3(ud_hist(1,:), ud_hist(2,:), ud_hist(3,:), "Color", "red", "LineWidth", line_width, "LineStyle", "--"); hold on
 
-rad = -pi:0.1:pi;
-plot3(max_u*sin(rad), max_u*cos(rad), zeros(size(rad)), "Color", "black")
+% rad = -pi:0.1:pi;
+% plot3(max_u*sin(rad), max_u*cos(rad), zeros(size(rad)), "Color", "black")
 
 grid on; grid minor;
 xlabel('$u_1$', 'FontSize', font_size, 'Interpreter', 'latex');
@@ -150,13 +157,43 @@ zlabel('$u_3$', 'FontSize', font_size, 'Interpreter', 'latex');
 ax = gca;
 ax.FontSize = font_size; 
 ax.FontName = 'Times New Roman';
-
+% pbaspect([1 1 1])
+axis equal
+% axis square
 
 %% 
 figure(2); clf; 
 % hF = gcf; 
 % hF.Position(3:4) = [1600, 800];
 tl = tiledlayout(4, 2, 'Padding', 'none', 'TileSpacing', 'compact');
+
+% ============================================
+%     Control norm
+% ============================================
+nexttile;
+
+plot([-10, T+10], param.max_u * [1 1], "Color", "black", "LineWidth", line_width, "LineStyle", "-"); hold on
+maxVal = 0; minVal = 0;
+for idx = 1:1:num_sample
+    c = c_list(idx, :);
+
+    u_norm = time_norm(sys{idx}.u_hist);
+    plot(t, u_norm, "Color", c, "LineWidth", line_width, "LineStyle", "-"); hold on
+
+    maxVal = max(maxVal, max(u_norm));
+    minVal = min(minVal, min(u_norm));
+end
+
+grid on; grid minor;
+xlabel('Time / s', 'FontSize', font_size, 'Interpreter', 'latex');
+ylabel("$\Vert u\Vert$", 'FontSize', font_size, 'Interpreter', 'latex');
+len = maxVal-minVal; ratio = .1;
+if len ~= 0; ylim([minVal-len*ratio maxVal+len*ratio]);  end
+xlim([0 T])
+
+ax = gca;
+ax.FontSize = font_size; 
+ax.FontName = 'Times New Roman';
 
 
 % ============================================
@@ -178,7 +215,7 @@ for x_idx = 1:1:num_x
 
     grid on; grid minor;
     xlabel('Time / s', 'FontSize', font_size, 'Interpreter', 'latex');
-    ylabel('$x_1$', 'FontSize', font_size, 'Interpreter', 'latex');
+    ylabel("$e_"+x_idx+"$", 'FontSize', font_size, 'Interpreter', 'latex');
     len = maxVal-minVal; ratio = .1;
     if len ~= 0; ylim([minVal-len*ratio maxVal+len*ratio]);  end
     xlim([0 T])
