@@ -15,9 +15,9 @@ T = t(end);
 %% FIGURE SETTING
 POSITION_FLAG = 1; % it will plot fiugures in the same position
 
-font_size = 16;
+font_size = 28;
 line_width = 2;
-lgd_size = 16;
+lgd_size = 20;
 fig_height = 200; 
 fig_width = 450;
 
@@ -41,17 +41,18 @@ c_list = [
 % ============================================
 figure(1); clf; 
 hF = gcf; 
-hF.Position(3:4) = [1600, 200];
-tl = tiledlayout(1, 7, 'Padding', 'none', 'TileSpacing', 'compact');
+hF.Position(3:4) = [800, 600];
+% hF.Position(3:4) = [1600, 200];
+tl = tiledlayout(3, 1, 'Padding', 'none', 'TileSpacing', 'compact');
 
 % ============================================
 %     STATE VARIABLE
 % ============================================
 for x_idx = 1:1:num_x
-    nexttile([1,2]);
+    nexttile;
 
     maxVal = 0; minVal = 0;
-    for idx = 1:1:num_sample
+    for idx = flip(1:1:num_sample)
         c = c_list(idx, :);
 
         plot(t, sys{idx}.x_hist(x_idx,:), "Color", c, "LineWidth", line_width, "LineStyle", "-"); hold on
@@ -78,8 +79,11 @@ end
 % ============================================
 %     STATE VARIABLE (Bird-eye view)
 % ============================================
-nexttile;
-for idx = 1:1:num_sample
+figure(2); clf; 
+hF = gcf; 
+hF.Position(3:4) = [400, 400];
+
+for idx = flip(1:1:num_sample)
     c = c_list(idx, :);
 
     plot3(sys{idx}.x_hist(1,:), sys{idx}.x_hist(2,:), sys{idx}.x_hist(3,:), "Color", c, "LineWidth", line_width, "LineStyle", "-"); hold on
@@ -107,26 +111,28 @@ ax.FontName = 'Times New Roman';
 % ============================================
 %     figure 2: CONTROL INPUT
 % ============================================
-figure(2); clf; 
+figure(3); clf; 
 hF = gcf; 
-hF.Position(3:4) = [1600, 200];
-tl = tiledlayout(1, 7, 'Padding', 'none', 'TileSpacing', 'compact');
+hF.Position(3:4) = [800, 600];
+tl = tiledlayout(3, 1, 'Padding', 'none', 'TileSpacing', 'compact');
 
 % ============================================
 %     CONTROL INPUT
 % ============================================
 for u_idx = 1:1:num_u
-    nexttile([1,2]);
+    nexttile;
 
     maxVal = 0; minVal = 0;
-    for idx = 1:1:num_sample
+    for idx = flip(1:1:num_sample)
         c = c_list(idx, :);
 
         plot(t, sys{idx}.u_hist(u_idx,:), "Color", c, "LineWidth", line_width, "LineStyle", "-"); hold on
         plot(t, sys{idx}.uSat_hist(u_idx,:), "Color", c, "LineWidth", line_width, "LineStyle", "--"); hold on
-
-        maxVal = max(maxVal, max([sys{idx}.u_hist(u_idx,:), sys{idx}.uSat_hist(u_idx,:), ud_hist(u_idx,:)]));
-        minVal = min(minVal, min([sys{idx}.u_hist(u_idx,:), sys{idx}.uSat_hist(u_idx,:), ud_hist(u_idx,:)]));
+    
+        if idx ~= 3
+            maxVal = max(maxVal, max([sys{idx}.u_hist(u_idx,:), sys{idx}.uSat_hist(u_idx,:), ud_hist(u_idx,:)]));
+            minVal = min(minVal, min([sys{idx}.u_hist(u_idx,:), sys{idx}.uSat_hist(u_idx,:), ud_hist(u_idx,:)]));
+        end
     end
     plot(t, ud_hist(u_idx,:), "Color", "red", "LineWidth", line_width, "LineStyle", "--"); hold on
 
@@ -145,10 +151,13 @@ end
 % ============================================
 %     CONTROL INPUT LOCI
 % ============================================
-nexttile;
+figure(4); clf; 
+hF = gcf; 
+hF.Position(3:4) = [400, 400];
+
 max_u = param.max_u;
 
-for idx = 1:1:num_sample
+for idx = flip(1:1:num_sample)
     c = c_list(idx, :);
 
     plot3(sys{idx}.u_hist(1,:), sys{idx}.u_hist(2,:), sys{idx}.u_hist(3,:), "Color", c, "LineWidth", line_width, "LineStyle", "-"); hold on
@@ -167,26 +176,28 @@ grid on; grid minor;
 xlabel('$u_1$', 'FontSize', font_size, 'Interpreter', 'latex');
 ylabel('$u_2$', 'FontSize', font_size, 'Interpreter', 'latex');
 zlabel('$u_3$', 'FontSize', font_size, 'Interpreter', 'latex');
-% len = maxVal-minVal; ratio = .1;
-% if len ~= 0
-%     ylim([minVal-len*ratio maxVal+len*ratio]);
-%     xlim([minVal-len*ratio maxVal+len*ratio]);
-% end
+maxVal = max_u; minVal = -max_u
+len = maxVal-minVal; ratio = .1;
+if len ~= 0
+    ylim([minVal-len*ratio maxVal+len*ratio]);
+    zlim([minVal-len*ratio maxVal+len*ratio]);
+    xlim([minVal-len*ratio maxVal+len*ratio]);
+end
 
 ax = gca;
 ax.FontSize = font_size; 
 ax.FontName = 'Times New Roman';
 % pbaspect([1 1 1])
-axis equal
+% axis equal
 % axis square
 
 %% 
 % ============================================
 %     figure 3: CONTROL INPUT NORM
 % ============================================
-figure(3); clf; 
+figure(5); clf; 
 hF = gcf; 
-hF.Position(3:4) = [400, 200];
+hF.Position(3:4) = [800, 200];
 % tl = tiledlayout(1, 4, 'Padding', 'none', 'TileSpacing', 'compact');
 
 % ============================================
@@ -196,7 +207,7 @@ hF.Position(3:4) = [400, 200];
 
 plot([-10, T+10], param.max_u * [1 1], "Color", "black", "LineWidth", line_width, "LineStyle", "-"); hold on
 maxVal = 0; minVal = 0;
-for idx = 1:1:num_sample
+for idx = flip(1:1:num_sample)
     c = c_list(idx, :);
 
     u_norm = time_norm(sys{idx}.u_hist);
@@ -220,16 +231,16 @@ ax.FontName = 'Times New Roman';
 % ============================================
 %     figure 4: TRACKING ERROR
 % ============================================
-figure(4); clf; 
+figure(6); clf; 
 hF = gcf; 
-hF.Position(3:4) = [400, 200];
-tl = tiledlayout(1, 4, 'Padding', 'none', 'TileSpacing', 'compact');
+hF.Position(3:4) = [800, 200];
+% tl = tiledlayout(1, 4, 'Padding', 'none', 'TileSpacing', 'compact');
 
 % ============================================
 %     Tracking error 
 % ============================================
 maxVal = 0; minVal = 0;
-for idx = 1:1:num_sample
+for idx = flip(1:1:num_sample)
     c = c_list(idx, :);
 
     err = time_norm(sys{idx}.x_hist-xd_hist);
@@ -335,7 +346,7 @@ ax.FontName = 'Times New Roman';
 if SAVE_FLAG
     [~,~] = mkdir("figures/compare");
 
-    for idx = 1:1:10
+    for idx = 1:1:6
 
         f_name = "figures/compare/Fig" + string(idx);
 

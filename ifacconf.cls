@@ -650,12 +650,14 @@
 \newtheorem{conj}[thm]{Conjecture}
 \newtheorem{fact}[thm]{Fact}
 \newtheorem{hypo}[thm]{Hypothesis}
-\newtheorem{assum}[thm]{Assumption}
+% \newtheorem{assum}[thm]{Assumption}
+\newtheorem{assum}{Assumption}
 \newtheorem{prop}[thm]{Proposition}
 \newtheorem{crit}[thm]{Criterion}
  \theoremstyle{definition}
 \newtheorem{defn}[thm]{Definition}
-\newtheorem{exmp}[thm]{Example}
+% \newtheorem{exmp}[thm]{Example}
+\newtheorem{exmp}{Example}
 \newtheorem{rem}[thm]{Remark}
 \newtheorem{prob}[thm]{Problem}
 \newtheorem{prin}[thm]{Principle}

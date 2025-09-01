@@ -15,6 +15,7 @@
 \usepackage[dvipsnames]{xcolor}
 
 \usepackage{subfig}
+\usepackage{kotex}
 \usepackage{tikz}
 % ============================================
 %         GENERAL MACROS
@@ -183,13 +184,13 @@ Before presenting the proposed method, we first review the contraction theory an
 \subsection{Contraction Theory} \label{sec:sub:contraction}
 
 Consider that we have the following deterministic nonlinear system:
-\begin{equation} \label{eq:sys}
+\begin{equation} \label{eq:pre:sys}
    \ddtt\mv{x}
    =
    \mv{f}(\mv{x},t)
    .
 \end{equation}
-The contraction theory commences with the definition of \textit{differential dynamics} of the system \eqref{eq:sys} using \textit{differential displacement} $\delta\mv{x}$ \cite[Chap 4]{Kirk:2004aa}, which is defined as follows:
+The contraction theory commences with the definition of \textit{differential dynamics} of the system \eqref{eq:pre:sys} using \textit{differential displacement} $\delta\mv{x}$ \cite[Chap 4]{Kirk:2004aa}, which is defined as follows:
 \begin{equation}
    \ddtt{\delta\mv{x}}
    =
@@ -198,10 +199,10 @@ The contraction theory commences with the definition of \textit{differential dyn
 \end{equation}
 The differential displacement $\delta\mv{x}$ is the infinitesimal displacement at \textit{fixed time}.
 
-The contraction property of the system \eqref{eq:sys} can be analyzed using the Lyapunov function $V:=V(\mv{x},t)=\tfrac{1}{2}\delta\mv{x}^\top \mm{M} \delta\mv{x}$, where $\mm{M}:=\mm{M}(\mv{x},\mv{x}_d,t)\in\R^{n\times n}$ the \textit{contraction metric}.
+The contraction property of the system \eqref{eq:pre:sys} can be analyzed using the Lyapunov function $V:=V(\mv{x},t)=\tfrac{1}{2}\delta\mv{x}^\top \mm{M} \delta\mv{x}$, where $\mm{M}:=\mm{M}(\mv{x},\mv{x}_d,t)\in\R^{n\times n}$ the \textit{contraction metric}.
 The contraction metric $\mm{M}$ is symmetric positive definite matrix and satisfies $\overline{m}\mm{I}_n\succeq\mm{M}\succeq\underline{m}\mm{I}_n$ with $\overline{m},\underline{m}\in\R_{>0}$.
-For the system \eqref{eq:sys} to be contracting, the following condition must hold:
-\begin{equation} \label{eq:contraction:condition}
+For the system \eqref{eq:pre:sys} to be contracting, the following condition must hold:
+\begin{equation} \label{eq:pre:contraction:condition}
    \ddtt\mm{M} 
    + 
    2\mysym(
@@ -212,14 +213,14 @@ For the system \eqref{eq:sys} to be contracting, the following condition must ho
    ,
 \end{equation}
 which leads to $\ddtt V \leq -\alpha V$ for some $\alpha\in\R_{>0}$.
-In other words, all solutions of the system \eqref{eq:sys} are contracting to a unique solution with an exponential rate $\alpha$.
+In other words, all solutions of the system \eqref{eq:pre:sys} are contracting to a unique solution with an exponential rate $\alpha$.
 
 It is notable that the initial conditions are exponentially forgotten in the contracting system \cite{LOHMILLER:1998aa}.
 Therefore, the contraction property is independent of the initial conditions.
 
-\cred{global??}
+\cred{global?? 하다는것도 쓸까?}
 
-\subsection{Partial Contraction Theory}
+\subsection{Partial Contraction Theory} \label{sec:sub:contraction:partial}
 
 On the other hand, the partial contraction theory investigates the contraction of the system using a virtual system.
 Following theorem details the partial contraction theory.
@@ -237,17 +238,18 @@ Following theorem details the partial contraction theory.
    If a particular solution of virtual system verifies a smooth specific property, then all solutions of the original system verifies this property exponentially.
 \end{thm}
 
-\begin{pf}
+\begin{exmp}
    \cred{
-   Assume that the possible solutions of the virtual system $\mv{q}$ are $\mv{\xi}_1(t)$ and $\mv{\xi}_2(t)$ which are the trajectories of the nonlinear system $\mv{x}$.
-   ...
+   Assume that the possible solutions of the virtual system defined in Theorem \ref{thm:partial:contraction} are $\mv{\xi}_1(t)$ and $\mv{\xi}_2(t)$ which are the solutions of the nonlinear system $\mv{x}$.
+   
    }
-\end{pf}
 
-\subsection{Perturbed Contracting System}
+\end{exmp}
 
-The following theorem presents the contraction property of the perturbed system by adding a bounded perturbation $\mv{d}(\mv{x},t)$ to the system \eqref{eq:sys}:
-\begin{equation}
+\subsection{Perturbed Contracting System} \label{sec:sub:contraction:perturbed}
+
+The following theorem presents the contraction property of the perturbed system by adding a bounded perturbation $\mv{d}(\mv{x},t)$ to the system \eqref{eq:pre:sys}:
+\begin{equation} \label{eq:pre:sys:perturbed}
    \ddtt\mv{x}
    =
    \mv{f}(\mv{x},t) + \mv{d}(\mv{x},t)
@@ -256,7 +258,7 @@ The following theorem presents the contraction property of the perturbed system 
 
 % Steady state error of perturbed contraction system
 \begin{thm} [Eq.~15 \cite{LOHMILLER:1998aa}] \label{thm:contraction:perturbed}
-   If the system \eqref{eq:sys} is contracting with the contraction metric $\mm{M}$ which satisfies the condition \eqref{eq:contraction:condition}, the path integral of the virtual system ...
+   If the system \eqref{eq:pre:sys} is contracting with the contraction metric $\mm{M}$ which satisfies the condition \eqref{eq:pre:contraction:condition}, the path integral $V_l(\mv{q},\delta\mv{q},t)=\int_{\mv{\xi}_1}^{\mv{\xi}_2}\norm{\mm{\Theta}(\mv{q},t)\delta\mv{q}}$, where $\mv{\xi}_1$ and $\mv{\xi}_2$ are the solutions of \eqref{eq:pre:sys} and \eqref{eq:pre:sys:perturbed}, respectively, and $\mv{q}$ is the virtual 
    \MSRY{ADD!!}
    \begin{equation}
       \norm{\mv\xi_1(t)-\mv\xi_2(t)}
@@ -282,7 +284,7 @@ The following theorem presents the contraction property of the perturbed system 
 \section{Problem Formulation}
 
 Let us consider the following nonlinear system as follows:
-\begin{equation} \label{eq:sys:target}
+\begin{equation} \label{eq:sys}
    \begin{aligned}   
       \ddtt{\mv{x}}
       =&
@@ -307,37 +309,37 @@ Let us consider the following nonlinear system as follows:
 \end{equation}
 where $\mv{x}\in\R^n$ denotes the state variables, $\mv{u}\in\R^n$ denotes the control inputs, and $\mv{d}(t)\in\R^n$ denotes the external disturbances, and $\mv{f}:=\mv{f}(\mv{x},t)$ and $\mm{B}:=\mm{B}(\mv{x},t)$ denote system functions.
 The input saturation function is denoted by $\mysat(\cdot)$ and is defined as
-\begin{equation} \label{eq:control:sat}
+\begin{equation} \label{eq:sys:sat}
    \mysat(\mv{u}) =
    \begin{cases}
       \mv{u}, & \text{if } \norm{\mv{u}} \le \overline{u} \\
-      \tfrac{\mv{u}}{\norm{\mv{u}}}, & \text{otherwise}
+      \overline{u}\tfrac{\mv{u}}{\norm{\mv{u}}}, & \text{otherwise}
       ,
    \end{cases}
 \end{equation}
 where $\overline{u}\in\R_{>0}$ denotes the saturation threshold.
-The difference between the actual control input $\mv{u}$ and the saturated control input is denoted by $\mv{\phi}(\mv{u}) = \mysat(\mv{u}) - \mv{u}$.
+The difference between the controller output $\mv{u}$ and the saturated control input $\mysat(\mv{u})$ is denoted by $\mv{\phi}(\mv{u}) = \mysat(\mv{u}) - \mv{u}$.
 
 In the practical perspective, we consider the following assumption:
 \begin{assum}
    The control input matrix $\mv{B}$ is sign-definite, so that the inverse of $\mm{B}$ exists.
 \end{assum}
 
-Motivated by the use of the partial contraction theory in \cite{Tsukamoto:2021af}, \MSRY{and more...}, we assume that the desired trajectory (including desired unsaturated control input, \ie $\norm{\mv{u}_d}\le\overline{u}$) of the system is given without disturbances, \ie $d=0$, as follows:
-\begin{equation} \label{eq:desired:sys}
+Motivated by the use of the partial contraction theory in \cite{Tsukamoto:2021af}, \MSRY{and more...}, we assume that the desired control input $\mv{u}_d\in\R^n$ which is designed to achieve the desired trajectory $\mv{x}_d\in\R^n$ under ideal conditions, \ie $\mv{d}=0$ and $\norm{\mv{u}_d}\le\overline{u}$, is given as follows:
+\begin{equation} \label{eq:sys:desired}
    \ddtt\mv{x}_d   =
    \mv{f}_d
    +
    \mm{B}_d \mv{u}_d
    ,
 \end{equation}
-where $\mv{x}_d\in\R^n$ is the desired state vector and $\mv{u}_d\in\R^n$ is the desired control input vector, and $\mv{f}_d:=\mv{f}(\mv{x}_d, t)$ and $\mm{B}_d:=\mm{B}(\mv{x}_d,t)$.
+where $\mv{f}_d:=\mv{f}(\mv{x}_d, t)$ and $\mm{B}_d:=\mm{B}(\mv{x}_d,t)$.
 
-Finally, the control objective is to design a control input $\mv{u}$ such that the system trajectories of the system \eqref{eq:desired:sys} and the desired system \eqref{eq:desired:sys} converges, under the existences of the disturbances $\mv{d}$ and input saturation $\mysat(\cdot)$.
+Finally, the control objective is to design a control input $\mv{u}$ such that the system trajectories of the system \eqref{eq:pre:sys:perturbed} and the desired system \eqref{eq:sys:desired} converges, under the existences of the disturbances $\mv{d}$ and input saturation $\mysat(\cdot)$.
 
 \section{Main Results}
 
-Following the control design in \cite{Tsukamoto:2021af}, state-dependent coefficient (SDC) formulation \cite{Dani:2015aa} is used to represent the error dynamics \MSRY{more details}.
+Following the control design in \cite{Tsukamoto:2021af}, the state-dependent coefficient (SDC) formulation \cite{Dani:2015aa} is used to simplify the analysis to be understood as in LTV system theory.
 The SDC $\mathbb{A}:=\mathbb{A}(\mv{x},\mv{x}_d)$ is defined as follows:
 \begin{equation} \label{eq:SDC}
    \mathbb{A}
@@ -363,7 +365,7 @@ $
    + \mm{B} \mv{u}_d 
    - \mm{B}_d \mv{u}_d
 $
-and $\mm{B}_d := \mm{B}(\mv{x}_d)$, and $c$ is a dummy variable for the integration.
+and $c$ is a dummy variable for the integration.
 The existence... blah blah can be found in \cite{Dani:2015aa}, \MSRY{and more...}.
 
 Then, the error dynamics can be expressed as:
@@ -377,7 +379,7 @@ Then, the error dynamics can be expressed as:
       \mv{f}-\mv{f}_d
       + \mm{B} \mv{u}
       - \mm{B}_d \mv{u}_d
-      + \mv{\phi}(\mv{u}) + \mv{d}
+      + \mm{B} \mv{\phi}(\mv{u}) + \mv{d}
       \\
       =&
       \underbrace
@@ -391,24 +393,24 @@ Then, the error dynamics can be expressed as:
       }_{= \mathbb{A}(\mv{x},\mv{x}_d) (\mv{x} - \mv{x}_d)}
       \\
       &
-      - \mm{B} 
+      + \mm{B} 
       (
          \mv{u} - \mv{u}_d
       )
-      + \mv{\phi}(\mv{u}) + \mv{d}
+      + \mm{B} \mv{\phi}(\mv{u}) + \mv{d}
       \\
       =&
       \mathbb{A} (\mv{x} - \mv{x}_d)
-      - \mm{B} 
+      + \mm{B} 
       (\mv{u} - \mv{u}_d)
-      + \mv{\phi}(\mv{u}) + \mv{d}
+      + \mm{B} \mv{\phi}(\mv{u}) + \mv{d}
       \\
       =&
       \left(
          \mathbb{A} - \mm{B} \mm{R}^{-1} \mm{B} ^\top \mm{M}
       \right)
       (\mv{x} - \mv{x}_d)
-      + \mv{\phi}(\mv{u}) + \mv{d}
+      + \mm{B} \mv{\phi}(\mv{u}) + \mv{d}
       ,
    \end{aligned}
 \end{equation}
@@ -420,14 +422,17 @@ with the control input $\mv{u}$ defined as:
    -
    \mm{R}^{-1} \mm{B}^\top \mm{M} (\mv{x} - \mv{x}_d)
 \end{equation}
-where $\mm{R} \succ 0$ is a positive definite matrix and $\mm{M}:=\mm{M}(\mv{x},\mv{x_d},t) \succ 0$ is the contraction metric defined in Section \ref{sec:sub:contraction}.
+where $\mm{R}=\mm{R}^\top \succ 0$ is a symmetric positive definite matrix.
+
+In the following, we formulate the optimization problem to obtain the contraction metric $\mm{M}$ which satisfies the contraction condition \eqref{eq:control:condition:contraction} and does not violate the input saturation constraint \eqref{eq:sys:sat}.
+
 
 \subsection{Contraction Metric Calculation}
 
-\subsubsection{Contraction Condition Constraint}
+\subsubsection{Contraction Condition Satisfaction}
 
-Invoking the partial contraction theory reviewed in Section \ref{sec:sub:contraction}, we can define the virtual system as follows:
-\begin{equation} \label{eq:sys:virtual}
+Invoking the partial contraction theory reviewed in Section \ref{sec:sub:contraction:partial}, we can define the virtual system as follows:
+\begin{equation} \label{eq:sys:virtual1}
    \ddtt\mv{q}
    =
    \ddtt\mv{x}_d
@@ -437,12 +442,12 @@ Invoking the partial contraction theory reviewed in Section \ref{sec:sub:contrac
    \right)
    (\mv{q} - \mv{x}_d)
    +
-   d_{\mu}
+   \mv{d}_{\mu}
    ,
 \end{equation}
-where $\mv{q}$ is the virtual state vector and $d_{\mu}:=d_{\mu}(d,\mu), \forall \mu\in[0,1]$ is defined as $d_{\mu} = d_{\mu}(d,0)$ and $d_{\mu} = d_{\mu}(d,1)$.
-The differential dynamics is then defined as:
-\begin{equation} \label{eq:sys:virtual:variational}
+where $\mv{q}\in\R^n$ is the virtual state vector and $\mv{d}_{\mu}:=\mv{d}_{\mu}(\mv{d},\mu),\ \forall \mu\in[0,1]$, is defined as $\mv{0} = \mv{d}_{\mu}(\mv{d},0)$ and $\mv{d} = \mv{d}_{\mu}(\mv{d},1)$.
+The differential dynamics is then defined as follows:
+\begin{equation} \label{eq:sys:virtual2}
    \ddtt{\delta{\mv{q}}}
    =
    \left(
@@ -452,7 +457,8 @@ The differential dynamics is then defined as:
    .
 \end{equation}
 
-Then according to Theorem \ref{thm:contraction:perturbed} and the partial contraction theory, the system \eqref{eq:sys:virtual} and the system \eqref{eq:desired:sys} will converge to the desired trajectory $\mv{x}_d$ with steady state error:
+\MSRY{CHECK FROM HERE}
+Then according to Theorem \ref{thm:partial:contraction} and \ref{thm:contraction:perturbed}, system \eqref{eq:sys:virtual1} and the system \eqref{eq:sys:desired} will converge to the desired trajectory $\mv{x}_d$ with steady state error:
 \begin{equation} \label{eq:ss:error}
    \mv{e}_{\rm{ss}}
    = 
@@ -487,7 +493,7 @@ Therefore, we need to incorporate input constraints into the LMI formulation.
 
 \subsubsection{Input Saturation Constraint}
 
-To address the input saturation function \eqref{eq:control:sat}, the saturation constraint $\mv{u}^\top \mv{u} - \overline{u}^2 \le 0$ is defined as:
+To address the input saturation function \eqref{eq:sys:sat}, the saturation constraint $\mv{u}^\top \mv{u} - \overline{u}^2 \le 0$ is defined as:
 \begin{equation}
    \begin{bmatrix}
       \overline{u}^2 & \left(\mv{u}_d - \mm{R}^{-1}\mm{B}^\top\mm{M}(\mv{x}-\mv{x}_d)\right)^\top \\
@@ -538,7 +544,9 @@ Finally, the contraction metric can be obtained by solving the following LMI pro
 \end{itemize}
 
 
-\section{Validations}
+\section{Numerical Validation}
+
+\subsection{Numerical Validation Set Up}
 
 We employed the Lorenz system \MSRY{REF} to validate the proposed method which is represented as follows:
 \begin{equation}
@@ -576,49 +584,64 @@ where $\sigma=10$, $\rho=28$, and $\beta=\tfrac{8}{3}$ are system parameters.
 
 
 
-% \begin{figure}[t]
-%     \centering
-%         \includegraphics[width=.99\linewidth]
-%         % \includegraphics[width=\figSizeOneCol\linewidth]
-%         {
-%             src/figures/exp_set.drawio.png
-%         }%
-%     \caption{
-%         Experimental setup of the two-link robotic manipulator used for real-time validation.
-%     }
-%     \label{fig:ctrl:exp:set}
-% \end{figure}
-
-
-\subsection{Scenario 1: Contraction Property}
+\subsection{Numerical Validation Results}
 
 
 \begin{figure*}[t]
    \centering
-   \subfloat[Tracking performance of $1$st joint angle $q_1$.]{
-   %   \includegraphics
-      \includegraphics[width=0.99\linewidth]
+   \subfloat[State trajectories.]{
+      \includegraphics[width=0.49\linewidth]
       {
-      % fig/Fig1.pdf
       src/script_simulation/figures/compare/Fig1.eps
       }%
-      \label{fig:ctrl:result:q1}}
-   \vfill
-   \subfloat[Tracking performance of $2$nd joint angle $q_2$.]{
-      \includegraphics[width=0.99\linewidth]
+      \label{fig:result:state}}
+   \hfill
+   \subfloat[Control inputs.]{
+      \includegraphics[width=0.49\linewidth]
       {
-      % src/measurement/figures/compare/Fig11.eps
-      src/script_simulation/figures/compare/Fig2.eps
+      src/script_simulation/figures/compare/Fig3.eps
       }%
-      \label{fig:ctrl:result:q2}}
+      \label{fig:result:control}}
+   \vfill
+   \subfloat[Norms of tracking errors.]{
+      \includegraphics[width=0.49\linewidth]
+      {
+      src/script_simulation/figures/compare/Fig6.eps
+      }%
+      \label{fig:result:error:norm}}
+   \hfill
+   \subfloat[Norms of control inputs.]{
+      \includegraphics[width=0.49\linewidth]
+      {
+      src/script_simulation/figures/compare/Fig5.eps
+      }%
+      \label{fig:result:control:norm}}
    \caption{
-   Real-time implementation results of (C$_1$) \protect\colorLine{blue}{solid}, (C$_2$) \protect\colorLine{cyan}{solid}, (C$_3$) \protect\colorLine{gray}{solid}, (C$_4$) \protect\colorLine{magenta}{solid}, and desired trajectory $x_d$ \protect\colorLine{red}{dashed}.
+   Numerical validation results of (C$_1$) \protect\colorLine{blue}{solid}, (C$_2$) \protect\colorLine{cyan}{solid}, (C$_3$) \protect\colorLine{gray}{solid}, (C$_4$) \protect\colorLine{magenta}{solid}, and desired trajectory $x_d$ \protect\colorLine{red}{dashed}.
 }
-\label{fig:ctrl:result}
+\label{fig:result}
 \end{figure*}
 
-
-\subsection{Scenario 2: Saturation Handling}
+\begin{figure}[t]
+   \centering
+   \subfloat[State trajectories (3D-view).]{
+      \includegraphics[width=0.48\linewidth]
+      {
+      src/script_simulation/figures/compare/Fig2.eps
+      }%
+      \label{fig:result:state:3d}}
+   \hfill
+   \subfloat[Control input loci (3D-view).]{
+      \includegraphics[width=0.48\linewidth]
+      {
+      src/script_simulation/figures/compare/Fig4.eps
+      }%
+      \label{fig:result:control:3d}}
+   \caption{
+   Numerical validation results of (C$_1$) \protect\colorLine{blue}{solid}, (C$_2$) \protect\colorLine{cyan}{solid}, (C$_3$) \protect\colorLine{gray}{solid}, (C$_4$) \protect\colorLine{magenta}{solid}, and desired trajectory $x_d$ \protect\colorLine{red}{dashed}.
+}
+\label{fig:result:3D}
+\end{figure}
 
 \section{Conclusion}
 
