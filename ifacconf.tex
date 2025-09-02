@@ -17,6 +17,8 @@
 \usepackage{subfig}
 \usepackage{kotex}
 \usepackage{tikz}
+
+\usepackage{lipsum} % for dummy text
 % ============================================
 %         GENERAL MACROS
 % ============================================
@@ -152,6 +154,8 @@ In this paper, we use the following notation:
 
 \subsection{Motivation}
 
+\cred{\lipsum[1-6]}
+
 \begin{itemize}
    \item Contraction theory introduction
    \item Limitation 1 (computational cost)
@@ -170,8 +174,8 @@ Hence, the main objective of this paper is to extend the contraction theory base
 
 The main contributions of this paper are 
 \begin{itemize}
-   \item The contraction metric is obtained by using linear matrix inequalities (LMI) which simplifies the calculation of the contraction metric;
-   \item Saturation is incorporated into the LMI framework for contraction metric calculation;
+   \item The contraction metric is obtained by using linear matrix inequalities (LMIs) which simplifies the calculation of the contraction metric;
+   \item Saturation constraint is incorporated into the LMI framework for contraction metric calculation;
    \item ...; and
    \item The effectiveness and the feasibility of the proposed method is validated through numerical simulations via \cred{Lorenz system}.
 \end{itemize}
@@ -461,8 +465,12 @@ The differential dynamics is then defined as follows:
 Then according to Theorem \ref{thm:partial:contraction} and \ref{thm:contraction:perturbed}, system \eqref{eq:sys:virtual1} and the system \eqref{eq:sys:desired} will converge to the desired trajectory $\mv{x}_d$ with steady state error:
 \begin{equation} \label{eq:ss:error}
    \mv{e}_{\rm{ss}}
-   = 
-   ..?
+   =
+   \left(
+      \sup({\mm{B}\mv{\phi(\mv{u})}})+\overline d
+   \right)
+   \tfrac{1}{\alpha}
+   \sqrt{\tfrac{\overline m}{\underline{m}}}
    ,
 \end{equation}
 with the following conditions:
@@ -476,6 +484,20 @@ with the following conditions:
    2\mm{M}\mm{B}\mm{R}^{-1} \mm{B}^\top \mm{M}
    \leq
    -2\alpha\mm{M}
+   .
+\end{equation}
+By multiplying $\mm{W}:=\mm{M}^{-1}$ both sides of \eqref{eq:control:condition:contraction}, we have the following LMI:
+\begin{equation} \label{eq:control:condition:contraction:LMI}
+   -
+   \ddtt\mm{W}
+   +
+   2\mysym(
+      \mathbb{A}\mm{W}
+   )
+   -
+   2\mm{B}\mm{R}^{-1} \mm{B}^\top 
+   \leq
+   -2\alpha\mm{W}
    .
 \end{equation}
 
@@ -529,7 +551,13 @@ where $\mathbb{X}:=\mm{W}(\mm{R}^{-1}\mm{B}^\top)^{-1}{(\mm{R}^{-1}\mm{B}^\top)^
 Finally, the contraction metric can be obtained by solving the following LMI problem:
 \begin{equation}
    \begin{aligned}
-      &\min_{\mm{W},X,\mu} X + \rm{trace}(\mm{\mathbb{X}})
+      &\min_{\mm{W},X,\mu} 
+         X
+         + 
+         \rm{trace}(\mm{\mathbb{X}})
+         \cred{
+            + \lambda \mu
+         }
       \\
       &\text{s.t. \eqref{eq:control:condition:contraction}, \eqref{eq:control:condition:saturation:1} and \eqref{eq:control:condition:saturation:2}}
    \end{aligned}
@@ -634,7 +662,8 @@ where $\sigma=10$, $\rho=28$, and $\beta=\tfrac{8}{3}$ are system parameters.
    \subfloat[Control input loci (3D-view).]{
       \includegraphics[width=0.48\linewidth]
       {
-      src/script_simulation/figures/compare/Fig4.eps
+      % src/script_simulation/figures/compare/Fig4.eps
+      src/script_simulation/figures/compare/Fig4.png
       }%
       \label{fig:result:control:3d}}
    \caption{

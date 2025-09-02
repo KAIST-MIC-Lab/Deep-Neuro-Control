@@ -30,6 +30,18 @@
               "icon": "lucide-file",
               "title": "Contraction Theory Based Control Under Input Saturation–LMI Approach"
             }
+          },
+          {
+            "id": "6247c84232f723ce",
+            "type": "leaf",
+            "state": {
+              "type": "release-notes",
+              "state": {
+                "currentVersion": "1.9.12"
+              },
+              "icon": "lucide-book-up",
+              "title": "Release Notes 1.9.12"
+            }
           }
         ]
       }
