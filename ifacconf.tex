@@ -99,7 +99,7 @@
 \begin{frontmatter}
 
 \title{
-   Contraction Theory Based Control Under Input Saturation–LMI Approach\thanksref{footnoteinfo}
+   \cblue{Contraction Theory Based Control} Under Input Saturation–LMI Approach\thanksref{footnoteinfo}
 } 
 % Title, preferably not more than 10 words.
 
@@ -108,16 +108,16 @@ goes here. Paper titles should be written in uppercase and lowercase
 letters, not all uppercase.}
 
 \author[First]{Myeongseok Ryu} 
-\author[Second]{Kyunghwan Choi} 
-\author[Third]{Sesun You}
+\author[First]{Kyunghwan Choi} 
+\author[Second]{Sesun You}
 
 \address[First]{
    Korea Advanced Institute of Science and Technology (KAIST), 
-   Daejeon 34051, South Korea (e-mail: dding\_98@kaist.ac.kr)}
+   Daejeon 34051, South Korea (e-mail: \{dding\_98,kh.choi\}@kaist.ac.kr)}
+% \address[Second]{
+%    Korea Advanced Institute of Science and Technology (KAIST), 
+%    Daejeon 34051, South Korea (e-mail: @kaist.ac.kr)}
 \address[Second]{
-   Korea Advanced Institute of Science and Technology (KAIST), 
-   Daejeon 34051, South Korea (e-mail: kh.choi@kaist.ac.kr)}
-\address[Third]{
    Keimyung University, 
    Daegu 42601, South Korea (e-mail: yousesun@kmu.ac.kr)}
 
@@ -152,9 +152,30 @@ In this paper, we use the following notation:
 
 \section{Introduction}
 
+% 미래생각
+% \begin{itemize}
+%    \item 차량으로
+%    \item 상태 제약조건 추가
+%    \item 입력 포화 고려
+%    \item 카메이터 검증 (횡제어)
+%    \begin{itemize}
+%       \item CV-STEM 
+%       \item sampling
+%       \item sampling -> metric (LMI) <- constraint
+%       \item DNN -> interpolate
+%    \end{itemize}
+% \end{itemize}
+
 \subsection{Motivation}
 
 \cred{\lipsum[1-6]}
+
+\cblue{
+   \begin{itemize}
+      \item 포화에 대한 사전 연구 더해서 비교
+      \item S.S.Ge의 논문 참고 
+   \end{itemize}
+}
 
 \begin{itemize}
    \item Contraction theory introduction
@@ -326,7 +347,7 @@ The difference between the controller output $\mv{u}$ and the saturated control 
 
 In the practical perspective, we consider the following assumption:
 \begin{assum}
-   The control input matrix $\mv{B}$ is sign-definite, so that the inverse of $\mm{B}$ exists.
+   \cred{수도인버스로변경}The control input matrix $\mv{B}$ is sign-definite, so that the inverse of $\mm{B}$ exists.
 \end{assum}
 
 Motivated by the use of the partial contraction theory in \cite{Tsukamoto:2021af}, \MSRY{and more...}, we assume that the desired control input $\mv{u}_d\in\R^n$ which is designed to achieve the desired trajectory $\mv{x}_d\in\R^n$ under ideal conditions, \ie $\mv{d}=0$ and $\norm{\mv{u}_d}\le\overline{u}$, is given as follows:
@@ -342,6 +363,13 @@ where $\mv{f}_d:=\mv{f}(\mv{x}_d, t)$ and $\mm{B}_d:=\mm{B}(\mv{x}_d,t)$.
 Finally, the control objective is to design a control input $\mv{u}$ such that the system trajectories of the system \eqref{eq:pre:sys:perturbed} and the desired system \eqref{eq:sys:desired} converges, under the existences of the disturbances $\mv{d}$ and input saturation $\mysat(\cdot)$.
 
 \section{Main Results}
+
+\cred{
+   \begin{itemize}
+      \item 포화에 대한 영향을 강조하기 위한 내용 추가 (리마크)
+      \item hard contraint를 쓰지 않고 LMI에 통합    
+   \end{itemize}
+}
 
 Following the control design in \cite{Tsukamoto:2021af}, the state-dependent coefficient (SDC) formulation \cite{Dani:2015aa} is used to simplify the analysis to be understood as in LTV system theory.
 The SDC $\mathbb{A}:=\mathbb{A}(\mv{x},\mv{x}_d)$ is defined as follows:
@@ -613,6 +641,13 @@ where $\sigma=10$, $\rho=28$, and $\beta=\tfrac{8}{3}$ are system parameters.
 
 
 \subsection{Numerical Validation Results}
+
+\begin{itemize}
+   \item Desired -> black solid
+   \item CMP -> blue dashed
+   \item CMP -> red dashed
+   \item CMP -> cyan dashed
+\end{itemize}
 
 
 \begin{figure*}[t]
