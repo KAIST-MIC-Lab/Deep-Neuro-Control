@@ -1,7 +1,4 @@
-- Author:
-	- Myeongseok Ryu
-	- Kyunghwan Choi
-	- Sesun You
+*Myeongseok Ryu, Kyunghwan Choi, Sesun You*
 
 > This research includes:
 > - Contraction theory-based control using LMI approach
@@ -11,6 +8,7 @@
 > 	- The handling process is integrated in LMI process
 > 	- Sector condition and s-procedure are used
 > - Numerical validation is demonstrated
+
 
 ## 1 Preliminaries
 Consider a nonlinear system as follows:
@@ -435,3 +433,4 @@ $$
 
 ## 5 Conclusion
 In this study, we 
+
