@@ -28,14 +28,14 @@ W_pre = (rand(x_num)+diag([2;3])) * 1e0; W_pre = W_pre'+W_pre;
 mu_pre = 1;
 M_pre = inv(W_pre)*mu_pre;
 
-e = [3;5]*1e1;
-alpha = 5e1;
+e = [3;-5]*1e1;
+alpha = 1e0;
 
 %% 
-ud = [1;0];
+ud = [1;-.5];
 
 m_min = 1e-3;
-u_max = 35;
+u_max = 3.5;
 
 if ud'*ud - u_max^2 > 0
     error("desired input exceeds the limit")
@@ -66,7 +66,7 @@ W_bar = sdpvar(x_num ,x_num); assign(W_bar, W_pre)
 mu = sdpvar(1,1); assign(mu, mu_pre);
 X = sdpvar(1,1); assign(X, mu_pre/m_min);
 
-lbd = 5e-2;
+lbd = 1e-2;
 
 con = [ 
     -(W_bar-W_pre)/dt + (W_bar*SDC' + SDC*W_bar) - 2*mu*B*inv_R*B' <= -2*alpha*W_bar;
