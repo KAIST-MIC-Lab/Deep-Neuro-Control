@@ -143,10 +143,10 @@ for t_idx = 1:1:num_t
         sys{c_idx}.u_hist(:, t_idx) = sys{c_idx}.u;
         sys{c_idx}.uSat_hist(:, t_idx) = sys{c_idx}.uSat;
 
-        sys{c_idx}.X_hist(t_idx) = ncm.X;  % controller gain
-        sys{c_idx}.optDone_hist(t_idx) = ncm.optDone;  % optimization done flag
-        sys{c_idx}.M_hist(:, t_idx) = norm(inv(ncm.W_bar/ncm.mu));
-        sys{c_idx}.mu_hist(:, t_idx) = ncm.mu;
+        sys{c_idx}.X_hist(t_idx) = sys{c_idx}.ncm.X;  % controller gain
+        sys{c_idx}.optDone_hist(t_idx) = sys{c_idx}.ncm.optDone;  % optimization done flag
+        sys{c_idx}.M_hist(:, t_idx) = norm(inv(sys{c_idx}.ncm.W_bar/sys{c_idx}.ncm.mu));
+        sys{c_idx}.mu_hist(:, t_idx) = sys{c_idx}.ncm.mu;
 
         sys{c_idx}.x = system_step(dt, sys{c_idx}.x, sys{c_idx}.uSat, d_func(t(t_idx), sys{c_idx}.x), param);
         sys{c_idx}.x_non = system_step(dt, sys{c_idx}.x_non, ud, d_func(t(t_idx), sys{c_idx}.x_non), param);

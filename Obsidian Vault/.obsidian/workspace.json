@@ -30,13 +30,7 @@
               "icon": "lucide-file",
               "title": "New approach—y-space"
             }
-          }
-        ]
-      },
-      {
-        "id": "d1605425174d8bef",
-        "type": "tabs",
-        "children": [
+          },
           {
             "id": "176ece987b91c7d8",
             "type": "leaf",
@@ -61,7 +55,8 @@
               "title": "Contraction Theory Based Control Under Input Saturation–LMI Approach"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -254,10 +249,10 @@
       "periodic-notes:Open this week": false
     }
   },
-  "active": "fb6cd53cea4724c4",
+  "active": "176ece987b91c7d8",
   "lastOpenFiles": [
-    "Contraction Theory Based Control Under Input Saturation–LMI Approach.md",
     "New approach—y-space.md",
+    "Contraction Theory Based Control Under Input Saturation–LMI Approach.md",
     "Untitled.md",
     "2025-W35.md",
     "Untitled.canvas",

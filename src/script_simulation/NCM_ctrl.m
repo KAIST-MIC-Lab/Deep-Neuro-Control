@@ -13,6 +13,8 @@
     x_num = ncm.x_num;
     mu = ncm.mu;
 
+    m_min = 1e-5;
+
     alpha = ncm.alpha; 
     inv_R = ncm.inv_R;  
 
@@ -68,6 +70,10 @@
         -(W_bar-pre_W_bar)/dt + (W_bar*SDC' + SDC*W_bar) - 2*mu*B*inv_R*B' <= -2*alpha*W_bar;
         eye(x_num) <= W_bar;
         W_bar <= X * eye(x_num);
+        % X == mu/m_min;
+        % m_min <= mu;
+        1e-99 <= mu;
+        1 <= X;
     ];
 
     if ncm.cstr_on
