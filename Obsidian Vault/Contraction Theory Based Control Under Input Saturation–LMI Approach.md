@@ -9,6 +9,11 @@
 > 	- Sector condition and s-procedure are used
 > - Numerical validation is demonstrated
 
+NAC <- current error (local system)
+ n traj(domain; seperate) - n NAC -> Fuzzy -> Deep learning + stability + math...
+ Fuzzy - 2 mix 
+ W^T \phi (V^T x) + mix
+ W^T \phi () 
 
 ## 1 Preliminaries
 Consider a nonlinear system as follows:

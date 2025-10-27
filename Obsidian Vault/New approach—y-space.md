@@ -27,7 +27,7 @@ e^\top (\tfrac{1}{\der t} \mm{I}+2\mathbb{A}^\top+2\alpha\mm{I})
 \mv{y}
 -
 \left(
-\tfrac{\mv{e}^\top\mm{M}_\rm{pre}\mv{e}}{\der t}
+\tfrac{\mv{e}^\top\mm{M}_\rm{pre}\mv{e}}{T_s}
 \right)
 \preceq
 0

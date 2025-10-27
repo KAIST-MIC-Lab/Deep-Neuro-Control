@@ -130,7 +130,6 @@ fprintf("mu = %.4f, X = %.4f\n", mu, X);
 
 eig(-(W_bar-W_pre)/dt + (W_bar*SDC' + SDC*W_bar) - 2*mu*B*inv_R*B' + 2*alpha*W_bar)
 eig((M-M_pre)/dt + (SDC'*M+M*SDC) - 2*M*B*inv_R*B'*M + 2*alpha*M)
-return
 
 %% PROPOSED
 M = sdpvar(x_num ,x_num); assign(M, M_pre);
