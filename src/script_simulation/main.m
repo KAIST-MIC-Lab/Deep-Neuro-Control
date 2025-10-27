@@ -13,7 +13,7 @@ FIGURE_PLOT_FLAG = 1;   % plot the result
 FIGURE_SAVE_FLAG = 0;   % save the figure as .png and .eps
 
 %% SIMULATION SETTING
-T = 3;                 % simulation time
+T = 1;                 % simulation time
 ctrl_dt = 1e-2;         % controller sampling time
 dt = 1e-3;
 % ctrl_dt = 1e-3;         % controller sampling time
@@ -29,6 +29,7 @@ param.beta = 8/3;
 % param.B = rand(3) + eye(3)*3;
 param.B = eye(3);
 param.max_u = 1.5e2;
+% param.max_u = 75;
 
 % disturbance
 d_MAX = 50;  % maximum disturbance;
@@ -50,30 +51,31 @@ fprintf("FIGURE_PLOT_FLAG : %d\n", FIGURE_PLOT_FLAG)
 fprintf("FIGURE_SAVE_FLAG : %d\n", FIGURE_SAVE_FLAG)
 
 %% SYSTEM AND REFERENCE DEFINITION
+% proposed 1 (effective space)
 sys{1}.x = [15;10;20];
 sys{1}.x_non = sys{1}.x;
-sys{1}.ctrl_opt = 1;
+sys{1}.ctrl_opt = 11;
 sys{1}.u = [0;0;0];
 
+% existing (large penalty)
 sys{2}.x = [15;10;20];
 sys{2}.x_non = sys{2}.x;
-sys{2}.ctrl_opt = 2;
+sys{2}.ctrl_opt = 32;
 sys{2}.u = [0;0;0];
-% 
-sys{3}.x = [15;10;20];
-sys{3}.x_non = sys{3}.x;
-sys{3}.ctrl_opt = 3;
-sys{3}.u = [0;0;0];
+% % existing (small penalty)
+% sys{3}.x = [15;10;20];
+% sys{3}.x_non = sys{3}.x;
+% sys{3}.ctrl_opt = 32;
+% sys{3}.u = [0;0;0];
 
 xd = [1;-3;5];
 grad = @system_grad;
 
-%% REFERENCE DEFINITION (will be tracked by BSC)
-
+%% REFERENCE DEFINITION
 % ud_func = @(t, xd) [sin(t); cos(t); -cos(t)]*0.1;
 ud_func = @(t, x)  inv(param.B) * (- system_func(x, param) - 2*(x-[8.485;8.485;27]));
 
-%% 
+%% PASSIVE VARIABLES
 num_x = length(xd);      % number of states
 num_u = length(ud_func(0, xd));      % number of inputs
 num_t = length(t);      % number of time steps
@@ -93,6 +95,7 @@ for idx = 1:1:num_sample
     sys{idx}.optDone_hist = zeros(1, num_t); % NCM: optimization result flag
     sys{idx}.M_hist = zeros(1, num_t);       % NCM: norm of M (contraction metric)
     sys{idx}.mu_hist = zeros(1, num_t);      % NCM: upper bound of norm(M)
+    sys{idx}.contraction_flag_hist = zeros(1, num_t); % NCM: contraction condition flag
 end
 
 xd_hist = zeros(num_x, num_t); % desired state history (without disturbance)
@@ -118,7 +121,7 @@ for t_idx = 1:1:num_t
             
             B = param.B;
             % u = ud - ncm.inv_R*B' * inv(ncm.W_bar/ncm.mu) * (x-xd);
-            u = ud - ncm.inv_R*B' * ncm.mu * (ncm.W_bar \ (x-xd));
+            u = ud - ncm.inv_R*B' * ncm.M * (x-xd);
 
             max_u = param.max_u;
             % uSat = max(min(u,max_u), -max_u);
@@ -145,16 +148,22 @@ for t_idx = 1:1:num_t
 
         sys{c_idx}.X_hist(t_idx) = sys{c_idx}.ncm.X;  % controller gain
         sys{c_idx}.optDone_hist(t_idx) = sys{c_idx}.ncm.optDone;  % optimization done flag
-        sys{c_idx}.M_hist(:, t_idx) = norm(inv(sys{c_idx}.ncm.W_bar/sys{c_idx}.ncm.mu));
-        sys{c_idx}.mu_hist(:, t_idx) = sys{c_idx}.ncm.mu;
+        sys{c_idx}.M_hist(:, t_idx) = norm(sys{c_idx}.ncm.M);
+        if isfield(sys{c_idx}.ncm, 'mu')
+            sys{c_idx}.mu_hist(:, t_idx) = sys{c_idx}.ncm.mu;
+        end
+        sys{c_idx}.contraction_flag_hist(:, t_idx) = sys{c_idx}.ncm.contraction_flag;
 
+        % step forward
         sys{c_idx}.x = system_step(dt, sys{c_idx}.x, sys{c_idx}.uSat, d_func(t(t_idx), sys{c_idx}.x), param);
         sys{c_idx}.x_non = system_step(dt, sys{c_idx}.x_non, ud, d_func(t(t_idx), sys{c_idx}.x_non), param);
     end
 
+    % record desired history
     xd_hist(:, t_idx) = xd;
     ud_hist(:, t_idx) = ud;
 
+    % step forward desired state
     xd = system_step(dt, xd, ud, 0, param);
 
     % report on console

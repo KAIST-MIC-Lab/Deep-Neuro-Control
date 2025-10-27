@@ -303,6 +303,31 @@ ax = gca;
 ax.FontSize = font_size; 
 ax.FontName = 'Times New Roman';
 
+% ============================================
+%     contraction condition satisfaction
+% ============================================
+nexttile;
+
+maxVal = 0; minVal = 0;
+for idx = 1:1:num_sample
+    c = c_list(idx, :);
+
+    plot(t, sys{idx}.contraction_flag_hist(1,:), "Color", c, "LineWidth", line_width, "LineStyle", "-"); hold on
+
+    maxVal = 1; minVal = 0;
+end
+
+grid on; grid minor;
+xlabel('Time / s', 'FontSize', font_size, 'Interpreter', 'latex');
+ylabel('Contraction Condition', 'FontSize', font_size, 'Interpreter', 'latex');
+len = maxVal-minVal; ratio = .1;
+if len ~= 0; ylim([minVal-len*ratio maxVal+len*ratio]);  end
+xlim([0 T])
+
+ax = gca;
+ax.FontSize = font_size; 
+ax.FontName = 'Times New Roman';
+
 %% LOCAL FUNCTIONS
 function y = time_norm(x)
     num_x = size(x, 1);
