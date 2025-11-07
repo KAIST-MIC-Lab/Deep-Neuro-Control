@@ -2,13 +2,14 @@ clear
 
 %% SIMULATION SETTING
 T = 1;                 % simulation time
-ctrl_dt = 1e-4;         % controller sampling time
-dt = 1e-5;
+ctrl_dt = 1e-5;         % controller sampling time
+dt = 1e-6;
 rpt_dt = 1e-1;          % report time (on console)
 t = 0:dt:T;             % time vector
 
 %%
 x = [15;10;20];
+z = [0;0;0];
 u0 = [0;0;0];
 u = u0;
 
@@ -21,12 +22,12 @@ param.sig = 10;
 param.rho = 28;
 param.beta = 8/3;
 
-u_max = 160;
+u_max = 260;
 sat_func = @(u, u_max) max(min(u, u_max), -u_max);
 
 function d = d_func(dt, t, x)
     if t>=0.5 && t<0.5+dt
-        d = [1;1;1]*10/dt;
+        d = [1;1;1]*0/dt;
     else
         d = [0;0;0];
     end
@@ -43,6 +44,7 @@ num_u = size(u, 1);
 
 %% 
 x_hist = zeros(num_x, num_t); x_hist(:,1) = x;
+z_hist = zeros(num_u, num_t); z_hist(:,1) = z;
 u_hist = zeros(num_u, num_t); u_hist(:,1) = u;
 xd_hist = zeros(num_x, num_t); xd_hist(:,1) = xd_func(t(1));
 
@@ -56,8 +58,15 @@ for t_idx = 1:1:num_t
     if mod(t_idx, round(ctrl_dt/dt)) == 1
         xd_dot = xd_dot_func(t(t_idx));
 
-        grad_u = -B' * (K*(x-xd) + f - xd_dot + B*sat_func(u, u_max));
-        u = u + (1/epsilon*grad_u) * ctrl_dt;
+        % grad_u = -B' * (K*(x-xd) + f - xd_dot + B*sat_func(u, u_max));
+        % u = u + (1/epsilon*grad_u) * ctrl_dt;
+        % u = -B \ (K*(x-xd) + f - xd_dot);
+
+        Az = -1e2; Bz = 1; Kz = 10;
+        grad_z = Az*z + Bz*(sat_func(u, u_max)-u);
+        z = z + grad_z * ctrl_dt;
+
+        u = - B \ (K*(x-xd) + f - xd_dot - Kz * z);
     end
 
     % system update
@@ -66,6 +75,7 @@ for t_idx = 1:1:num_t
 
     % record
     x_hist(:, t_idx) = x;
+    z_hist(:, t_idx) = z;
     u_hist(:, t_idx) = u;
     xd_hist(:, t_idx) = xd;
 end
@@ -110,6 +120,15 @@ xlabel('Time (s)');
 legend('u_1', 'u_2', 'u_3', 'Location', 'best');
 set(gca, 'FontSize', 12);
 ylim([-u_max u_max]*1.2);
+
+figure(3); clf; hold on; box on; grid on;
+plot(t, z_hist(1,:), 'LineWidth', 1.5); hold on
+plot(t, z_hist(2,:), 'LineWidth', 1.5);
+plot(t, z_hist(3,:), 'LineWidth', 1.5);
+ylabel('AW z');
+xlabel('Time (s)');
+legend('z_1', 'z_2', 'z_3', 'Location', 'best');
+set(gca, 'FontSize', 12);
 
 %% 
 function [f, B] = system_dynamics(x, u, param)
