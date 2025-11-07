@@ -66,7 +66,7 @@
             % obj = norm(M-eye(x_num)*mu) - mu;
             % obj = norm(M_bar-eye(x_num)) - mu;
             % obj = norm(M - (trace(M)/x_num)*eye(x_num)) - (trace(M)/x_num) * 1e5;
-            obj = norm(M - (trace(M)/x_num)*eye(x_num), 'fro')^2 - (trace(M)/x_num) * 1e-2;
+            obj = norm(M - (trace(M)/x_num)*eye(x_num), 'fro')^2 - (trace(M)/x_num) * 1e1;
  
             % constraint
             u_max = param.max_u;
