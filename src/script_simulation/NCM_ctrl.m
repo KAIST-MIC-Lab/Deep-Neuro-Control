@@ -61,19 +61,31 @@
 
             y = sdpvar(x_num,1); assign(y, pre_M*e);
 
+            mu_min = sdpvar(1,1);
+            mu_max = sdpvar(1,1);
+
             % objective function
-            % obj = norm(M-eye(x_num));
+            obj = 1;
+            obj = -mu;
+            obj = norm(M-eye(x_num));
+            % obj = norm(M-eye(x_num)) - mu;
             % obj = norm(M-eye(x_num)*mu) - mu;
             % obj = norm(M_bar-eye(x_num)) - mu;
-            % obj = norm(M - (trace(M)/x_num)*eye(x_num)) - (trace(M)/x_num) * 1e5;
-            obj = norm(M - (trace(M)/x_num)*eye(x_num), 'fro')^2 - (trace(M)/x_num) * 1e1;
- 
+            % obj = norm(M - (trace(M)/x_num)*eye(x_num)) - (trace(M)/x_num) * 1e5; 
+            % obj = norm(M - (trace(M)/x_num)*eye(x_num), 'fro')^2 - (trace(M)/x_num) * 1e1;
+
+            % obj = trace(M) - log(det(M));
+            % obj = log(mu_max) - log(mu_min);
+
             % constraint
             u_max = param.max_u;
             con = [
                 -y'*(2*B*inv_R*B')*y + e'*(1/dt*eye(x_num)+2*SDC'+2*alpha*eye(x_num))*y - (e'*pre_M*e)/dt <= 0;
-                % y'*(B*inv_R*inv_R*B')*y + (-2*ud'*inv_R*B')*y + (ud'*ud - u_max^2) <= 0;
+                y'*(B*inv_R*inv_R*B')*y + (-2*ud'*inv_R*B')*y + (ud'*ud - u_max^2) <= 0;
                 M*e == y;
+                % M >= mu * eye(x_num);
+                % mu >= 1e-99
+                % M <= 1e9 * eye(x_num);
                 % M == mu * M_bar;
             ];
 
@@ -124,6 +136,7 @@
             
         case 1 
             ops = sdpsettings('solver', 'fmincon', 'verbose', 0, 'fmincon.Algorithm', 'sqp');
+            % ops = sdpsettings('verbose', 0);
             % ops = sdpsettings('solver', 'ipopt');
 
     end
@@ -144,7 +157,9 @@
     switch ncm.ctrl_no
         case 0 % existing
             ncm.mu = value(mu);
-            ncm.X = value(X);
+            % ncm.X = value(X);            
+            ncm.X = cond(ncm.M);
+
             ncm.W_bar = value(W_bar);
             ncm.optDone = sol.problem;
 

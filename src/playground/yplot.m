@@ -34,14 +34,14 @@ mu_pre = 1;
 % M_pre = inv(W_pre)*mu_pre;
 
 e = [3;-5]*1e0;
-alpha = 1e0;
+alpha = 1e5;
 
 %% 
 ud = [1;-.5];
 
 m_max = 1e1;
 m_min = 1e-3;
-u_max = 3.5;
+u_max = 5.5;
 
 if ud'*ud - u_max^2 > 0
     error("desired input exceeds the limit")

@@ -23,8 +23,7 @@ function ncm = NCM_init(ctrl_dt, ctrl_opt)
         case 11 % proposed 1 (effective space)
             ncm.ctrl_no = 1;
                 
-            ncm.alpha = 1e10;    % decay rate (contracting)
-
+            ncm.alpha = 1e-3 ;    % decay rate (contracting)
 
             ncm.M = M;
             ncm.M_bar = eye(ncm.x_num);

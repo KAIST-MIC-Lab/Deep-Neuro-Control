@@ -14,6 +14,7 @@ FIGURE_SAVE_FLAG = 0;   % save the figure as .png and .eps
 
 %% SIMULATION SETTING
 T = 1;                 % simulation time
+% T = 5;                 % simulation time
 ctrl_dt = 1e-2;         % controller sampling time
 dt = 1e-3;
 % ctrl_dt = 1e-3;         % controller sampling time
@@ -28,8 +29,8 @@ param.beta = 8/3;
 
 % param.B = rand(3) + eye(3)*3;
 param.B = eye(3);
-param.max_u = 1.5e2;
-% param.max_u = 75;
+% param.max_u = 1.5e2;
+param.max_u = 75;
 
 % disturbance
 d_MAX = 50;  % maximum disturbance;
