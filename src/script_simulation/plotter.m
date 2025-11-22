@@ -20,13 +20,6 @@ fig_width = 450;
 % fig_height = 300; 
 % fig_width = 800;
 
-%% COLORS
-c_list = [
-    0 0 1       % BLUE
-    0 1 1       % CYAN
-    .5 .5 .5    % GRAY
-];
-
 %% MAIN PLOT FUNCTIONS
 figure(1); clf; 
 % hF = gcf; 
@@ -39,15 +32,13 @@ tl = tiledlayout(2, 4, 'Padding', 'none', 'TileSpacing', 'compact');
 for x_idx = 1:1:num_x
     nexttile;
 
-    maxVal = 0; minVal = 0;
-    for idx = 1:1:num_sample
-        c = c_list(idx, :);
+    maxVal = -9999; minVal = 9999;
+    for c_idx = 1:1:case_num
+        plot(t, recs{c_idx}.x_hist(x_idx,:), "Color", recs{c_idx}.color, "LineWidth", line_width, "LineStyle", "-"); hold on
+        plot(t, recs{c_idx}.x_non_hist(x_idx,:), "Color", recs{c_idx}.color, "LineWidth", line_width, "LineStyle", "--"); hold on
 
-        plot(t, sys{idx}.x_hist(x_idx,:), "Color", c, "LineWidth", line_width, "LineStyle", "-"); hold on
-        plot(t, sys{idx}.x_non_hist(x_idx,:), "Color", c, "LineWidth", line_width, "LineStyle", "--"); hold on
-
-        maxVal = max(maxVal, max([sys{idx}.x_hist(x_idx,:), sys{idx}.x_non_hist(x_idx,:), xd_hist(x_idx,:)]));
-        minVal = min(minVal, min([sys{idx}.x_hist(x_idx,:), sys{idx}.x_non_hist(x_idx,:), xd_hist(x_idx,:)]));
+        maxVal = max(maxVal, max([recs{c_idx}.x_hist(x_idx,:), recs{c_idx}.x_non_hist(x_idx,:), xd_hist(x_idx,:)]));
+        minVal = min(minVal, min([recs{c_idx}.x_hist(x_idx,:), recs{c_idx}.x_non_hist(x_idx,:), xd_hist(x_idx,:)]));
     end
     plot(t, xd_hist(x_idx,:), "Color", "red", "LineWidth", line_width, "LineStyle", "--"); hold on
 
@@ -68,11 +59,9 @@ end
 %     STATE VARIABLE (Bird-eye view)
 % ============================================
 nexttile;
-for idx = 1:1:num_sample
-    c = c_list(idx, :);
-
-    plot3(sys{idx}.x_hist(1,:), sys{idx}.x_hist(2,:), sys{idx}.x_hist(3,:), "Color", c, "LineWidth", line_width, "LineStyle", "-"); hold on
-    plot3(sys{idx}.x_non_hist(1,:), sys{idx}.x_non_hist(2,:), sys{idx}.x_non_hist(3,:), "Color", c, "LineWidth", line_width, "LineStyle", "--"); hold on
+for c_idx = 1:1:case_num
+    plot3(recs{c_idx}.x_hist(1,:), recs{c_idx}.x_hist(2,:), recs{c_idx}.x_hist(3,:), "Color", recs{c_idx}.color, "LineWidth", line_width, "LineStyle", "-"); hold on
+    plot3(recs{c_idx}.x_non_hist(1,:), recs{c_idx}.x_non_hist(2,:), recs{c_idx}.x_non_hist(3,:), "Color", recs{c_idx}.color, "LineWidth", line_width, "LineStyle", "--"); hold on
 end
 plot3(xd_hist(1,:), xd_hist(2,:), xd_hist(3,:), "Color", "red", "LineWidth", line_width, "LineStyle", "--"); hold on
 
@@ -99,15 +88,13 @@ axis equal
 for u_idx = 1:1:num_u
     nexttile;
 
-    maxVal = 0; minVal = 0;
-    for idx = 1:1:num_sample
-        c = c_list(idx, :);
+    maxVal = -9999; minVal = 9999;
+    for c_idx = 1:1:case_num
+        plot(t, recs{c_idx}.u_hist(u_idx,:), "Color", recs{c_idx}.color, "LineWidth", line_width, "LineStyle", "-"); hold on
+        plot(t, recs{c_idx}.uSat_hist(u_idx,:), "Color", recs{c_idx}.color, "LineWidth", line_width, "LineStyle", "--"); hold on
 
-        plot(t, sys{idx}.u_hist(u_idx,:), "Color", c, "LineWidth", line_width, "LineStyle", "-"); hold on
-        plot(t, sys{idx}.uSat_hist(u_idx,:), "Color", c, "LineWidth", line_width, "LineStyle", "--"); hold on
-
-        maxVal = max(maxVal, max([sys{idx}.u_hist(u_idx,:), sys{idx}.uSat_hist(u_idx,:), ud_hist(u_idx,:)]));
-        minVal = min(minVal, min([sys{idx}.u_hist(u_idx,:), sys{idx}.uSat_hist(u_idx,:), ud_hist(u_idx,:)]));
+        maxVal = max(maxVal, max([recs{c_idx}.u_hist(u_idx,:), recs{c_idx}.uSat_hist(u_idx,:), ud_hist(u_idx,:)]));
+        minVal = min(minVal, min([recs{c_idx}.u_hist(u_idx,:), recs{c_idx}.uSat_hist(u_idx,:), ud_hist(u_idx,:)]));
     end
     plot(t, ud_hist(u_idx,:), "Color", "red", "LineWidth", line_width, "LineStyle", "--"); hold on
 
@@ -129,11 +116,9 @@ end
 nexttile;
 max_u = param.max_u;
 
-for idx = 1:1:num_sample
-    c = c_list(idx, :);
-
-    plot3(sys{idx}.u_hist(1,:), sys{idx}.u_hist(2,:), sys{idx}.u_hist(3,:), "Color", c, "LineWidth", line_width, "LineStyle", "-"); hold on
-    plot3(sys{idx}.uSat_hist(1,:), sys{idx}.uSat_hist(2,:), sys{idx}.uSat_hist(3,:), "Color", c, "LineWidth", line_width, "LineStyle", "--"); hold on
+for c_idx = 1:1:case_num
+    plot3(recs{c_idx}.u_hist(1,:), recs{c_idx}.u_hist(2,:), recs{c_idx}.u_hist(3,:), "Color", recs{c_idx}.color, "LineWidth", line_width, "LineStyle", "-"); hold on
+    plot3(recs{c_idx}.uSat_hist(1,:), recs{c_idx}.uSat_hist(2,:), recs{c_idx}.uSat_hist(3,:), "Color", recs{c_idx}.color, "LineWidth", line_width, "LineStyle", "--"); hold on
 end
 [x y z] = sphere(128);
 h = surfl(max_u*x, max_u*y, max_u*z); 
@@ -173,12 +158,10 @@ tl = tiledlayout(4, 2, 'Padding', 'none', 'TileSpacing', 'compact');
 nexttile;
 
 plot([-10, T+10], param.max_u * [1 1], "Color", "black", "LineWidth", line_width, "LineStyle", "-"); hold on
-maxVal = 0; minVal = 0;
-for idx = 1:1:num_sample
-    c = c_list(idx, :);
-
-    u_norm = time_norm(sys{idx}.u_hist);
-    plot(t, u_norm, "Color", c, "LineWidth", line_width, "LineStyle", "-"); hold on
+maxVal = -9999; minVal = 9999;
+for c_idx = 1:1:case_num
+    u_norm = time_norm(recs{c_idx}.u_hist);
+    plot(t, u_norm, "Color", recs{c_idx}.color, "LineWidth", line_width, "LineStyle", "-"); hold on
 
     maxVal = max(maxVal, max(u_norm));
     minVal = min(minVal, min(u_norm));
@@ -202,12 +185,11 @@ ax.FontName = 'Times New Roman';
 for x_idx = 1:1:num_x
     nexttile;
 
-    maxVal = 0; minVal = 0;
-    for idx = 1:1:num_sample
-        c = c_list(idx, :);
+    maxVal = -9999; minVal = 9999;
+    for c_idx = 1:1:case_num
 
-        err = time_norm(sys{idx}.x_hist-xd_hist);
-        plot(t, err, "Color", c, "LineWidth", line_width, "LineStyle", "-"); hold on
+        err = time_norm(recs{c_idx}.x_hist-xd_hist);
+        plot(t, err, "Color", recs{c_idx}.color, "LineWidth", line_width, "LineStyle", "-"); hold on
 
         maxVal = max(maxVal, max(err));
         minVal = min(minVal, min(err));
@@ -230,16 +212,13 @@ end
 % ============================================
 nexttile;
 
-maxVal = 0; minVal = 0;
-for idx = 1:1:num_sample
-    c = c_list(idx, :);
-
-    plot(t, sys{idx}.M_hist(1,:), "Color", c, "LineWidth", line_width, "LineStyle", "-"); hold on
+maxVal = -9999; minVal = 9999;
+for c_idx = 1:1:case_num
+    plot(t, recs{c_idx}.M_hist(1,:), "Color", recs{c_idx}.color, "LineWidth", line_width, "LineStyle", "-"); hold on
     
-    maxVal = max(maxVal, max(sys{idx}.M_hist(1,:)));
-    minVal = min(minVal, min(sys{idx}.M_hist(1,:)));
+    maxVal = max(maxVal, max(recs{c_idx}.M_hist(1,:)));
+    minVal = min(minVal, min(recs{c_idx}.M_hist(1,:)));
 end
-
 grid on; grid minor;
 xlabel('Time / s', 'FontSize', font_size, 'Interpreter', 'latex');
 ylabel('$X$', 'FontSize', font_size, 'Interpreter', 'latex');
@@ -256,16 +235,12 @@ ax.FontName = 'Times New Roman';
 % ============================================
 nexttile;
 
-maxVal = 0; minVal = 0;
-for idx = 1:1:num_sample
-    c = c_list(idx, :);
-
-    plot(t, sys{idx}.optDone_hist(1,:), "Color", c, "LineWidth", line_width, "LineStyle", "-"); hold on
-
-    maxVal = max(maxVal, max(sys{idx}.optDone_hist(1,:)));
-    minVal = min(minVal, min(sys{idx}.optDone_hist(1,:)));
+maxVal = -9999; minVal = 9999;
+for c_idx = 1:1:case_num
+    plot(t, recs{c_idx}.optDone_hist(1,:), "Color", recs{c_idx}.color, "LineWidth", line_width, "LineStyle", "-"); hold on
+    maxVal = max(maxVal, max(recs{c_idx}.optDone_hist(1,:)));
+    minVal = min(minVal, min(recs{c_idx}.optDone_hist(1,:)));
 end
-
 grid on; grid minor;
 xlabel('Time / s', 'FontSize', font_size, 'Interpreter', 'latex');
 ylabel('Done', 'FontSize', font_size, 'Interpreter', 'latex');
@@ -282,16 +257,12 @@ ax.FontName = 'Times New Roman';
 % ============================================
 nexttile;
 
-maxVal = 0; minVal = 0;
-for idx = 1:1:num_sample
-    c = c_list(idx, :);
-
-    plot(t, sys{idx}.mu_hist(1,:), "Color", c, "LineWidth", line_width, "LineStyle", "-"); hold on
-
-    maxVal = max(maxVal, max(sys{idx}.mu_hist(1,:)));
-    minVal = min(minVal, min(sys{idx}.mu_hist(1,:)));
+maxVal = -9999; minVal = 9999;
+for c_idx = 1:1:case_num
+    plot(t, recs{c_idx}.mu_hist(1,:), "Color", recs{c_idx}.color, "LineWidth", line_width, "LineStyle", "-"); hold on
+    maxVal = max(maxVal, max(recs{c_idx}.mu_hist(1,:)));
+    minVal = min(minVal, min(recs{c_idx}.mu_hist(1,:)));
 end
-
 grid on; grid minor;
 xlabel('Time / s', 'FontSize', font_size, 'Interpreter', 'latex');
 ylabel('mu', 'FontSize', font_size, 'Interpreter', 'latex');
@@ -308,15 +279,11 @@ ax.FontName = 'Times New Roman';
 % ============================================
 nexttile;
 
-maxVal = 0; minVal = 0;
-for idx = 1:1:num_sample
-    c = c_list(idx, :);
-
-    plot(t, sys{idx}.contraction_flag_hist(1,:), "Color", c, "LineWidth", line_width, "LineStyle", "-"); hold on
-
+maxVal = -9999; minVal = 9999;
+for c_idx = 1:1:case_num
+    plot(t, recs{c_idx}.contraction_flag_hist(1,:), "Color", recs{c_idx}.color, "LineWidth", line_width, "LineStyle", "-"); hold on
     maxVal = 1; minVal = 0;
 end
-
 grid on; grid minor;
 xlabel('Time / s', 'FontSize', font_size, 'Interpreter', 'latex');
 ylabel('Contraction Condition', 'FontSize', font_size, 'Interpreter', 'latex');

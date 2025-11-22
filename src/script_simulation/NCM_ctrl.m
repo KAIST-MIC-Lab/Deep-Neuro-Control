@@ -53,11 +53,13 @@
 
         case 1 % proposed 1 (effective space)
             pre_M = ncm.M; pre_M_bar = ncm.M_bar;
+            pre_X = ncm.X;
             e = x-xd;
 
             M = sdpvar(x_num, x_num); assign(M, pre_M);
             M_bar = sdpvar(x_num, x_num); assign(M_bar, pre_M_bar);
             mu = sdpvar(1,1); assign(mu, ncm.mu);
+            X = sdpvar(1,1); assign(X, pre_X);
 
             y = sdpvar(x_num,1); assign(y, pre_M*e);
 
@@ -65,17 +67,14 @@
             mu_max = sdpvar(1,1);
 
             % objective function
-            obj = 1;
-            obj = -mu;
             obj = norm(M-eye(x_num));
-            % obj = norm(M-eye(x_num)) - mu;
             % obj = norm(M-eye(x_num)*mu) - mu;
             % obj = norm(M_bar-eye(x_num)) - mu;
-            % obj = norm(M - (trace(M)/x_num)*eye(x_num)) - (trace(M)/x_num) * 1e5; 
+            % obj = norm(M - (trace(M)/x_num)*eye(x_num)) - (trace(M)/x_num) * 1e5;
             % obj = norm(M - (trace(M)/x_num)*eye(x_num), 'fro')^2 - (trace(M)/x_num) * 1e1;
-
-            % obj = trace(M) - log(det(M));
-            % obj = log(mu_max) - log(mu_min);
+            % obj = log(trace(M)) - 1/x_num * log(det(M));
+            % obj = mu;
+            % obj = -X;
 
             % constraint
             u_max = param.max_u;
@@ -83,10 +82,12 @@
                 -y'*(2*B*inv_R*B')*y + e'*(1/dt*eye(x_num)+2*SDC'+2*alpha*eye(x_num))*y - (e'*pre_M*e)/dt <= 0;
                 y'*(B*inv_R*inv_R*B')*y + (-2*ud'*inv_R*B')*y + (ud'*ud - u_max^2) <= 0;
                 M*e == y;
-                % M >= mu * eye(x_num);
-                % mu >= 1e-99
-                % M <= 1e9 * eye(x_num);
+                % M >= mu*eye(x_num);
+                % M <= X*mu * eye(x_num);
+                % mu >= 1e-99;
+                % X >= 1e-99;
                 % M == mu * M_bar;
+                M >= 1e-99 * eye(x_num);
             ];
 
         case 2 % proposed 2 (inverse)

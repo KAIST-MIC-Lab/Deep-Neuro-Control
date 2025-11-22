@@ -5,14 +5,10 @@ function ncm = NCM_init(ctrl_dt, ctrl_opt)
     ncm.dt = ctrl_dt;   % control time step
     ncm.x_num = 3;      % number of state variables
 
-    % ncm.alpha = 1e5;    % decay rate (contracting)
-    ncm.d_MAX = 1;      % maximum disturbance (not used in this version)
-
     % initial values
-    mu = 1e0;  
-    % W_bar = 1e0*eye(ncm.x_num);  
+    mu = 1e1;  
     W_bar = mu*eye(ncm.x_num);  
-    M = inv(W_bar) * mu;
+    M = inv(W_bar) * mu; % W_bar / mu = W
     X = 1e1;
 
     % control gains
@@ -20,7 +16,9 @@ function ncm = NCM_init(ctrl_dt, ctrl_opt)
     ncm.inv_R = inv(R);  
 
     switch ctrl_opt
-        case 11 % proposed 1 (effective space)
+        % PROPOSED 1 – effective space
+        % ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        case 11 
             ncm.ctrl_no = 1;
                 
             ncm.alpha = 1e-3 ;    % decay rate (contracting)
@@ -30,12 +28,16 @@ function ncm = NCM_init(ctrl_dt, ctrl_opt)
             ncm.mu = mu;
             ncm.X = X;
 
+        % PROPOSED 2 – inverse space (not maintained)
+        % ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
         case 21 % proposed 2 (inverse)
             error("not maintained anymore")
 
             % ncm.ctrl_no = 2;
             % ncm.AUX = eye(ncm.x_num);
 
+        % EXISTING – penalty method
+        % ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
         case 31 % large penalty -> poor tracking
             ncm.ctrl_no = 0;
 
