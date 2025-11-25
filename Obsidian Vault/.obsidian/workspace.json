@@ -60,8 +60,21 @@
               "icon": "lucide-file",
               "title": "중간 보고"
             }
+          },
+          {
+            "id": "46511d4a04065445",
+            "type": "leaf",
+            "state": {
+              "type": "release-notes",
+              "state": {
+                "currentVersion": "1.10.3"
+              },
+              "icon": "lucide-book-up",
+              "title": "Release Notes 1.10.3"
+            }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -211,7 +224,7 @@
       "periodic-notes:Open this week": false
     }
   },
-  "active": "cc19b82d1dc10335",
+  "active": "46511d4a04065445",
   "lastOpenFiles": [
     "Contraction Theory Based Control Under Input Saturation–LMI Approach.md",
     "New approach—y-space.md",

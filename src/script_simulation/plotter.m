@@ -170,6 +170,7 @@ end
 grid on; grid minor;
 xlabel('Time / s', 'FontSize', font_size, 'Interpreter', 'latex');
 ylabel("$\Vert u\Vert$", 'FontSize', font_size, 'Interpreter', 'latex');
+maxVal = param.max_u; minVal = 0;
 len = maxVal-minVal; ratio = .1;
 if len ~= 0; ylim([minVal-len*ratio maxVal+len*ratio]);  end
 xlim([0 T])
@@ -188,7 +189,8 @@ for x_idx = 1:1:num_x
     maxVal = -9999; minVal = 9999;
     for c_idx = 1:1:case_num
 
-        err = time_norm(recs{c_idx}.x_hist-xd_hist);
+        % err = time_norm(recs{c_idx}.x_hist-xd_hist);
+        err = recs{c_idx}.x_hist(x_idx,:) - xd_hist(x_idx,:);
         plot(t, err, "Color", recs{c_idx}.color, "LineWidth", line_width, "LineStyle", "-"); hold on
 
         maxVal = max(maxVal, max(err));

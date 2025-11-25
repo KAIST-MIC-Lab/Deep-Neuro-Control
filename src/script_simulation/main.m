@@ -13,9 +13,11 @@ FIGURE_PLOT_FLAG = 1;   % plot the result
 FIGURE_SAVE_FLAG = 0;   % save the figure as .png and .eps
 
 %% SIMULATION SETTING
-T = 3;                 % simulation time
+T = 1;                 % simulation time
+% T = 3;                 % simulation time
 ctrl_dt = 1e-2;         % controller sampling time
-dt = 1e-3;
+% dt = 1e-3;
+dt = ctrl_dt/10;
 % ctrl_dt = 1e-3;         % controller sampling time
 % dt = 1e-4;
 rpt_dt = 1e-1;          % report time (on console)
@@ -28,8 +30,8 @@ param.beta = 8/3;
 
 % param.B = rand(3) + eye(3)*3;
 param.B = eye(3);
-% param.max_u = 1.5e2;
-param.max_u = 75;
+param.max_u = 1.5e2;
+% param.max_u = 75;
 
 % disturbance
 d_MAX = 50;  % maximum disturbance;
@@ -51,7 +53,7 @@ fprintf("FIGURE_PLOT_FLAG : %d\n", FIGURE_PLOT_FLAG)
 fprintf("FIGURE_SAVE_FLAG : %d\n", FIGURE_SAVE_FLAG)
 
 %% INITIAL POINTS SETTING
-x = [15;10;20];     % initial state
+x = [15;0;20];     % initial state
 xd = [10;5;15];             % desired initial state
 u = [0;0;0];        % initial input
 

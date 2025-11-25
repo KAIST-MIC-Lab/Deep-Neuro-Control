@@ -6,10 +6,12 @@ function ncm = NCM_init(ctrl_dt, ctrl_opt)
     ncm.x_num = 3;      % number of state variables
 
     % initial values
-    mu = 1e1;  
+    mu = 1e-3;  
     W_bar = mu*eye(ncm.x_num);  
     M = inv(W_bar) * mu; % W_bar / mu = W
-    X = 1e1;
+    % W_bar = zeros(ncm.x_num);
+    % M = eye(ncm.x_num);
+    X = 1e-9;
 
     % control gains
     R = diag([1e0 1e0 1e0])*1e0;
@@ -21,7 +23,7 @@ function ncm = NCM_init(ctrl_dt, ctrl_opt)
         case 11 
             ncm.ctrl_no = 1;
                 
-            ncm.alpha = 1e-3 ;    % decay rate (contracting)
+            ncm.alpha = 1e0;    % decay rate (contracting)
 
             ncm.M = M;
             ncm.M_bar = eye(ncm.x_num);
