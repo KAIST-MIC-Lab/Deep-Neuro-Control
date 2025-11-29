@@ -13,9 +13,9 @@ FIGURE_PLOT_FLAG = 1;   % plot the result
 FIGURE_SAVE_FLAG = 0;   % save the figure as .png and .eps
 
 %% SIMULATION SETTING
-T = 1;                 % simulation time
+T = .3;                 % simulation time
 % T = 3;                 % simulation time
-ctrl_dt = 1e-2;         % controller sampling time
+ctrl_dt = 1/200;         % controller sampling time
 % dt = 1e-3;
 dt = ctrl_dt/10;
 % ctrl_dt = 1e-3;         % controller sampling time
@@ -53,7 +53,7 @@ fprintf("FIGURE_PLOT_FLAG : %d\n", FIGURE_PLOT_FLAG)
 fprintf("FIGURE_SAVE_FLAG : %d\n", FIGURE_SAVE_FLAG)
 
 %% INITIAL POINTS SETTING
-x = [15;0;20];     % initial state
+x = [12;3;17];     % initial state
 xd = [10;5;15];             % desired initial state
 u = [0;0;0];        % initial input
 
@@ -115,10 +115,14 @@ fprintf("SIMULATION RUNNING...\n")
 for t_idx = 1:1:num_t
 
     % desired control input
-    ud = ud_func(t(t_idx), xd);
-    
+    if t(t_idx) > 0.444
+        fprintf("check\n")
+    end
+
     % control decision
     if mod(t_idx, round(ctrl_dt/dt)) == 1
+        ud = ud_func(t(t_idx), xd);
+        
         for c_idx = 1:1:case_num
             x = recs{c_idx}.x; x_non = recs{c_idx}.x_non;
             ncm = recs{c_idx}.ncm;
@@ -128,11 +132,16 @@ for t_idx = 1:1:num_t
             
             B = param.B;
             % u = ud - ncm.inv_R*B' * inv(ncm.W_bar/ncm.mu) * (x-xd);
-            u = ud - ncm.inv_R*B' * ncm.M * (x-xd);
+            % u = ud - ncm.inv_R*B' * ncm.M * (x-xd);
+            u = ncm.u;
 
             max_u = param.max_u;
             % uSat = max(min(u,max_u), -max_u);
-            if norm(u) > max_u; uSat = u/norm(u)*max_u; else; uSat = u; end
+            if norm(u) > max_u
+                uSat = u/norm(u)*max_u; 
+            else 
+                uSat = u;
+            end
             % uSat = u;
 
             % update controller

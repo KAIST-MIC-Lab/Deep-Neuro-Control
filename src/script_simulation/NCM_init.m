@@ -7,7 +7,8 @@ function ncm = NCM_init(ctrl_dt, ctrl_opt)
 
     % initial values
     mu = 1e-3;  
-    W_bar = mu*eye(ncm.x_num);  
+    W_bar = eye(ncm.x_num);  
+    % W_bar = mu*eye(ncm.x_num);  
     M = inv(W_bar) * mu; % W_bar / mu = W
     % W_bar = zeros(ncm.x_num);
     % M = eye(ncm.x_num);
@@ -26,9 +27,10 @@ function ncm = NCM_init(ctrl_dt, ctrl_opt)
             ncm.alpha = 1e0;    % decay rate (contracting)
 
             ncm.M = M;
-            ncm.M_bar = eye(ncm.x_num);
+            % ncm.M_bar = eye(ncmj.x_num);
             ncm.mu = mu;
             ncm.X = X;
+            ncm.y = ncm.M*ones(ncm.x_num,1);
 
         % PROPOSED 2 – inverse space (not maintained)
         % ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -57,8 +59,9 @@ function ncm = NCM_init(ctrl_dt, ctrl_opt)
 
             ncm.W_bar = W_bar;
             ncm.mu = mu;   
-            ncm.M = M;        
+            ncm.M = M;    
             ncm.X = X;
+
 
             ncm.lbd = 1e-3; % penalty term
         
@@ -66,4 +69,6 @@ function ncm = NCM_init(ctrl_dt, ctrl_opt)
             error("Invalid control option")
     end
 
+
+    ncm.u = zeros(ncm.x_num,1);
 end
