@@ -13,8 +13,8 @@ FIGURE_PLOT_FLAG = 1;   % plot the result
 FIGURE_SAVE_FLAG = 0;   % save the figure as .png and .eps
 
 %% SIMULATION SETTING
+
 T = .3;                 % simulation time
-% T = 3;                 % simulation time
 ctrl_dt = 1/200;         % controller sampling time
 % dt = 1e-3;
 dt = ctrl_dt/10;
@@ -34,10 +34,10 @@ param.max_u = 1.5e2;
 % param.max_u = 75;
 
 % disturbance
-d_MAX = 50;  % maximum disturbance;
+d_MAX = 5;  % maximum disturbance;
 % d_func = @(t, x) [sin(t);-cos(t);sin(t)] * d_MAX;
 % d_func = @(t, x) [1;1;1] * heaviside(t-1.5) * d_MAX;
-d_func = @(t, x) [1;1;1] * (heaviside(t,1.5)-heaviside(t,1.5+dt))/dt * d_MAX;
+d_func = @(t, x) [1;1;1] * (heaviside(t,.1)-heaviside(t,.1+dt))/dt * d_MAX;
 
 
 %% REPORT SETTING
@@ -53,8 +53,8 @@ fprintf("FIGURE_PLOT_FLAG : %d\n", FIGURE_PLOT_FLAG)
 fprintf("FIGURE_SAVE_FLAG : %d\n", FIGURE_SAVE_FLAG)
 
 %% INITIAL POINTS SETTING
-x = [12;3;17];     % initial state
-xd = [10;5;15];             % desired initial state
+x = [11;12;15];     % initial state
+xd = [11;12;15];             % desired initial state
 u = [0;0;0];        % initial input
 
 %% PASSIVE CONSTANTS
@@ -114,11 +114,6 @@ fprintf("SIMULATION RUNNING...\n")
 
 for t_idx = 1:1:num_t
 
-    % desired control input
-    if t(t_idx) > 0.444
-        fprintf("check\n")
-    end
-
     % control decision
     if mod(t_idx, round(ctrl_dt/dt)) == 1
         ud = ud_func(t(t_idx), xd);
@@ -173,6 +168,8 @@ for t_idx = 1:1:num_t
         % step forward
         recs{c_idx}.x = system_step(dt, recs{c_idx}.x, recs{c_idx}.uSat, d_func(t(t_idx), recs{c_idx}.x), param);
         recs{c_idx}.x_non = system_step(dt, recs{c_idx}.x_non, ud, d_func(t(t_idx), recs{c_idx}.x_non), param);
+
+        % fprintf("t: %.3f, Case %d, x1: %.3f, x2: %.3f, x3: %.3f\n", t(t_idx)*1e3, c_idx, recs{c_idx}.x(1), recs{c_idx}.x(2), recs{c_idx}.x(3));
     end
 
     % step forward desired state
@@ -184,7 +181,7 @@ for t_idx = 1:1:num_t
 
     % report on console
     if mod(t_idx, round(rpt_dt/dt)) == 1
-        fprintf('Simulation Time: %.3f (%.2f %%)\n', t(t_idx), t_idx/num_t*100);
+        fprintf('Time: %.3f (%.2f %%)\n', t(t_idx), t_idx/num_t*100);
     end
 end
 

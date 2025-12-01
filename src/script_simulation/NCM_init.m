@@ -22,13 +22,13 @@ function ncm = NCM_init(ctrl_dt, ctrl_opt)
         % PROPOSED 1 – effective space
         % ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
         case 11 
-            ncm.ctrl_no = 1;
+            ncm.ctrl_no = 13;
                 
-            ncm.alpha = 1e-3;    % decay rate (contracting)
+            ncm.alpha = 0e3;    % decay rate (contracting)
 
             ncm.M = M;
             % ncm.M_bar = eye(ncmj.x_num);
-            ncm.mu = mu;
+            ncm.mu = 1e3;
             ncm.X = X;
             ncm.y = ncm.M*ones(ncm.x_num,1);
 

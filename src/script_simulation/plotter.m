@@ -24,7 +24,7 @@ fig_width = 450;
 figure(1); clf; 
 % hF = gcf; 
 % hF.Position(3:4) = [1600, 800];
-tl = tiledlayout(2, 4, 'Padding', 'none', 'TileSpacing', 'compact');
+tl = tiledlayout(2, 3, 'Padding', 'none', 'TileSpacing', 'compact');
 
 % ============================================
 %     STATE VARIABLE
@@ -58,29 +58,29 @@ end
 % ============================================
 %     STATE VARIABLE (Bird-eye view)
 % ============================================
-nexttile;
-for c_idx = 1:1:case_num
-    plot3(recs{c_idx}.x_hist(1,:), recs{c_idx}.x_hist(2,:), recs{c_idx}.x_hist(3,:), "Color", recs{c_idx}.color, "LineWidth", line_width, "LineStyle", "-"); hold on
-    plot3(recs{c_idx}.x_non_hist(1,:), recs{c_idx}.x_non_hist(2,:), recs{c_idx}.x_non_hist(3,:), "Color", recs{c_idx}.color, "LineWidth", line_width, "LineStyle", "--"); hold on
-end
-plot3(xd_hist(1,:), xd_hist(2,:), xd_hist(3,:), "Color", "red", "LineWidth", line_width, "LineStyle", "--"); hold on
-
-grid on; grid minor;
-xlabel('$x_1$', 'FontSize', font_size, 'Interpreter', 'latex');
-ylabel('$x_2$', 'FontSize', font_size, 'Interpreter', 'latex');
-zlabel('$x_3$', 'FontSize', font_size, 'Interpreter', 'latex');
-% len = maxVal-minVal; ratio = .1;
-% if len ~= 0
-%     ylim([minVal-len*ratio maxVal+len*ratio]);
-%     xlim([minVal-len*ratio maxVal+len*ratio]);
+% nexttile;
+% for c_idx = 1:1:case_num
+%     plot3(recs{c_idx}.x_hist(1,:), recs{c_idx}.x_hist(2,:), recs{c_idx}.x_hist(3,:), "Color", recs{c_idx}.color, "LineWidth", line_width, "LineStyle", "-"); hold on
+%     plot3(recs{c_idx}.x_non_hist(1,:), recs{c_idx}.x_non_hist(2,:), recs{c_idx}.x_non_hist(3,:), "Color", recs{c_idx}.color, "LineWidth", line_width, "LineStyle", "--"); hold on
 % end
-
-ax = gca;
-ax.FontSize = font_size; 
-ax.FontName = 'Times New Roman';
-% pbaspect([1 1 1])
-axis equal
-% axis square
+% plot3(xd_hist(1,:), xd_hist(2,:), xd_hist(3,:), "Color", "red", "LineWidth", line_width, "LineStyle", "--"); hold on
+% 
+% grid on; grid minor;
+% xlabel('$x_1$', 'FontSize', font_size, 'Interpreter', 'latex');
+% ylabel('$x_2$', 'FontSize', font_size, 'Interpreter', 'latex');
+% zlabel('$x_3$', 'FontSize', font_size, 'Interpreter', 'latex');
+% % len = maxVal-minVal; ratio = .1;
+% % if len ~= 0
+% %     ylim([minVal-len*ratio maxVal+len*ratio]);
+% %     xlim([minVal-len*ratio maxVal+len*ratio]);
+% % end
+% 
+% ax = gca;
+% ax.FontSize = font_size; 
+% ax.FontName = 'Times New Roman';
+% % pbaspect([1 1 1])
+% axis equal
+% % axis square
 
 % ============================================
 %     CONTROL INPUT
@@ -113,38 +113,38 @@ end
 % ============================================
 %     CONTROL INPUT LOCI
 % ============================================
-nexttile;
-max_u = param.max_u;
-
-for c_idx = 1:1:case_num
-    plot3(recs{c_idx}.u_hist(1,:), recs{c_idx}.u_hist(2,:), recs{c_idx}.u_hist(3,:), "Color", recs{c_idx}.color, "LineWidth", line_width, "LineStyle", "-"); hold on
-    plot3(recs{c_idx}.uSat_hist(1,:), recs{c_idx}.uSat_hist(2,:), recs{c_idx}.uSat_hist(3,:), "Color", recs{c_idx}.color, "LineWidth", line_width, "LineStyle", "--"); hold on
-end
-[x y z] = sphere(128);
-h = surfl(max_u*x, max_u*y, max_u*z); 
-set(h, 'FaceColor', [.5 .5 .5], 'FaceAlpha', 0.1, 'EdgeColor', 'none')
-% shading interp
-% plot3(ud_hist(1,:), ud_hist(2,:), ud_hist(3,:), "Color", "red", "LineWidth", line_width, "LineStyle", "--"); hold on
-
-% rad = -pi:0.1:pi;
-% plot3(max_u*sin(rad), max_u*cos(rad), zeros(size(rad)), "Color", "black")
-
-grid on; grid minor;
-xlabel('$u_1$', 'FontSize', font_size, 'Interpreter', 'latex');
-ylabel('$u_2$', 'FontSize', font_size, 'Interpreter', 'latex');
-zlabel('$u_3$', 'FontSize', font_size, 'Interpreter', 'latex');
-% len = maxVal-minVal; ratio = .1;
-% if len ~= 0
-%     ylim([minVal-len*ratio maxVal+len*ratio]);
-%     xlim([minVal-len*ratio maxVal+len*ratio]);
+% nexttile;
+% max_u = param.max_u;
+% 
+% for c_idx = 1:1:case_num
+%     plot3(recs{c_idx}.u_hist(1,:), recs{c_idx}.u_hist(2,:), recs{c_idx}.u_hist(3,:), "Color", recs{c_idx}.color, "LineWidth", line_width, "LineStyle", "-"); hold on
+%     plot3(recs{c_idx}.uSat_hist(1,:), recs{c_idx}.uSat_hist(2,:), recs{c_idx}.uSat_hist(3,:), "Color", recs{c_idx}.color, "LineWidth", line_width, "LineStyle", "--"); hold on
 % end
-
-ax = gca;
-ax.FontSize = font_size; 
-ax.FontName = 'Times New Roman';
-% pbaspect([1 1 1])
-axis equal
-% axis square
+% [x y z] = sphere(128);
+% h = surfl(max_u*x, max_u*y, max_u*z); 
+% set(h, 'FaceColor', [.5 .5 .5], 'FaceAlpha', 0.1, 'EdgeColor', 'none')
+% % shading interp
+% % plot3(ud_hist(1,:), ud_hist(2,:), ud_hist(3,:), "Color", "red", "LineWidth", line_width, "LineStyle", "--"); hold on
+% 
+% % rad = -pi:0.1:pi;
+% % plot3(max_u*sin(rad), max_u*cos(rad), zeros(size(rad)), "Color", "black")
+% 
+% grid on; grid minor;
+% xlabel('$u_1$', 'FontSize', font_size, 'Interpreter', 'latex');
+% ylabel('$u_2$', 'FontSize', font_size, 'Interpreter', 'latex');
+% zlabel('$u_3$', 'FontSize', font_size, 'Interpreter', 'latex');
+% % len = maxVal-minVal; ratio = .1;
+% % if len ~= 0
+% %     ylim([minVal-len*ratio maxVal+len*ratio]);
+% %     xlim([minVal-len*ratio maxVal+len*ratio]);
+% % end
+% 
+% ax = gca;
+% ax.FontSize = font_size; 
+% ax.FontName = 'Times New Roman';
+% % pbaspect([1 1 1])
+% axis equal
+% % axis square
 
 %% 
 figure(2); clf; 
