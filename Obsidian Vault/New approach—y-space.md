@@ -7,9 +7,14 @@ $$
 .
 $$
 The existing LMI formulation 
+$$
+V:=\delta x^T M \delta x, \quad \ddtt V\le -\alpha V
+$$
 
 
-
+$$
+u =u_d - R^{-1}B^T Me
+$$
 ---
 $$
 \tfrac{\mm{M}-\mm{M}_\rm{pre}}{\der t}

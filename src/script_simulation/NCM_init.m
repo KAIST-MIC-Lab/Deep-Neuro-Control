@@ -24,7 +24,7 @@ function ncm = NCM_init(ctrl_dt, ctrl_opt)
         case 11 
             ncm.ctrl_no = 1;
                 
-            ncm.alpha = 1e0;    % decay rate (contracting)
+            ncm.alpha = 1e-3;    % decay rate (contracting)
 
             ncm.M = M;
             % ncm.M_bar = eye(ncmj.x_num);

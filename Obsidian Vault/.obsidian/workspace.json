@@ -6,6 +6,7 @@
       {
         "id": "6c387ea27a7d1ede",
         "type": "tabs",
+        "dimension": 42.55681818181819,
         "children": [
           {
             "id": "12067f9595645d56",
@@ -36,6 +37,7 @@
       {
         "id": "f21c66d94a775b79",
         "type": "tabs",
+        "dimension": 57.44318181818182,
         "children": [
           {
             "id": "cc19b82d1dc10335",
@@ -226,6 +228,7 @@
   },
   "active": "46511d4a04065445",
   "lastOpenFiles": [
+    "중간 보고.md",
     "Contraction Theory Based Control Under Input Saturation–LMI Approach.md",
     "New approach—y-space.md",
     "Screenshot 2025-10-12 at 2.55.33 PM.png"
