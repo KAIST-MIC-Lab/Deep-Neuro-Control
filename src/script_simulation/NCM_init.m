@@ -22,13 +22,13 @@ function ncm = NCM_init(ctrl_dt, ctrl_opt)
         % PROPOSED 1 – effective space
         % ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
         case 11 
-            ncm.ctrl_no = 13;
+            ncm.ctrl_no = 12;
                 
-            ncm.alpha = 0e3;    % decay rate (contracting)
+            ncm.alpha = 1e-1;    % decay rate (contracting)
 
             ncm.M = M;
             % ncm.M_bar = eye(ncmj.x_num);
-            ncm.mu = 1e3;
+            ncm.mu = 1e-3;
             ncm.X = X;
             ncm.y = ncm.M*ones(ncm.x_num,1);
 
@@ -55,7 +55,7 @@ function ncm = NCM_init(ctrl_dt, ctrl_opt)
         case 32 % small penalty -> better but satuatrion occurs
             ncm.ctrl_no = 0;
 
-            ncm.alpha = 1e0;    % decay rate (contracting)
+            ncm.alpha = 1e-1;    % decay rate (contracting)
 
             ncm.W_bar = W_bar;
             ncm.mu = mu;   

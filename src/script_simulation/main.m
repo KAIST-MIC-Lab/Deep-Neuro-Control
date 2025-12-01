@@ -20,7 +20,7 @@ ctrl_dt = 1/200;         % controller sampling time
 dt = ctrl_dt/10;
 % ctrl_dt = 1e-3;         % controller sampling time
 % dt = 1e-4;
-rpt_dt = 1e-1;          % report time (on console)
+rpt_dt = 1e-1;          % report time )(on console)
 t = 0:dt:T;             % time vector
 
 %% SM PARAMETERS
@@ -30,8 +30,8 @@ param.beta = 8/3;
 
 % param.B = rand(3) + eye(3)*3;
 param.B = eye(3);
-param.max_u = 1.5e2;
-% param.max_u = 75;
+% param.max_u = 1.5e2;
+param.max_u = 250;
 
 % disturbance
 d_MAX = 5;  % maximum disturbance;
@@ -53,8 +53,8 @@ fprintf("FIGURE_PLOT_FLAG : %d\n", FIGURE_PLOT_FLAG)
 fprintf("FIGURE_SAVE_FLAG : %d\n", FIGURE_SAVE_FLAG)
 
 %% INITIAL POINTS SETTING
-x = [11;12;15];     % initial state
-xd = [11;12;15];             % desired initial state
+x = [10;5;14];     % initial state
+xd = [11;4;15];             % desired initial state
 u = [0;0;0];        % initial input
 
 %% PASSIVE CONSTANTS
