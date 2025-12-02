@@ -30,9 +30,12 @@
     %% OPTIMIZATION PROBLEM DEFINITION
     switch ncm.ctrl_no 
         case 0 % existing
-            pre_W_bar = ncm.W_bar; pre_mu = ncm.mu;
+            % prepare
+            pre_W_bar = ncm.W_bar; 
+            pre_mu = ncm.mu;
             e = x-xd;
 
+            % optimization variable
             W_bar = sdpvar(x_num ,x_num); assign(W_bar, pre_W_bar);
             mu = sdpvar(1,1); assign(mu, pre_mu);
             X = sdpvar(1,1); assign(X, ncm.X);
@@ -51,135 +54,52 @@
                 1 <= X;
             ];
 
-        case 14 % proposed 1 (effective space)
-            pre_mu = ncm.mu;
-            pre_M = ncm.M - ncm.mu*eye(x_num);
-            e = x-xd;
-            for idx = 1:length(e)
-                if abs(e(idx)) < 1e-9
-                    e(idx) = sign(e(idx)) * 1e-9;
-                end
-            end
-
-            mu = sdpvar(1,1); assign(mu, 1e4);
-            del_M = sdpvar(x_num, x_num); assign(del_M, zeros(x_num,x_num))
-            del_y = sdpvar(x_num,1); assign(del_y, zeros(x_num,1))
-            % del_y = zeros(3,1);
-            % eps = sdpvar(1,1);
-            eps = zeros(1,1);
-
-            % constraint
-            H = [
-                -2*e'*B*inv_R*B'*e, -2*e'*B*inv_R*B';
-                -2*B*inv_R*B'*e, -2*B*inv_R*B'
-            ];
-            f = [
-                e'*e/dt+e'*SDC'*e+e'*SDC*e+2*alpha*(e'*e);
-                transpose(e'/dt+2*e'*SDC'+2*alpha*e')    
-            ];
-            c = -(e'*e)*pre_mu/dt + -e'*del_M*e/dt;
-
-            % objective function
-            % obj = norm(del_y);
-            obj = del_y'*del_y + 5e-1*eps;
-            % obj = del_y'*del_y + eps -1e2*mu;
-            % lbd = 0e12;
-            % obj = lbd*(del_y'*del_y) + ([mu;del_y]'*H*[mu;del_y] + f'*[mu;del_y])'*([mu;del_y]'*H*[mu;del_y] + f'*[mu;del_y]); % -> a m + b <= 0
-            % obj =  lbd*(del_y'*del_y) +([mu;del_y]- .5*inv(H)*f)'*([mu;del_y]- .5*inv(H)*f);
-            % obj =  lbd*(del_y'*del_y) +([mu;del_y]- H\f)'*([mu;del_y]- H\f);
-
-            u_max = param.max_u;
-            con = [
-                % -2*(e'*B*inv_R*B'*e)*mu^2 -4*del_y'*(B*inv_R*B')*mu*e -2*del_y'*(B*inv_R*B')*del_y ...
-                % + (e'/dt+e'*SDC'+e'*SDC+2*alpha*e')*(mu*e+del_y) <= -0;
-                % mu >= mu_bound;
-                % -2*e'*B*inv_R*B'*e*mu^2 + (e'*e/dt+e'*SDC'*e+e'*SDC*e+2*alpha*(e'*e))*mu <= 0;
-                [mu;del_y]'*H*[mu;del_y] + f'*[mu;del_y] + - eps <= 0; % -> a m + b <= 0
-                % [mu;del_y]'*H*[mu;del_y] + f'*[mu;del_y] + c <= 0;
-                % H*[mu;del_y]]
-                % mu^2*a + mu*(b+2*alpha*(e'*e)) +c <= 0
-                % e'*(mu*eye(x_num)+del_M)*(B*inv_R*inv_R*B')*(mu*eye(x_num)+del_M)*e + (-2*ud'*inv_R*B')*(mu*eye(x_num)+del_M)*e + (ud'*ud - u_max^2) <= 0;
-                (e'*mu+del_y')*(B*inv_R*inv_R*B')*(mu*e+del_y) + (-2*ud'*inv_R*B')*(mu*e+del_y) + (ud'*ud - u_max^2) <= 0;
-                % del_y == del_M * e;
-                % mu >= 1e-9;
-                mu >= 2.5e1
-                del_y'*e >= 0
-                del_y'*e <= 0.0001
-                eps >= 0
-                % del_M >= 0;
-                % mu <= 20;
-            ];
-
-        case 13 % proposed 1 (effective space)
-            pre_mu = ncm.mu;
-            e = x-xd;
-            for idx = 1:length(e)
-                if abs(e(idx)) < 1e-9
-                    e(idx) = sign(e(idx)) * 1e-9;
-                end
-            end
-
-            mu = sdpvar(1,1); assign(mu, ncm.mu);
-            
-            
-            % constraint
-            a = -2*e'*B*inv_R*B'*e;
-            b = 1/dt*(e'*e) + e'*SDC'*e + e'*SDC*e;
-            c = -(e'*e)*pre_mu/dt;
-            
-            mu_bound = 1/a * (-b-2*alpha*(e'*e));
-            fprintf("mu bound %.4f\n", mu_bound);
-            
-            % objective function
-            obj = (mu-mu_bound)^2; % mu > mu_bound, mu, minimum mu
-
-            u_max = param.max_u;
-            con = [
-                % mu >= mu_bound;
-                % mu^2*a + mu*(b+2*alpha*(e'*e)) +c <= 0
-                mu^2*(e'*(B*inv_R*inv_R*B')*e) + (-2*ud'*inv_R*B')*e*mu + (ud'*ud - u_max^2) <= 0;
-                mu >= 1e-9;
-                % mu <= 20;
-            ];
 
         case 12 % proposed 1 (effective space)
+            % prepare
             e = x-xd;
             pre_M = ncm.M; 
-            pre_y = pre_M*e;
+            pre_y = ncm.y;
+            M_energy = ncm.M_energy;
 
-            M = sdpvar(x_num, x_num); assign(M, pre_M);
-            % mu = sdpvar(1,1); assign(mu, ncm.mu);
+            % optimization variable
             y = sdpvar(x_num,1);
+            eps = sdpvar(1,1); assign(eps, 0);
 
-            % constraint
+            % optimal point (with respect to 1 cond)
             H = (-2*B*inv_R*B');
             f = transpose(e'*(1/dt*eye(x_num)+2*SDC'+2*alpha*eye(x_num)));
             c = -(e'*pre_M*e)/dt;
-            y_trg = -H\f;
+            
+            % mu_h = e'*H*e; mu_f = f'*e; % c = 0;
+            % mu_trg_1 = 1/2/mu_h * (-mu_f-sqrt(mu_f^2-4*mu_h*c));
+            % % mu_trg_1 = 1/2/mu_h * (-mu_f+sqrt(mu_f^2-4*mu_h*c));
+            % if mu_f^2-4*mu_h*c < 0
+            % %     y_trg = zeros(x_num,1);
+            %     warning("imaginary root")
+            % end
+            %     % else
+            % mu_trg_1 = real(mu_trg_1);
+            % y_trg = mu_trg_1 * e;
+            % % end
 
-            mu_h = e'*H*e; mu_f = f'*e; c = 0;
-            y_trg = 1/2/mu_h * (-mu_f-sqrt(mu_f^2-4*mu_h*c)) * e;
-
+            assign(y, pre_y);
+            
             % objective function
-            % obj = 1-y'*e/norm(e)^2/norm(M);
-            % obj = norm(e)^2*norm(M)-e'*M*e;
-            % obj = norm(e)*norm(y) - e'*y;
-            % obj = sqrt(e'*e)*sqrt(y'*y) - e'*y;
-            % obj = e'*y;
-            obj = (y-y_trg)'*(y-y_trg);
-            % obj = (y--inv(H)*f)'*(y--inv(H)*f);
+            lbd = 1e-1; % slack var penalty
+            obj = (sqrt((e'*e)*(y'*y)) - e'*y) + lbd*eps;
+            % obj = (y-y_trg)'*(y-y_trg);
+            % obj = (ud - inv_R*B'*y)'*(ud - inv_R*B'*y);
 
-            assign(y, -H\f);
+            % constraint
             u_max = param.max_u;
             con = [
+                (e'*y - M_energy*(e'*e))^2 <= (1e-5+eps)*(e'*e);
+                eps >= 0
                 % y'*H*y + f'*y <= 0;
-                % y'*H*y + f'*y + c <= 0;
+                y'*H*y + f'*y + c <= 0;
                 y'*(B*inv_R*inv_R*B')*y + (-2*ud'*inv_R*B')*y + (ud'*ud - u_max^2) <= 0;
-                % M*e == y;
-                % y'*y >= 1e4
                 % y'*e >= 1e-9;
-                % M >= 1e-99*eye(x_num)
-                % mu >= 1e-9;
             ];
     end
     
@@ -195,22 +115,15 @@
             % ops = sdpsettings(ops, 'sedumi.cg.maxiter', 1000);
             
         case {13, 14, 12}
-            % ops = sdpsettings('solver', 'ipopt', 'verbose', 1);
-            % ops = sdpsettings('solver', 'fmincon', ...
-            %     'verbose', 0, ...
-            %         'fmincon.TolFun', 1e-6, ...
-            %         'fmincon.MaxIter', 10000000);
             ops = sdpsettings('solver', 'fmincon', ...
                 'verbose', 0, ...
                 'fmincon.Algorithm', 'sqp', ...
-                'fmincon.TolFun', 1e-9, ...
-                'fmincon.MaxIter', 10000000);
+                'fmincon.TolFun', 1e-8, ... % obj func 
+                'fmincon.MaxIter', 1000000000);
                 % 'MaxIterations', 500000);
-            ops = sdpsettings(ops, 'fmincon.TolCon', 1e-20);
+            ops = sdpsettings(ops, 'fmincon.TolCon', 1e-8);
             ops = sdpsettings(ops, 'debug',0);
 
-            % ops = sdpsettings('verbose', 0);
-            % ops = sdpsettings('solver', 'ipopt');
     end
 
     % optimize!
@@ -227,78 +140,56 @@
         case 0 % existing
             if sol.problem == 0
                 ncm.mu = value(mu);
-                % ncm.X = value(X);            
-                ncm.X = cond(ncm.M);
-    
                 ncm.W_bar = value(W_bar);
+                ncm.M = ncm.mu * (ncm.W_bar\eye(size(ncm.W_bar)));  % M = mu * inv(W_bar)
+                ncm.X = cond(ncm.M);
+
                 ncm.optDone = sol.problem;
     
-                ncm.M = inv(ncm.W_bar/ncm.mu);
             end
 
             ncm.u = ud - ncm.inv_R*B' * ncm.M * e;
 
-        case 14 % proposed 1 (effective space)
-            if sol.problem == 0
-                % ncm.M = value(M);
-                ncm.mu = value(mu);
-                ncm.M = ncm.mu*eye(x_num) + value(del_M);
-                ncm.y = value(del_y) + ncm.mu * e;
-            end
-
-            ncm.u = ud - ncm.inv_R*B' * ncm.y;
-
-        case 13 % proposed 1 (effective space)
-            if sol.problem == 0
-                % ncm.M = value(M);
-                ncm.mu = value(mu);
-                % ncm.X = cond(ncm.M);
-                % ncm.y = value(y);
-            end
-
-            ncm.u = ud - ncm.inv_R*B' * ncm.mu * e;
-
         case 12 % proposed 1 (effective space)
-            if sol.problem == 0
-                ncm.M = value(M);
-                ncm.y = value(y);
-            end
 
-            M = ncm.M;
-            y = ncm.y;
-            cond0 = y'*H*y+f'*y+c <= 0;
-            fprintf("y: %.3f %.3f %.3f, cond0: %d\n", y(1), y(2), y(3), cond0);
+            if sol.problem == 0
+                ncm.y = value(y);
+                ncm.mu = eps; % <======== CORRECT!!!
+
+                % pre_res = check(con);
+                % if pre_res(end) <= 0
+                %     ncm.M = mu_trg_1*eye(x_num);
+                % else
+                    % if norm(ncm.y) == 0 || norm(e) == 0
+                    %     tmp1 = 0;
+                    %     tmp2 = 0;
+                    % else
+                        tmp1 = - ((pre_M*e)*(e'*pre_M))/(e'*pre_M*e);
+                        tmp2 = + (ncm.y*ncm.y')/(ncm.y'*e);
+                    % % end
+                    ncm.M = pre_M + tmp1 + tmp2;
+
+                % ncm.M = eye(x_num) - (e*e')/(e'*e) + (ncm.y*ncm.y')/(ncm.y'*e);
+                % end
+                ncm.X = cond(ncm.M);
+            end
+            
+            % cond0 = ncm.y'*H*ncm.y+f'*ncm.y+c <= 0;
+            % fprintf("y: %.3f %.3f %.3f, cond0: %d\n", ncm.y(1), ncm.y(2), ncm.y(3), cond0);
             % fprintf("eps: %.4f\n", value(eps));
 
             ncm.u = ud - ncm.inv_R*B' * ncm.y;
 
-        case 2 % proposed 2 (inverse)
-            % ncm.AUX = value(AUX);
-            % ncm.mu = value(mu);
     end
 
     %% CONTRACTION CONDITION CHECK
     switch ncm.ctrl_no 
-        case 0
-            M = ncm.mu*inv(ncm.W_bar); pre_M = pre_mu*inv(pre_W_bar);
-            cond_check = (M-pre_M)/dt + (SDC'*M + M*SDC) - 2*M*B*inv_R*B'*M + 2*alpha*M;
-        case {13, 14,12} % proposed 1 (effective space)
-            % cond_check = (ncm.M-pre_M)/dt + (SDC'*ncm.M + ncm.M*SDC) - 2*ncm.M*B*inv_R*B'*ncm.M + 2*alpha*ncm.M;
-            cond_check = 1;
+        case 0 % existing
+            pre_M = pre_mu*pre_W_bar\eye(size(pre_W_bar));
+            cond_check = (ncm.M-pre_M)/dt + (SDC'*ncm.M + ncm.M*SDC) - 2*ncm.M*B*inv_R*B'*ncm.M + 2*alpha*ncm.M;
+        case {13, 14, 12} % proposed 1 (effective space)
+            cond_check = (ncm.M-pre_M)/dt + (SDC'*ncm.M + ncm.M*SDC) - 2*ncm.M*B*inv_R*B'*ncm.M + 2*alpha*ncm.M;
 
-            % y = value(y); M = value(M); mu = value(mu);
-            % mu
-            % cond0 = sol.problem;
-            % cond1 = -y'*(2*B*inv_R*B')*y + e'*(1/dt*eye(x_num)+2*SDC'+2*alpha*eye(x_num))*y - (e'*pre_M*e)/dt <= 0;
-            % cond2 = y'*(B*inv_R*inv_R*B')*y + (-2*ud'*inv_R*B')*y + (ud'*ud - param.max_u^2)  <= 0;
-            % cond3 = norm(M*e - y) < 1e-6;
-            % cond4 = all(eig(M - mu*eye(x_num))) >= 0;
-
-            % % fprintf("c0: %d, c1: %d, c2: %d, c3: %d, c4: %d\n\n", cond0, cond1, cond2, cond3, cond4);
-            % fprintf("c0: %d, c1: %d, c2: %d, c3: %d, c4: %d\n", cond0, cond1, cond2, cond3, cond4);
-
-        case 2 % proposed 2 (inverse)
-            error("not maintained anymore");
     end
     ncm.contraction_flag = all(eig(cond_check) <= 0);
 
@@ -418,3 +309,96 @@ end
         %     %     (W_bar*inv(inv_R*B')) eye(x_num)] >= 0,
         %     %     con, 
         %     % ];
+
+% ======================================================================
+
+        % case 14 % proposed 1 (effective space)
+        %     pre_mu = ncm.mu;
+        %     pre_M = ncm.M - ncm.mu*eye(x_num);
+        %     e = x-xd;
+        %     for idx = 1:length(e)
+        %         if abs(e(idx)) < 1e-9
+        %             e(idx) = sign(e(idx)) * 1e-9;
+        %         end
+        %     end
+
+        %     mu = sdpvar(1,1); assign(mu, 1e4);
+        %     del_M = sdpvar(x_num, x_num); assign(del_M, zeros(x_num,x_num))
+        %     del_y = sdpvar(x_num,1); assign(del_y, zeros(x_num,1))
+        %     % del_y = zeros(3,1);
+        %     % eps = sdpvar(1,1);
+        %     eps = zeros(1,1);
+
+        %     % constraint
+        %     H = [
+        %         -2*e'*B*inv_R*B'*e, -2*e'*B*inv_R*B';
+        %         -2*B*inv_R*B'*e, -2*B*inv_R*B'
+        %     ];
+        %     f = [
+        %         e'*e/dt+e'*SDC'*e+e'*SDC*e+2*alpha*(e'*e);
+        %         transpose(e'/dt+2*e'*SDC'+2*alpha*e')    
+        %     ];
+        %     c = -(e'*e)*pre_mu/dt + -e'*del_M*e/dt;
+
+        %     % objective function
+        %     % obj = norm(del_y);
+        %     obj = del_y'*del_y + 5e-1*eps;
+        %     % obj = del_y'*del_y + eps -1e2*mu;
+        %     % lbd = 0e12;
+        %     % obj = lbd*(del_y'*del_y) + ([mu;del_y]'*H*[mu;del_y] + f'*[mu;del_y])'*([mu;del_y]'*H*[mu;del_y] + f'*[mu;del_y]); % -> a m + b <= 0
+        %     % obj =  lbd*(del_y'*del_y) +([mu;del_y]- .5*inv(H)*f)'*([mu;del_y]- .5*inv(H)*f);
+        %     % obj =  lbd*(del_y'*del_y) +([mu;del_y]- H\f)'*([mu;del_y]- H\f);
+
+        %     u_max = param.max_u;
+        %     con = [
+        %         % -2*(e'*B*inv_R*B'*e)*mu^2 -4*del_y'*(B*inv_R*B')*mu*e -2*del_y'*(B*inv_R*B')*del_y ...
+        %         % + (e'/dt+e'*SDC'+e'*SDC+2*alpha*e')*(mu*e+del_y) <= -0;
+        %         % mu >= mu_bound;
+        %         % -2*e'*B*inv_R*B'*e*mu^2 + (e'*e/dt+e'*SDC'*e+e'*SDC*e+2*alpha*(e'*e))*mu <= 0;
+        %         [mu;del_y]'*H*[mu;del_y] + f'*[mu;del_y] + - eps <= 0; % -> a m + b <= 0
+        %         % [mu;del_y]'*H*[mu;del_y] + f'*[mu;del_y] + c <= 0;
+        %         % H*[mu;del_y]]
+        %         % mu^2*a + mu*(b+2*alpha*(e'*e)) +c <= 0
+        %         % e'*(mu*eye(x_num)+del_M)*(B*inv_R*inv_R*B')*(mu*eye(x_num)+del_M)*e + (-2*ud'*inv_R*B')*(mu*eye(x_num)+del_M)*e + (ud'*ud - u_max^2) <= 0;
+        %         (e'*mu+del_y')*(B*inv_R*inv_R*B')*(mu*e+del_y) + (-2*ud'*inv_R*B')*(mu*e+del_y) + (ud'*ud - u_max^2) <= 0;
+        %         % del_y == del_M * e;
+        %         % mu >= 1e-9;
+        %         mu >= 2.5e1
+        %         del_y'*e >= 0
+        %         del_y'*e <= 0.0001
+        %         eps >= 0
+        %         % del_M >= 0;
+        %         % mu <= 20;
+        %     ];
+
+        % case 13 % proposed 1 (effective space)
+        %     pre_mu = ncm.mu;
+        %     e = x-xd;
+        %     for idx = 1:length(e)
+        %         if abs(e(idx)) < 1e-9
+        %             e(idx) = sign(e(idx)) * 1e-9;
+        %         end
+        %     end
+
+        %     mu = sdpvar(1,1); assign(mu, ncm.mu);
+            
+            
+        %     % constraint
+        %     a = -2*e'*B*inv_R*B'*e;
+        %     b = 1/dt*(e'*e) + e'*SDC'*e + e'*SDC*e;
+        %     c = -(e'*e)*pre_mu/dt;
+            
+        %     mu_bound = 1/a * (-b-2*alpha*(e'*e));
+        %     fprintf("mu bound %.4f\n", mu_bound);
+            
+        %     % objective function
+        %     obj = (mu-mu_bound)^2; % mu > mu_bound, mu, minimum mu
+
+        %     u_max = param.max_u;
+        %     con = [
+        %         % mu >= mu_bound;
+        %         % mu^2*a + mu*(b+2*alpha*(e'*e)) +c <= 0
+        %         mu^2*(e'*(B*inv_R*inv_R*B')*e) + (-2*ud'*inv_R*B')*e*mu + (ud'*ud - u_max^2) <= 0;
+        %         mu >= 1e-9;
+        %         % mu <= 20;
+        %     ];

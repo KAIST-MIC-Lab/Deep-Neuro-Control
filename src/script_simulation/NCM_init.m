@@ -8,15 +8,12 @@ function ncm = NCM_init(ctrl_dt, ctrl_opt)
     % initial values
     mu = 1e-3;  
     W_bar = eye(ncm.x_num);  
-    % W_bar = mu*eye(ncm.x_num);  
-    M = inv(W_bar) * mu; % W_bar / mu = W
-    % W_bar = zeros(ncm.x_num);
-    % M = eye(ncm.x_num);
-    X = 1e-9;
+    M = (W_bar\eye(size(W_bar))) * mu; % W_bar / mu = W
+    X = 1;
 
     % control gains
     R = diag([1e0 1e0 1e0])*1e0;
-    ncm.inv_R = inv(R);  
+    ncm.inv_R = R\eye(size(R));
 
     switch ctrl_opt
         % PROPOSED 1 – effective space
@@ -24,44 +21,40 @@ function ncm = NCM_init(ctrl_dt, ctrl_opt)
         case 11 
             ncm.ctrl_no = 12;
                 
-            ncm.alpha = 1e-1;    % decay rate (contracting)
+            ncm.alpha = 1e1;    % decay rate (contracting)
 
-            ncm.M = M;
+            ncm.M_energy = 3e1;
+            ncm.M = eye(ncm.x_num)*ncm.M_energy;
+
+            % ncm.M = eye(ncm.x_num)*1e-3;
             % ncm.M_bar = eye(ncmj.x_num);
             ncm.mu = 1e-3;
             ncm.X = X;
             ncm.y = ncm.M*ones(ncm.x_num,1);
-
-        % PROPOSED 2 – inverse space (not maintained)
-        % ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-        case 21 % proposed 2 (inverse)
-            error("not maintained anymore")
-
-            % ncm.ctrl_no = 2;
-            % ncm.AUX = eye(ncm.x_num);
 
         % EXISTING – penalty method
         % ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
         case 31 % large penalty -> poor tracking
             ncm.ctrl_no = 0;
 
+            ncm.alpha = 1e1;    % decay rate (contracting)
+
             ncm.W_bar = W_bar;
             ncm.mu = mu;
             ncm.M = M;    
             ncm.X = X;
 
-            ncm.lbd = 1e-0 ; % penalty term
+            ncm.lbd = 1e-2 ; % penalty term
         
         case 32 % small penalty -> better but satuatrion occurs
             ncm.ctrl_no = 0;
 
-            ncm.alpha = 1e-1;    % decay rate (contracting)
+            ncm.alpha = 1e1;    % decay rate (contracting)
 
             ncm.W_bar = W_bar;
             ncm.mu = mu;   
             ncm.M = M;    
             ncm.X = X;
-
 
             ncm.lbd = 1e-3; % penalty term
         

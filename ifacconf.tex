@@ -28,6 +28,7 @@
 \newcommand{\MSRY}[1]{{\color{Peach} [MS: #1]}} % Myeongseok's 
 \newcommand\eg{\textrm{e.g.,\ }}
 \newcommand\ie{\textrm{i.e.,\ }}
+\definecolor{my_cyan}{rgb}{0.0, 1.0, 1.0}
 
 \newcommand{\colorLine}[2]{[\tikz[baseline=(current bounding box.base)]{\draw[color=#1,
 #2,line width=2pt] (0,3pt) -- (1.5em,3pt);}]}
@@ -99,15 +100,13 @@
 \begin{frontmatter}
 
 \title{
-   Effective Space Method for Contraction Theory Based Control with Input Saturation Constraints
+   Convex Optimization for Contraction-Based Control: An Energy-Based Effective Space Approach
    \thanksref{footnoteinfo}
 } 
 % Title, preferably not more than 10 words.
 
 \thanks[footnoteinfo]{
-   Sponsor and financial support acknowledgment
-goes here. Paper titles should be written in uppercase and lowercase
-letters, not all uppercase.
+   This work was supported in part by the National Research Foundation of Korea (NRF) grant funded by the Korea government (MSIT) (RS-2025-00554087)
 }
 
 \author[First]{Myeongseok Ryu} 
@@ -124,17 +123,22 @@ letters, not all uppercase.
    Keimyung University, 
    Daegu 42601, South Korea (e-mail: yousesun@kmu.ac.kr)}
 
+
+   
 \begin{abstract}                % Abstract of 50--100 words
-   Besides the traditional Lyapunov stability theory, contraction theory offers a interesting perspective on the stability of nonlinear systems.
-   It allows us analyze the system stability by examining the convergence of trajectories.
-   The recent development of the contraction theory based control has introduced computational efficient methods for obtaining contraction metrics using linear matrix inequalities (LMIs).
-   In this paper, the contraction theory based control strategy is extended to account for input saturation by incorporating saturation constraints into the LMI framework for contraction metric calculation.
-   The proposed method calculates the contraction metrics while ensuring the satisfaction of input saturation constraints and uses as a feedback mechanism to adjust the control inputs.
-   The proposed method is demonstrated its effectiveness through numerical simulations via \cred{Lorenz system}.
+   % Besides the traditional Lyapunov stability theory, contraction theory offers a interesting perspective on the stability of nonlinear systems.
+   % It allows us analyze the system stability by examining the convergence of trajectories.
+   % Recent developments in contraction theory based control have introduced computationally efficient methods for obtaining contraction metrics using linear matrix inequalities (LMIs).
+   In this paper, we propose a computationally efficient and numerically robust contraction metric calculation method for contraction-based control design.
+   Conventional Linear Matrix Inequality (LMI) frameworks for contraction metric calculation suffer from high computational complexity and scale-invariance issues of the objective function which minimizes the condition number of the contraction metric.
+   To address these issues, the contraction metrics are projected onto the trajectory error vector space leading to a simplified convex optimization framework within a lower-dimensional effective space.
+   Furthermore, the energy-based constraints are incorporated preventing the contraction metrics from collapsing or exploding, which ensures minimum required control effort.
+   In addition, convex input saturation constraints are considered to handle practical limitations of the actuators.
+   The effectiveness and the feasibility of the proposed method is validated through numerical simulations via Lorenz system.
 \end{abstract}
 
 \begin{keyword}
-   Contraction theory, input saturation, linear matrix inequalities (LMIs)
+   Contraction theory, convex optimization, input saturation, energy-based control
 \end{keyword}
 
 \end{frontmatter}
@@ -142,151 +146,107 @@ letters, not all uppercase.
 
 \section*{Notation}
 
-In this paper, we use the following notation:
-\begin{itemize}
-   \item $:=$ denotes \textit{defined as}.
-   \item $(\cdot^\top)$ denotes the transpose of a matrix or a vector.
-   \item $\mv{x}:=[x_i]_{i\in\{1,\cdots,n\}}\in\R^n$ denotes the state vector.
-   \item $\mm A:=[a_{ij}]_{i,j\in\{1,\cdots,n\}}\in\R^{n\times n}$ denotes a matrix.
-   \item $\lambda_{i}(\mm A),\ i\in\{\max,\min\}$ denotes the maximum and minimum singular value of $\mm A$, respectively.
-   \item $\mm I_n$ denotes the identity matrix of size $n$ and $\mm 0_{n\times m}$ denotes the zero matrix of size $n\times m$.
-   \item $\mysym$ denotes the symmetric part of a matrix, \ie $\mysym(\mm A):=\tfrac{1}{2}(\mm A+\mm A^\top)$ (see \cite{Tsukamoto:2021ac}).
-\end{itemize}
+In this study, the following notation is used:
+Vector and matrix entries are denoted as $\mv{x}=[x_i]_{i\in\{1,\cdots,n\}}$ and $\mm{A}=[a_{ij}]_{i\in\{1,\cdots,n\},j\in\{1,\cdots,m\}}$, respectively.
+The symmetric part of a matrix is denoted as $\mysym(\mm A):=\tfrac{1}{2}(\mm A+\mm A^\top)$ \cite{Tsukamoto:2021ac}.
+% The Kronecker product is denoted by $\otimes$ \cite[Chap. 7 Def. 7.1.2]{Bernstein:2009aa}.
+The identity matrix of size $n$ is denoted by $\mm I_n$, and the zero matrix of size $n\times m$ is denoted by $\mm 0_{n\times m}$.
+% The $i\textsuperscript{th}$ row of the matrix $\mm A\in\R^{n\times m}$ is denoted by $\myrow_i(\mm A)$.
+For $\mm{A}\in\R^{/n\times m}$, the vectorization of $\mm A$ is denoted as $\myvec(\mm A):=(\myrow_1(\mm A^\top),\cdots,\myrow_m(\mm A^\top)  )^\top\in\R^{nm}$.
 
 \section{Introduction}
 
-% 미래생각
-% \begin{itemize}
-%    \item 차량으로
-%    \item 상태 제약조건 추가
-%    \item 입력 포화 고려
-%    \item 카메이터 검증 (횡제어)
-%    \begin{itemize}
-%       \item CV-STEM 
-%       \item sampling
-%       \item sampling -> metric (LMI) <- constraint
-%       \item DNN -> interpolate
-%    \end{itemize}
-% \end{itemize}
-
 \subsection{Motivation}
 
-
-\cblue{
-   \begin{itemize}
-      \item 포화에 대한 사전 연구 더해서 비교
-      \item S.S.Ge의 논문 참고 
-   \end{itemize}
-}
+\textbf{Contraction Theory}
 
 \begin{itemize}
-   \item Contraction theory introduction
-   \item Limitation 1 (computational cost)
-   \item Recent development (LMI)
-   \item Limitation 2 (input saturation)
-   \begin{itemize}
-      \item use penalty term to prevent excessive control input
-   \end{itemize}
-   \item saturation handling in LMI
+   \item 
 \end{itemize}
 
-To the best of our knowledge, there has been no previous work that considers the input saturation in LMI frameworks for contraction metrics.
-Hence, the main objective of this paper is to extend the contraction theory based control strategy to account for input saturation simultaneously in the LMI framework.
+\textbf{Conventional Approaches}
+
+\begin{itemize}
+   \item LMI framework for contraction metric calculation
+\end{itemize}
+
+\textbf{Limitations}
+
+\begin{itemize}
+   \item Computational complexity of LMI framework for contraction metric calculation
+   \item No consideration of input saturation issue
+\end{itemize}
+
+To the best of our knowledge, there has been no previous work that projects the contraction constraints onto the error space to reduce the computational complexity of the contraction metric calculation.
+Moreover, input saturation has not been considered in the conventional contraction theory based control design.
+Hence, the main objective of this paper is to simplify the contraction metric calculation and to incorporate the input saturation constraint into a convex optimization framework for contraction metric calculation.
 
 \subsection{Contributions}
 
 The main contributions of this paper are 
 \begin{itemize}
-   \item The contraction metric is obtained by using linear matrix inequalities (LMIs) which simplifies the calculation of the contraction metric;
-   \item Saturation constraint is incorporated into the LMI framework for contraction metric calculation;
-   \item ...; and
-   \item The effectiveness and the feasibility of the proposed method is validated through numerical simulations via \cred{Lorenz system}.
+   \item The contraction metrics can be calculated in a lower-dimensional effective space by projecting the contraction constraints onto the trajectory error vector space, which significantly reduces the computational complexity of the LMI framework for contraction metric calculation;
+   \item Scale-invariance issues of the objective function in the conventional LMI framework are resolved by introducing energy-based constraints that prevent the contraction metrics from collapsing or exploding, which ensures minimum required control effort;
+   \item Saturation constraint is incorporated into the convex optimization framework, which handles practical limitations of the actuators; and
+   \item Robust feasibility of the proposed method is enhanced by ... slack variables
 \end{itemize}
-
 
 \section{Preliminaries}
 
 Before presenting the proposed method, we first review the contraction theory and related theorems.
+The detailed explanation of contraction theory can be found in \cite{LOHMILLER:1998aa,Tsukamoto:2021aa}.
 
-\subsection{Contraction Theory} \label{sec:sub:contraction}
+\subsection{Contraction Property and Contraction Metric} \label{sec:sub:contraction}
 
 Consider that we have the following deterministic nonlinear system:
 \begin{equation} \label{eq:pre:sys}
    \ddtt\mv{x}
    =
    \mv{f}(\mv{x},t)
-   .
+   ,
 \end{equation}
-The contraction theory commences with the definition of \textit{differential dynamics} of the system \eqref{eq:pre:sys} using \textit{differential displacement} $\delta\mv{x}$ \cite[Chap 4]{Kirk:2004aa}, which is defined as follows:
-\begin{equation}
+where $\mv{x}\in\R^n$ denotes the state variables and $\mv{f}:=\mv{f}(\mv{x},t)$ denotes the nonlinear system function.
+Additionally, consider differential dynamics of the system \eqref{eq:pre:sys} \cite[Chap 4]{Kirk:2004aa}, \ie 
+$
    \ddtt{\delta\mv{x}}
    =
    \pptfrac{\mv{f}}{\mv{x}} \delta\mv{x}
    .
-\end{equation}
-The differential displacement $\delta\mv{x}$ is the infinitesimal displacement at \textit{fixed time}.
+$
 
-The contraction property of the system \eqref{eq:pre:sys} can be analyzed using the Lyapunov function $V:=V(\mv{x},t)=\tfrac{1}{2}\delta\mv{x}^\top \mm{M} \delta\mv{x}$, where $\mm{M}:=\mm{M}(\mv{x},\mv{x}_d,t)\in\R^{n\times n}$ the \textit{contraction metric}.
-The contraction metric $\mm{M}$ is symmetric positive definite matrix and satisfies $\overline{m}\mm{I}_n\succeq\mm{M}\succeq\underline{m}\mm{I}_n$ with $\overline{m},\underline{m}\in\R_{>0}$.
-For the system \eqref{eq:pre:sys} to be contracting, the following condition must hold:
+According to [..], the system \eqref{eq:pre:sys} is said to be \textit{contracting}, \ie all trajectories converge incrementally exponentially to a unique trajectory, if the following condition holds:
 \begin{equation} \label{eq:pre:contraction:condition}
    \ddtt\mm{M} 
    + 
    2\mysym(
       \mm{M} \pptfrac{\mv{f}}{\mv{x}}
    ) 
-   \leq 
+   \preceq 
    -2\alpha\mm{M}
    ,
 \end{equation}
-which leads to $\ddtt V \leq -\alpha V$ for some $\alpha\in\R_{>0}$.
-In other words, all solutions of the system \eqref{eq:pre:sys} are contracting to a unique solution with an exponential rate $\alpha$.
+where $\mm{M}$ denotes \textit{contraction metric} and $\alpha\in\R_{>0}$ denotes the contraction rate.
+The contraction metric $\mm{M}$ is symmetric positive definite matrix and satisfies $\overline{m}\mm{I}_n\succeq\mm{M}\succeq\underline{m}\mm{I}_n$ with $\overline{m},\underline{m}\in\R_{>0}$.
 
 It is notable that the initial conditions are exponentially forgotten in the contracting system \cite{LOHMILLER:1998aa}.
-Therefore, the contraction property is independent of the initial conditions.
-
-\cred{global?? 하다는것도 쓸까?}
-
-\subsection{Partial Contraction Theory} \label{sec:sub:contraction:partial}
-
-On the other hand, the partial contraction theory investigates the contraction of the system using a virtual system.
-Following theorem details the partial contraction theory.
-
-\begin{thm} [see \cite{Wang:2004aa}] \label{thm:partial:contraction}
-   Consider a nonlinear system of the form 
-   $
-      \ddtt\mv{x} = \mv{f}(\mv{x},\mv{x},t)
-   $
-   and the virtual system 
-   $
-      \ddtt\mv{q} = \mv{f}(\mv{q},\mv{x},t)
-   $
-   are contracting with respect to $\mv{q}$.
-   If a particular solution of virtual system verifies a smooth specific property, then all solutions of the original system verifies this property exponentially.
-\end{thm}
-
-\begin{exmp}
-   \cred{
-   Assume that the possible solutions of the virtual system defined in Theorem \ref{thm:partial:contraction} are $\mv{\xi}_1(t)$ and $\mv{\xi}_2(t)$ which are the solutions of the nonlinear system $\mv{x}$.
-   
-   }
-
-\end{exmp}
 
 \subsection{Perturbed Contracting System} \label{sec:sub:contraction:perturbed}
 
-The following theorem presents the contraction property of the perturbed system by adding a bounded perturbation $\mv{d}(\mv{x},t)$ to the system \eqref{eq:pre:sys}:
+If the system \eqref{eq:pre:sys} is subjected to bounded disturbances, the system can be expressed as follows:
 \begin{equation} \label{eq:pre:sys:perturbed}
    \ddtt\mv{x}
    =
-   \mv{f}(\mv{x},t) + \mv{d}(\mv{x},t)
-   .
+   \mv{f}(\mv{x},t)
+   +
+   \mv{d}(t)
+   , 
 \end{equation}
+where $\mv{d}(t)\in\R^n$ denotes the external disturbances with $\norm{\mv{d}(t)}\leq \overline{d}$ where $\overline{d}\in\R_{>0}$.
 
-% Steady state error of perturbed contraction system
-\begin{thm} [Eq.~15 \cite{LOHMILLER:1998aa}] \label{thm:contraction:perturbed}
-   If the system \eqref{eq:pre:sys} is contracting with the contraction metric $\mm{M}$ which satisfies the condition \eqref{eq:pre:contraction:condition}, the path integral $V_l(\mv{q},\delta\mv{q},t)=\int_{\mv{\xi}_1}^{\mv{\xi}_2}\norm{\mm{\Theta}(\mv{q},t)\delta\mv{q}}$, where $\mv{\xi}_1$ and $\mv{\xi}_2$ are the solutions of \eqref{eq:pre:sys} and \eqref{eq:pre:sys:perturbed}, respectively, and $\mv{q}$ is the virtual 
-   \MSRY{ADD!!}
+The following theorem states that all solutions of the perturbed contracting system \eqref{eq:pre:sys:perturbed} exponentially converge to a bounded ball of the solution of the nominal contracting system \eqref{eq:pre:sys}.
+\begin{thm} \label{thm:contraction:perturbed}
+   If the system \eqref{eq:pre:sys} is contracting with the contraction metric $\mm{M}$ which satisfies the condition \eqref{eq:pre:contraction:condition}, the path integral $V_l(\mv{q},\delta\mv{q},t)=\int_{\mv{\xi}_1}^{\mv{\xi}_2}\norm{\mm{\Theta}(\mv{q},t)\delta\mv{q}}$, where $\mm{\Theta}(\mv{q},t):=\mm{M}^{1/2}$, and $\mv{\xi}_1$ and $\mv{\xi}_2$ are the solutions of \eqref{eq:pre:sys} and \eqref{eq:pre:sys:perturbed}, respectively, and $\mv{q}$ is the virtual state variable, exponentially converges to a bounded ball. 
+   Especially, the following inequality of a bounded error ball of the solutions of \eqref{eq:pre:sys} and \eqref{eq:pre:sys:perturbed} holds:
    \begin{equation}
       \norm{\mv\xi_1(t)-\mv\xi_2(t)}
       \le
@@ -294,19 +254,16 @@ The following theorem presents the contraction property of the perturbed system 
       \exp(-\alpha t)
       +
       \tfrac{\overline d}{\alpha}
-      \sqrt{\tfrac{\overline m}{\underline{m}}}
+      \sqrt{\chi}
       (1-\exp(-\alpha t))
       ,
    \end{equation}
-   \MSRY{ADD!!}
+   where $\chi:=\overline{m}/\underline{m}$ denotes the condition number of $\mm{M}$, yielding the steady state error bound of $\tfrac{\overline d}{\alpha}\chi$.
 \end{thm}
 
 \begin{pf}
-   See Theorem 2.4 in \cite{Tsukamoto:2021aa}.
+   See the proof of Theorem 2.4 in \cite{Tsukamoto:2021aa}.
 \end{pf}
-
-
-\MSRY{Any more comments, if needed}
 
 \section{Problem Formulation}
 
@@ -321,38 +278,13 @@ Let us consider the following nonlinear system as follows:
       \mysat(\mv{u})   
       +
       \mv{d}(t)
-      \\
-      =&
-      \mv{f}(\mv{x},t)
-      +
-      \mm{B}(\mv{x},t)
-      \mv{u}
-      +
-      \mv{\phi(\mv{u})}
-      +
-      \mv{d}(t)
       ,
    \end{aligned}
 \end{equation}
-where $\mv{x}\in\R^n$ denotes the state variables, $\mv{u}\in\R^n$ denotes the control inputs, and $\mv{d}(t)\in\R^n$ denotes the external disturbances, and $\mv{f}:=\mv{f}(\mv{x},t)$ and $\mm{B}:=\mm{B}(\mv{x},t)$ denote system functions.
-The input saturation function is denoted by $\mysat(\cdot)$ and is defined as
-\begin{equation} \label{eq:sys:sat}
-   \mysat(\mv{u}) =
-   \begin{cases}
-      \mv{u}, & \text{if } \norm{\mv{u}} \le \overline{u} \\
-      \overline{u}\tfrac{\mv{u}}{\norm{\mv{u}}}, & \text{otherwise}
-      ,
-   \end{cases}
-\end{equation}
-where $\overline{u}\in\R_{>0}$ denotes the saturation threshold.
-The difference between the controller output $\mv{u}$ and the saturated control input $\mysat(\mv{u})$ is denoted by $\mv{\phi}(\mv{u}) = \mysat(\mv{u}) - \mv{u}$.
+where $\mv{x}\in\R^n$ denotes the state variables, $\mv{u}\in\R^n$ denotes the control inputs, and $\mv{d}:=\mv{d}(t)\in\R^n$ denotes the bounded external disturbances, \ie $\norm{\mv{d}} \leq \overline{d}$, and $\mv{f}:=\mv{f}(\mv{x},t)$ and $\mm{B}:=\mm{B}(\mv{x},t)$ denote system functions.
+The input saturation function is denoted by $\mysat(\cdot)$ and can be defined as any convex function which is physically feasible.
 
-In the practical perspective, we consider the following assumption:
-\begin{assum}
-   \cred{수도인버스로변경}The control input matrix $\mv{B}$ is sign-definite, so that the inverse of $\mm{B}$ exists.
-\end{assum}
-
-Motivated by the use of the partial contraction theory in \cite{Tsukamoto:2021af}, \MSRY{and more...}, we assume that the desired control input $\mv{u}_d\in\R^n$ which is designed to achieve the desired trajectory $\mv{x}_d\in\R^n$ under ideal conditions, \ie $\mv{d}=0$ and $\norm{\mv{u}_d}\le\overline{u}$, is given as follows:
+We assume that some desired control input $\mv{u}_d\in\R^m$ is pre-designed to achieve the desired trajectory $\mv{x}_d\in\R^n$ under ideal conditions, \ie $\mv{d}=0$ and $\norm{\mv{u}_d}\le\overline{u}$ where $\overline{u}\in\R_{>0}$ denotes the maximum allowable input magnitude by simulating the following desired system:
 \begin{equation} \label{eq:sys:desired}
    \ddtt\mv{x}_d   =
    \mv{f}_d
@@ -362,48 +294,8 @@ Motivated by the use of the partial contraction theory in \cite{Tsukamoto:2021af
 \end{equation}
 where $\mv{f}_d:=\mv{f}(\mv{x}_d, t)$ and $\mm{B}_d:=\mm{B}(\mv{x}_d,t)$.
 
-Finally, the control objective is to design a control input $\mv{u}$ such that the system trajectories of the system \eqref{eq:pre:sys:perturbed} and the desired system \eqref{eq:sys:desired} converges, under the existences of the disturbances $\mv{d}$ and input saturation $\mysat(\cdot)$.
-
-\section{Main Results}
-
-\cred{
-   \begin{itemize}
-      \item 포화에 대한 영향을 강조하기 위한 내용 추가 (리마크)
-      \item hard contraint를 쓰지 않고 LMI에 통합    
-   \end{itemize}
-}
-
-Following the control design in \cite{Tsukamoto:2021af}, the state-dependent coefficient (SDC) formulation \cite{Dani:2015aa} is used to simplify the analysis to be understood as in LTV system theory.
-The SDC $\mathbb{A}:=\mathbb{A}(\mv{x},\mv{x}_d)$ is defined as follows:
-\begin{equation} \label{eq:SDC}
-   \mathbb{A}
-   :=
-   \textstyle\int_0^1 
-   \left[
-      \pptfrac{\overline{\mv{f}}}{\mv{x}}     
-   \right]
-   \big(
-      c \mv{x} + (1-c) \mv{x}_d
-   \big)
-   \,
-   \der c
-   ,
-\end{equation}
-where 
-$
-   \overline{\mv{f}}
-   :=
-   \overline{\mv{f}} (\mv{x},\mv{x}_d)
-   =
-   \mv{f}-\mv{f}_d
-   + \mm{B} \mv{u}_d 
-   - \mm{B}_d \mv{u}_d
-$
-and $c$ is a dummy variable for the integration.
-The existence... blah blah can be found in \cite{Dani:2015aa}, \MSRY{and more...}.
-
-Then, the error dynamics can be expressed as:
-\begin{equation} \label{eq:error:dyn}
+The error dynamics between the system \eqref{eq:sys} and the desired system \eqref{eq:sys:desired} can be expressed as follows:
+\begin{equation} \label{eq:error:dyn:1}
    \begin{aligned}
       \ddtt
       (
@@ -411,10 +303,39 @@ Then, the error dynamics can be expressed as:
       )
       =&
       \mv{f}-\mv{f}_d
-      + \mm{B} \mv{u}
+      + \mm{B} \mysat(\mv{u})
       - \mm{B}_d \mv{u}_d
-      + \mm{B} \mv{\phi}(\mv{u}) + \mv{d}
-      \\
+      + \mv{d}
+      .
+   \end{aligned}
+\end{equation}
+Using the state-dependent coefficient (SDC) formulation \cite{Dani:2015aa}, \ie 
+$
+   \mathbb{A}
+   :=
+   \int_0^1 
+   \left[
+      \pptfrac{\overline{\mv{f}}}{\mv{x}}
+   \right]
+   \big(
+      c \mv{x} + (1-c) \mv{x}_d
+   \big)
+   \,\der c
+   ,
+$
+the error dynamics \eqref{eq:error:dyn:1} can be linearized as follows:
+\begin{equation} \label{eq:error:dyn:2}
+   \begin{aligned}
+      \ddtt
+      (
+         \mv{x} - \mv{x}_d
+      )
+      % =&
+      % \mv{f}-\mv{f}_d
+      % + \mm{B} \mv{u}
+      % - \mm{B}_d \mv{u}_d
+      % + \mm{B} \mv{\phi}(\mv{u}) + \mv{d}
+      % \\
       =&
       \underbrace
       {
@@ -438,168 +359,185 @@ Then, the error dynamics can be expressed as:
       + \mm{B} 
       (\mv{u} - \mv{u}_d)
       + \mm{B} \mv{\phi}(\mv{u}) + \mv{d}
-      \\
-      =&
-      \left(
-         \mathbb{A} - \mm{B} \mm{R}^{-1} \mm{B} ^\top \mm{M}
-      \right)
-      (\mv{x} - \mv{x}_d)
-      + \mm{B} \mv{\phi}(\mv{u}) + \mv{d}
-      ,
    \end{aligned}
 \end{equation}
-with the control input $\mv{u}$ defined as:
-\begin{equation} \label{eq:control:input}
+
+To simplify the control design, we use the following state feedback control law:
+\begin{equation} \label{eq:control:law}
    \mv{u}
    =
    \mv{u}_d
    -
-   \mm{R}^{-1} \mm{B}^\top \mm{M} (\mv{x} - \mv{x}_d)
-\end{equation}
-where $\mm{R}=\mm{R}^\top \succ 0$ is a symmetric positive definite matrix.
-
-In the following, we formulate the optimization problem to obtain the contraction metric $\mm{M}$ which satisfies the contraction condition \eqref{eq:control:condition:contraction} and does not violate the input saturation constraint \eqref{eq:sys:sat}.
-
-
-\subsection{Contraction Metric Calculation}
-
-\subsubsection{Contraction Condition Satisfaction}
-
-Invoking the partial contraction theory reviewed in Section \ref{sec:sub:contraction:partial}, we can define the virtual system as follows:
-\begin{equation} \label{eq:sys:virtual1}
-   \ddtt\mv{q}
-   =
-   \ddtt\mv{x}_d
-   +
-   \left(
-      \mathbb{A} - \mm{B}\mm{R}^{-1} \mm{B}^\top \mm{M}
-   \right)
-   (\mv{q} - \mv{x}_d)
-   +
-   \mv{d}_{\mu}
+   \mm{R}^{-1} \mm{B}^\top \mm{M}
+   (
+      \mv{x} - \mv{x}_d
+   )
    ,
 \end{equation}
-where $\mv{q}\in\R^n$ is the virtual state vector and $\mv{d}_{\mu}:=\mv{d}_{\mu}(\mv{d},\mu),\ \forall \mu\in[0,1]$, is defined as $\mv{0} = \mv{d}_{\mu}(\mv{d},0)$ and $\mv{d} = \mv{d}_{\mu}(\mv{d},1)$.
-The differential dynamics is then defined as follows:
-\begin{equation} \label{eq:sys:virtual2}
-   \ddtt{\delta{\mv{q}}}
-   =
+where $\mm{R}\in\R^{m\times m}$ denotes a positive definite weighting matrix for the control input.
+Substituting the control law \eqref{eq:control:law} into the error dynamics \eqref{eq:error:dyn:2}, we obtain:
+\begin{equation} \label{eq:error:dyn:3}
+   \ddtt
+   (
+      \mv{x}\!-\!\mv{x}_d
+   )
+   \!=\!
    \left(
-      \mathbb{A} - \mm{B}\mm{R}^{-1} \mm{B}^\top \mm{M}
+      \mathbb{A} - \mm{B} \mm{R}^{-1} \mm{B} ^\top \mm{M}
    \right)
-   \delta{\mv{q}}
-   .
-\end{equation}
-
-\MSRY{CHECK FROM HERE}
-Then according to Theorem \ref{thm:partial:contraction} and \ref{thm:contraction:perturbed}, system \eqref{eq:sys:virtual1} and the system \eqref{eq:sys:desired} will converge to the desired trajectory $\mv{x}_d$ with steady state error:
-\begin{equation} \label{eq:ss:error}
-   \mv{e}_{\rm{ss}}
-   =
-   \left(
-      \sup({\mm{B}\mv{\phi(\mv{u})}})+\overline d
-   \right)
-   \tfrac{1}{\alpha}
-   \sqrt{\tfrac{\overline m}{\underline{m}}}
+   (\mv{x} - \mv{x}_d)
+   + \mm{B} \mv{\phi}(\mv{u}) + \mv{d}
    ,
 \end{equation}
-with the following conditions:
-\begin{equation} \label{eq:control:condition:contraction}
+where $\mv{\phi}(\mv{u}):=\mysat(\mv{u}) - \mv{u}$.
+
+Finally, the control objective is to obtain tha contraction metric $\mm{M}$ in \eqref{eq:control:law} which guarantees the system \eqref{eq:sys} to be contracting in the presence of input saturation.
+
+\section{Conventional LMI-Approach} \label{sec:conv:lmi}
+
+In [...], Tsukamoto \etal proposed ConVex optimization-based Steady-state Tracking Error Minimization (CV-STEM) to obtain the contraction metric $\mm{M}$ by solving the following LMI optimization problem.
+Ignoring the input saturation effect, the contraction constraint of the error dynamics \eqref{eq:error:dyn:3} can be expressed as follows:
+\begin{equation} \label{eq:cstr:ctrc}
    \ddtt\mm{M}
    +
-   2\mysym(
-      \mm{M}\mathbb{A}
-   )
-   +
-   2\mm{M}\mm{B}\mm{R}^{-1} \mm{B}^\top \mm{M}
-   \leq
-   -2\alpha\mm{M}
+   2\mysym
+   \left(
+      \mm{M}
+      \mathbb{A}
+   \right)
+   - 
+   2
+   \mm{M}\mm{B}\mm{R}^{-1}\mm{B}^\top\mm{M}
+   \preceq
+   -2\alpha \mm{M}
    .
 \end{equation}
-By multiplying $\mm{W}:=\mm{M}^{-1}$ both sides of \eqref{eq:control:condition:contraction}, we have the following LMI:
-\begin{equation} \label{eq:control:condition:contraction:LMI}
-   -
-   \ddtt\mm{W}
-   +
-   2\mysym(
-      \mathbb{A}\mm{W}
-   )
-   -
-   2\mm{B}\mm{R}^{-1} \mm{B}^\top 
-   \leq
-   -2\alpha\mm{W}
-   .
-\end{equation}
-
-In \MSRY{[]}, Tsukamoto \etal proposed a method to formulate the LMI problem for the contraction metric as follows:
+Using the variable transformation $\mm{M}=:\mm{W}^{-1}$, we have the following LMI optimization problem:
 \begin{equation}
-   \begin{aligned}
-      &\min_{\mm{W},X,\mu} X + \lambda \mu
+   \begin{matrix}
+      \min_{
+         \overline{\mm{W}},\xi,\mu
+         } 
+      \xi + \lambda \mu
       \\
-      &\text{s.t. \eqref{eq:control:condition:contraction}}
-   \end{aligned}
-\end{equation}
+      \text{s.t. }
+      % \begin{cases}
+         -
+         \ddtt\overline{\mm{W}}
+         +
+         2\mysym(
+            \mathbb{A}\overline{\mm{W}}
+         )
+         -
+         2\mu\mm{B}\mm{R}^{-1} \mm{B}^\top 
+         \preceq
+         -2\alpha\overline{\mm{W}}
+         ,
+         % \\
+         % &
+         % \overline{\mm{W}} = \overline{\mm{W}}^\top \succ 0
+         % ,
+      % \end{cases}
+   \end{matrix}
+\end{equation} 
+where $\overline{\mm{W}}:=\mu\mm{W}$ and $\mu\in\R_{>0}$ is a normalizing term of $\mm{M}$.
+Using $\lambda\in\R_{>0}$, the magnitude of the contraction metric $\mm{M}$ can be adjusted.
 
-However, even with the proposed method, the input saturation can still occur by excessive contraction metric leading to potential instability.
-Therefore, we need to incorporate input constraints into the LMI formulation.
+As well known, the computational complexity of solving the above LMI optimization problem is \cred{$\mathcal{O}(n^6)$ [..], which can be a critical issue for high-dimensional systems.}
+Moreover, since CV-STEM penalizes the magnitude of the control input indirectly by adjusting $\mm{M}$, the input saturation constraint is not explicitly considered in the optimization problem.
 
-\subsubsection{Input Saturation Constraint}
+\MSRY{Add more!}
 
-To address the input saturation function \eqref{eq:sys:sat}, the saturation constraint $\mv{u}^\top \mv{u} - \overline{u}^2 \le 0$ is defined as:
-\begin{equation}
-   \begin{bmatrix}
-      \overline{u}^2 & \left(\mv{u}_d - \mm{R}^{-1}\mm{B}^\top\mm{M}(\mv{x}-\mv{x}_d)\right)^\top \\
-      \star & \mm{I}
-   \end{bmatrix}
-   \succeq
-   0
-   .
-\end{equation}
-By multiplying both sides by $\left[\mydiag\right(\mm{I},\mm{W}(\mm{R}^{-1}\mm{B}^\top)^{-1}\left)\right]$, we have LMIs as follows:
-\begin{equation} \label{eq:control:condition:saturation:1}
-   \begin{bmatrix}
-      \overline{u}^2 & \left(\mm{W}(\mm{R}^{-1}\mm{B}^\top)^{-1}\mv{u}_d - (\mv{x}-\mv{x}_d)\right)^\top \\
-      \star & \mathbb{X}
-   \end{bmatrix}
-   \succeq
-   0
+\begin{rem}
+   \MSRY{Mathmatical Issue}
+\end{rem}
+
+\section{Main Results}
+
+Since in the control law \eqref{eq:control:law}, the contraction metric $\mm{M}$ is only applied to the trajectory error vector $\mv{e}:=\mv{x}-\mv{x}_d$, we can project the contraction constraints onto the trajectory error vector space, leading to a simplified convex optimization framework within a lower-dimensional effective space.
+Hence, pre- and post-multiply $\mv{e}^\top$ and $\mv{e}$ to the contraction constraint \eqref{eq:cstr:ctrc}, respectively, yielding:
+\begin{equation} \label{eq:cstr:ctrc:proj}
+   \mv{y}^\top 
+   \!
+   \left(
+   \!
+      -\mm{B} \mm{R}^{-1} \mm{B}^\top
+   \!
+   \right)
+   \mv{y}
+   +
+   \mv{e}^\top
+   \!
+   \left(
+      \tfrac{1}{T_s}+2\alpha
+      +
+      2\mathbb{A}^\top
+   \!
+   \right)
+   \mv{y}
+   -
+   \tfrac{\mv{e}^\top \mm{M}_{\rm{pre}} \mv{e}}{T_s}
+   \le 0
    ,
 \end{equation}
-where $\mathbb{X}:=\mm{W}(\mm{R}^{-1}\mm{B}^\top)^{-1}{(\mm{R}^{-1}\mm{B}^\top)^{-1}}^\top\mm{W}$ which satisfies
-\begin{equation} \label{eq:control:condition:saturation:2}
-   \begin{bmatrix}
-      \mathbb{X} & \mm{W}((\mm{R}^{-1}\mm{B}^\top)^{-1})^\top \\
-      \star & \mm{I}
-   \end{bmatrix}
-   \succeq
-   0
-   .
+where we define $\mv{y}:=\mm{M}\mv{e}$.
+Note that $\ddtt\mm{M} \approx \tfrac{1}{T_s}(\mm{M}-\mm{M}_{\rm{pre}})$ where $T_s$ denotes the sampling time and $\mm{M}_{\rm{pre}}$ denotes the contraction metric obtained at the previous time step.
+
+The convex input saturation function $\mysat(\cdot)$ preserves the convexity on $\mv{y}$, since $\mv{u}$ is linear with respect to $\mv{y}$.
+% Thus, the input saturation effect can be incorporated into the projected contraction constraint \eqref{eq
+
+\begin{figure}[t]
+   \centering
+   \includegraphics[width=0.49\linewidth]
+   {
+      figures/scene_first.drawio.pdf
+   }
+   \caption{
+   Case 1
+   }
+\label{fig:scene:first}
+\end{figure}
+
+As aforementioned in Section~\ref{sec:conv:lmi}, the scale-invariance issue of the objective function which only minimizes the condition number of $\mm{M}$ should be resolved.
+To this end, energy-based constraint is introduced to prevent the contraction metric $\mm{M}$ from collapsing or exploding, which ensures minimum required control effort.
+\begin{equation} \label{eq:cstr:energy}
+   \left(
+      \mv{e}^\top \mv{y} 
+      -
+      m_{\rm{energy}}\mv{e}^\top \mv{e}
+   \right)^2
+   \le
+   (\epsilon + s) \norm{\mv{e}}^2
+   ,
 \end{equation}
+where $m_{\rm{energy}}\in\R_{>0}$ denotes the desired energy level, and $\epsilon\in\R_{>0}$ and $s\in\R_{\ge0}$ denote allowable energy variation and a slack variable to enhance the robust feasibility of the optimization problem.
 
-\hfill
+In Fig.~\ref{fig:scene:first}, the constraints are illustrated in two-dimensional space for better intuition.
+The outside of blue eclipse and inside of red eclipse represent the feasible space of the contraction constraint \eqref{eq:cstr:ctrc:proj} and the input saturation constraint $\mysat(\mv{y})\le0$, respectively.
+The green lines represent the energy-based constraint \eqref{eq:cstr:energy}.
 
-Finally, the contraction metric can be obtained by solving the following LMI problem:
+Thus, the following convex optimization problem can be formulated to obtain the contraction metric $\mm{M}$ considering the input saturation effect:
 \begin{equation}
-   \begin{aligned}
-      &\min_{\mm{W},X,\mu} 
-         X
-         + 
-         \rm{trace}(\mm{\mathbb{X}})
-         \cred{
-            + \lambda \mu
-         }
+   \begin{matrix}
+      \min_{
+         \mv{y}
+         } 
+      \norm{\mv{y}}\norm{\mv{e}} - \mv{y}^\top \mv{e}
+      +
+      \lambda s
       \\
-      &\text{s.t. \eqref{eq:control:condition:contraction}, \eqref{eq:control:condition:saturation:1} and \eqref{eq:control:condition:saturation:2}}
-   \end{aligned}
+      \text{s.t. }
+      \begin{cases}
+         &\eqref{eq:cstr:ctrc:proj}
+         ,
+         \eqref{eq:cstr:energy}
+         ,
+         \\
+         &\mysat(\mv{y}) \le 0
+         ,
+      \end{cases}
+   \end{matrix}
 \end{equation}
-
-\subsection{Numerical Methods For LMI}
-
-\begin{itemize}
-   \item Discretize $\ddtt\mv{M}$
-   \item LMI solver
-   \item Tuning methods
-\end{itemize}
 
 
 \section{Numerical Validation}
@@ -644,12 +582,25 @@ where $\sigma=10$, $\rho=28$, and $\beta=\tfrac{8}{3}$ are system parameters.
 
 \subsection{Numerical Validation Results}
 
-\begin{itemize}
-   \item \colorLine{black}{solid} Desired 
-   \item \colorLine{blue}{dashed} CMP1 
-   \item \colorLine{red}{dashed} CMP2 
-   \item \colorLine{cyan}{dashed} CMP3 
-\end{itemize}
+\begin{table}[t]
+   \renewcommand{\arraystretch}{1.3}
+   \caption{Controllers for comparative study.}
+   \centering
+   % \begin{tabular}{c m{13.5em}}
+   \begin{tabular}{c l}
+   \hline
+   & \textbf{Description} \\
+   \hline
+   \hline 
+   (C$_1$) \protect\colorLine{blue}{solid} & Proposed controller \\ 
+   \hline
+   (C$_2$) \protect\colorLine{my_cyan}{solid} & CV-STEM (\cite{Tsukamoto:2021ae}) \\
+   \hline
+   (C$_3$) \protect\colorLine{gray}{solid} & Desired controller \\
+   \hline
+   \end{tabular}
+   \label{table:controllers}
+\end{table}
 
 
 \begin{figure*}[t]
@@ -682,7 +633,7 @@ where $\sigma=10$, $\rho=28$, and $\beta=\tfrac{8}{3}$ are system parameters.
       }%
       \label{fig:result:control:norm}}
    \caption{
-   Numerical validation results of (C$_1$) \protect\colorLine{blue}{solid}, (C$_2$) \protect\colorLine{cyan}{solid}, (C$_3$) \protect\colorLine{gray}{solid}, (C$_4$) \protect\colorLine{magenta}{solid}, and desired trajectory $x_d$ \protect\colorLine{red}{dashed}.
+   Numerical validation results of (C$_1$) \protect\colorLine{blue}{solid}, (C$_2$) \protect\colorLine{my_cyan}{solid}, (C$_3$) \protect\colorLine{gray}{solid}, (C$_4$) \protect\colorLine{magenta}{solid}, and desired trajectory $x_d$ \protect\colorLine{red}{dashed}.
 }
 \label{fig:result}
 \end{figure*}
@@ -704,7 +655,7 @@ where $\sigma=10$, $\rho=28$, and $\beta=\tfrac{8}{3}$ are system parameters.
       }%
       \label{fig:result:control:3d}}
    \caption{
-   Numerical validation results of (C$_1$) \protect\colorLine{blue}{solid}, (C$_2$) \protect\colorLine{cyan}{solid}, (C$_3$) \protect\colorLine{gray}{solid}, (C$_4$) \protect\colorLine{magenta}{solid}, and desired trajectory $x_d$ \protect\colorLine{red}{dashed}.
+   Numerical validation results of (C$_1$) \protect\colorLine{blue}{solid}, (C$_2$) \protect\colorLine{my_cyan}{solid}, (C$_3$) \protect\colorLine{gray}{solid}, (C$_4$) \protect\colorLine{magenta}{solid}, and desired trajectory $x_d$ \protect\colorLine{red}{dashed}.
 }
 \label{fig:result:3D}
 \end{figure}

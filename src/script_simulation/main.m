@@ -13,8 +13,8 @@ FIGURE_PLOT_FLAG = 1;   % plot the result
 FIGURE_SAVE_FLAG = 0;   % save the figure as .png and .eps
 
 %% SIMULATION SETTING
-
-T = .3;                 % simulation time
+T = .5;                 % simulation time
+% T = 1;                 % simulation time
 ctrl_dt = 1/200;         % controller sampling time
 % dt = 1e-3;
 dt = ctrl_dt/10;
@@ -28,17 +28,19 @@ param.sig = 10;
 param.rho = 28;
 param.beta = 8/3;
 
-% param.B = rand(3) + eye(3)*3;
+% param.B = rand(3)*2 + eye(3)*3;
+% param.B = diag([1 10 3]);
 param.B = eye(3);
 % param.max_u = 1.5e2;
-param.max_u = 250;
+param.max_u = 160;
 
 % disturbance
-d_MAX = 5;  % maximum disturbance;
+d_MAX = 1000;  % maximum disturbance;
 % d_func = @(t, x) [sin(t);-cos(t);sin(t)] * d_MAX;
-% d_func = @(t, x) [1;1;1] * heaviside(t-1.5) * d_MAX;
-d_func = @(t, x) [1;1;1] * (heaviside(t,.1)-heaviside(t,.1+dt))/dt * d_MAX;
-
+% d_func = @(t, x) [1;1;1] * heaviside(t,.1) * d_MAX;
+% d_func = @(t, x) [1;1;1] * (heaviside(t,.1)-heaviside(t,.1+dt)) * d_MAX;
+d_func = @(t, x) [1;1;1] * (heaviside(t,.1)-heaviside(t,.1+20*dt)) * d_MAX;
+% d_func = @(t, x) randn(3,1) * heaviside(t,.1) * d_MAX;
 
 %% REPORT SETTING
 fprintf("\n")
@@ -53,7 +55,7 @@ fprintf("FIGURE_PLOT_FLAG : %d\n", FIGURE_PLOT_FLAG)
 fprintf("FIGURE_SAVE_FLAG : %d\n", FIGURE_SAVE_FLAG)
 
 %% INITIAL POINTS SETTING
-x = [10;5;14];     % initial state
+x = [10;5;13];     % initial state
 xd = [11;4;15];             % desired initial state
 u = [0;0;0];        % initial input
 
@@ -66,9 +68,10 @@ num_t = length(t); % number of time steps
 % ctrl_opt 11: proposed 1 (effective space)
 % ctrl_opt 32: existing (small penalty)
 test_cases = [
-    struct('name', 'c1', 'ctrl_opt', 11, 'dist_on', 0, 'color', [0 0 1]), ...
+    % struct('name', 'c1', 'ctrl_opt', 31, 'dist_on', 0, 'color', [.5 .5 .5]), ...
     struct('name', 'c1', 'ctrl_opt', 32, 'dist_on', 0, 'color', [0 1 1]), ...
-];
+    struct('name', 'c1', 'ctrl_opt', 11, 'dist_on', 0, 'color', [0 0 1]), ...
+    ];
 case_num = length(test_cases);
 
 for c_idx = 1:case_num
@@ -110,6 +113,7 @@ xd_hist = zeros(num_x, num_t); % desired state history (without disturbance)
 ud_hist = zeros(num_u, num_t); % desired input history
 
 %% MAIN LOOP
+fprintf("\n")
 fprintf("SIMULATION RUNNING...\n")
 
 for t_idx = 1:1:num_t
@@ -174,7 +178,7 @@ for t_idx = 1:1:num_t
 
     % step forward desired state
     xd = system_step(dt, xd, ud, 0, param);
-    
+     
     % record desired history
     xd_hist(:, t_idx) = xd;
     ud_hist(:, t_idx) = ud;

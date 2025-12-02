@@ -216,10 +216,10 @@ nexttile;
 
 maxVal = -9999; minVal = 9999;
 for c_idx = 1:1:case_num
-    plot(t, recs{c_idx}.M_hist(1,:), "Color", recs{c_idx}.color, "LineWidth", line_width, "LineStyle", "-"); hold on
+    plot(t, recs{c_idx}.X_hist, "Color", recs{c_idx}.color, "LineWidth", line_width, "LineStyle", "-"); hold on
     
-    maxVal = max(maxVal, max(recs{c_idx}.M_hist(1,:)));
-    minVal = min(minVal, min(recs{c_idx}.M_hist(1,:)));
+    maxVal = max(maxVal, max(recs{c_idx}.X_hist));
+    minVal = min(minVal, min(recs{c_idx}.X_hist));
 end
 grid on; grid minor;
 xlabel('Time / s', 'FontSize', font_size, 'Interpreter', 'latex');

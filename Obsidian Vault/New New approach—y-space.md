@@ -1,3 +1,17 @@
+
+
+
+
+
+
+---
+## 1 Introduction
+- About contraction theory
+- Conventional approach of contraction theory based control
+- Limitations of the existing methods
+- 
+
+## 2 Review of Conventional Contraction based Control
 We have contraction constraint which is BMI, as follows:
 $$
 \ddtt\mm{M}+\mathbb{A}^\top\mm{M}+\mm{M}\mathbb{A}
@@ -13,6 +27,11 @@ $$
 .
 $$
 ---
+Conventionally, we minimize the condition number of the contraction metric $\mm{M}$ according to the ### theorem.
+
+
+---
+## 3 Proposed Method
 By pre-and post-multiplying $\mv{e}$, we obtain
 $$
 -\mv{y}^\top (2\mm{B}\mm{R}^{-1}\mm{B}^\top) \mv{y}
@@ -40,11 +59,22 @@ $$
 $$
 Each inequalities represents the contraction condition and input saturation constraint, respectively. They can be illustrated as ellipses whose feasible domain is outside and inside, respectively. 
 
-From the first equation, we have the following two scenarios in two-dimensional case:
+In conclusion, following the conventional optimization formulation, we can formulate the following optimization problem:
+$$
+\begin{aligned}
+\min_{\mv{y}}
+\mv{y}
+\end{aligned}
+$$
 
 
 
+---
+From the first equation, we have the following two scenarios in two-dimensional case.
+![[scene_one.jpg]]
 In the first scenario, 
+
+
 
 
 

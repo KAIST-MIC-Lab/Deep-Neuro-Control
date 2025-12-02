@@ -4,40 +4,8 @@
     "type": "split",
     "children": [
       {
-        "id": "6c387ea27a7d1ede",
-        "type": "tabs",
-        "dimension": 42.55681818181819,
-        "children": [
-          {
-            "id": "12067f9595645d56",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "New New approach—y-space.md",
-                "mode": "source",
-                "source": false,
-                "backlinks": true,
-                "backlinkOpts": {
-                  "collapseAll": false,
-                  "extraContext": false,
-                  "sortOrder": "alphabetical",
-                  "showSearch": false,
-                  "searchQuery": "",
-                  "backlinkCollapsed": false,
-                  "unlinkedCollapsed": true
-                }
-              },
-              "icon": "lucide-file",
-              "title": "New New approach—y-space"
-            }
-          }
-        ]
-      },
-      {
         "id": "f21c66d94a775b79",
         "type": "tabs",
-        "dimension": 57.44318181818182,
         "children": [
           {
             "id": "cc19b82d1dc10335",
@@ -45,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "중간 보고.md",
+                "file": "Draft - Contraction Theory based Control – Energy Based Approach + Convex Input Constraint + Effective Space (Simple).md",
                 "mode": "source",
                 "source": false,
                 "backlinks": true,
@@ -60,7 +28,7 @@
                 }
               },
               "icon": "lucide-file",
-              "title": "중간 보고"
+              "title": "Draft - Contraction Theory based Control – Energy Based Approach + Convex Input Constraint + Effective Space (Simple)"
             }
           }
         ]
@@ -213,12 +181,17 @@
       "periodic-notes:Open this week": false
     }
   },
-  "active": "12067f9595645d56",
+  "active": "cc19b82d1dc10335",
   "lastOpenFiles": [
-    "중간 보고.md",
     "New New approach—y-space.md",
+    "Draft - Contraction Theory based Control – Energy Based Approach + Convex Input Constraint + Effective Space (Simple).md",
+    "Untitled.md",
+    "중간 보고.md",
+    "Welcome.md",
     "New approach—y-space.md",
     "Contraction Theory Based Control Under Input Saturation–LMI Approach.md",
+    "scene_one.jpg",
+    "scene_two.jpg",
     "Dream.md",
     "Screenshot 2025-10-12 at 2.55.33 PM.png"
   ]
