@@ -130,7 +130,7 @@
    % It allows us analyze the system stability by examining the convergence of trajectories.
    % Recent developments in contraction theory based control have introduced computationally efficient methods for obtaining contraction metrics using linear matrix inequalities (LMIs).
    In this paper, we propose a computationally efficient and numerically robust contraction metric calculation method for contraction-based control design.
-   Conventional Linear Matrix Inequality (LMI) frameworks for contraction metric calculation suffer from high computational complexity and scale-invariance issues of the objective function which minimizes the condition number of the contraction metric.
+   Conventional Linear Matrix Inequality (LMI) optimization frameworks for contraction metric calculation suffer from high computational complexity for real-time implementation and scale-invariance issues of the objective function which minimizes the condition number of the contraction metric.
    To address these issues, the contraction metrics are projected onto the trajectory error vector space leading to a simplified convex optimization framework within a lower-dimensional effective space.
    Furthermore, the energy-based constraints are incorporated preventing the contraction metrics from collapsing or exploding, which ensures minimum required control effort.
    In addition, convex input saturation constraints are considered to handle practical limitations of the actuators.
@@ -144,15 +144,15 @@
 \end{frontmatter}
 %===============================================================================
 
-\section*{Notation}
+% \section*{Notation}
 
-In this study, the following notation is used:
-Vector and matrix entries are denoted as $\mv{x}=[x_i]_{i\in\{1,\cdots,n\}}$ and $\mm{A}=[a_{ij}]_{i\in\{1,\cdots,n\},j\in\{1,\cdots,m\}}$, respectively.
-The symmetric part of a matrix is denoted as $\mysym(\mm A):=\tfrac{1}{2}(\mm A+\mm A^\top)$ \cite{Tsukamoto:2021ac}.
+% In this study, the following notation is used:
+% Vector and matrix entries are denoted as $\mv{x}=[x_i]_{i\in\{1,\cdots,n\}}$ and $\mm{A}=[a_{ij}]_{i\in\{1,\cdots,n\},j\in\{1,\cdots,m\}}$, respectively.
+% The symmetric part of a matrix is denoted as $\mysym(\mm A):=\tfrac{1}{2}(\mm A+\mm A^\top)$ \cite{Tsukamoto:2021ac}.
 % The Kronecker product is denoted by $\otimes$ \cite[Chap. 7 Def. 7.1.2]{Bernstein:2009aa}.
-The identity matrix of size $n$ is denoted by $\mm I_n$, and the zero matrix of size $n\times m$ is denoted by $\mm 0_{n\times m}$.
+% The identity matrix of size $n$ is denoted by $\mm I_n$, and the zero matrix of size $n\times m$ is denoted by $\mm 0_{n\times m}$.
 % The $i\textsuperscript{th}$ row of the matrix $\mm A\in\R^{n\times m}$ is denoted by $\myrow_i(\mm A)$.
-For $\mm{A}\in\R^{/n\times m}$, the vectorization of $\mm A$ is denoted as $\myvec(\mm A):=(\myrow_1(\mm A^\top),\cdots,\myrow_m(\mm A^\top)  )^\top\in\R^{nm}$.
+% For $\mm{A}\in\R^{/n\times m}$, the vectorization of $\mm A$ is denoted as $\myvec(\mm A):=(\myrow_1(\mm A^\top),\cdots,\myrow_m(\mm A^\top)  )^\top\in\R^{nm}$.
 
 \section{Introduction}
 
@@ -225,7 +225,7 @@ According to [..], the system \eqref{eq:pre:sys} is said to be \textit{contracti
    -2\alpha\mm{M}
    ,
 \end{equation}
-where $\mm{M}$ denotes \textit{contraction metric} and $\alpha\in\R_{>0}$ denotes the contraction rate.
+where $\mm{M}$ denotes \textit{contraction metric} and $\alpha\in\R_{>0}$ denotes the contraction rate, and $\mysym(\mm A):=\tfrac{1}{2}(\mm A+\mm A^\top)$ \cite{Tsukamoto:2021ac}.
 The contraction metric $\mm{M}$ is symmetric positive definite matrix and satisfies $\overline{m}\mm{I}_n\succeq\mm{M}\succeq\underline{m}\mm{I}_n$ with $\overline{m},\underline{m}\in\R_{>0}$.
 
 It is notable that the initial conditions are exponentially forgotten in the contracting system \cite{LOHMILLER:1998aa}.
