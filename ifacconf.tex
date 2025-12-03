@@ -416,12 +416,13 @@ Using the variable transformation $\mm{M}=:\mm{W}^{-1}$, we have the following L
 \begin{equation}
    \begin{matrix}
       \min_{
-         \overline{\mm{W}},\xi,\mu
+         \overline{\mm{W}},\xi,\nu
          } 
-      \xi + \lambda \mu
+      \xi + \lambda \nu
       \\
       \text{s.t. }
-      % \begin{cases}
+      \begin{cases}
+         &
          -
          \ddtt\overline{\mm{W}}
          +
@@ -429,18 +430,22 @@ Using the variable transformation $\mm{M}=:\mm{W}^{-1}$, we have the following L
             \mathbb{A}\overline{\mm{W}}
          )
          -
-         2\mu\mm{B}\mm{R}^{-1} \mm{B}^\top 
+         2\nu\mm{B}\mm{R}^{-1} \mm{B}^\top 
          \preceq
          -2\alpha\overline{\mm{W}}
          ,
-         % \\
-         % &
-         % \overline{\mm{W}} = \overline{\mm{W}}^\top \succ 0
-         % ,
-      % \end{cases}
+         \\
+         &
+         \mm{I}_n
+         \preceq
+         \overline{\mm{W}}
+         \preceq
+         \xi \mm{I}_n
+         ,
+      \end{cases}
    \end{matrix}
 \end{equation} 
-where $\overline{\mm{W}}:=\mu\mm{W}$ and $\mu\in\R_{>0}$ is a normalizing term of $\mm{M}$.
+where $\overline{\mm{W}}:=\nu\mm{W}$ and $\nu\in\R_{>0}$ is a normalizing term of $\mm{M}$.
 Using $\lambda\in\R_{>0}$, the magnitude of the contraction metric $\mm{M}$ can be adjusted.
 
 As well known, the computational complexity of solving the above LMI optimization problem is \cred{$\mathcal{O}(n^6)$ [..], which can be a critical issue for high-dimensional systems.}
@@ -486,35 +491,19 @@ Note that $\ddtt\mm{M} \approx \tfrac{1}{T_s}(\mm{M}-\mm{M}_{\rm{pre}})$ where $
 The convex input saturation function $\mysat(\cdot)$ preserves the convexity on $\mv{y}$, since $\mv{u}$ is linear with respect to $\mv{y}$.
 % Thus, the input saturation effect can be incorporated into the projected contraction constraint \eqref{eq
 
-\begin{figure}[t]
-   \centering
-   \includegraphics[width=0.49\linewidth]
-   {
-      figures/scene_first.drawio.pdf
-   }
-   \caption{
-   Case 1
-   }
-\label{fig:scene:first}
-\end{figure}
-
 As aforementioned in Section~\ref{sec:conv:lmi}, the scale-invariance issue of the objective function which only minimizes the condition number of $\mm{M}$ should be resolved.
 To this end, energy-based constraint is introduced to prevent the contraction metric $\mm{M}$ from collapsing or exploding, which ensures minimum required control effort.
 \begin{equation} \label{eq:cstr:energy}
    \left(
       \mv{e}^\top \mv{y} 
       -
-      m_{\rm{energy}}\mv{e}^\top \mv{e}
+      \mu \mv{e}^\top \mv{e}
    \right)^2
    \le
    (\epsilon + s) \norm{\mv{e}}^2
    ,
 \end{equation}
-where $m_{\rm{energy}}\in\R_{>0}$ denotes the desired energy level, and $\epsilon\in\R_{>0}$ and $s\in\R_{\ge0}$ denote allowable energy variation and a slack variable to enhance the robust feasibility of the optimization problem.
-
-In Fig.~\ref{fig:scene:first}, the constraints are illustrated in two-dimensional space for better intuition.
-The outside of blue eclipse and inside of red eclipse represent the feasible space of the contraction constraint \eqref{eq:cstr:ctrc:proj} and the input saturation constraint $\mysat(\mv{y})\le0$, respectively.
-The green lines represent the energy-based constraint \eqref{eq:cstr:energy}.
+where $\mu\in\R_{>0}$ denotes the desired energy level, and $\epsilon\in\R_{>0}$ and $s\in\R_{\ge0}$ denote allowable energy variation and a slack variable to enhance the robust feasibility of the optimization problem.
 
 Thus, the following convex optimization problem can be formulated to obtain the contraction metric $\mm{M}$ considering the input saturation effect:
 \begin{equation}
@@ -538,6 +527,25 @@ Thus, the following convex optimization problem can be formulated to obtain the 
       \end{cases}
    \end{matrix}
 \end{equation}
+
+\begin{figure}[t]
+   \centering
+   \includegraphics[width=0.75\linewidth]
+   {
+      figures/scene_first.drawio.pdf
+   }
+   \caption{
+      Illustration of the optimization problem in two-dimensional space.
+   }
+\label{fig:scene:first}
+\end{figure}
+
+For better intuition, in Fig.~\ref{fig:scene:first}, the constraints are illustrated in two-dimensional space.
+The minimization of the condition number of $\mm{M}$ is equivalent to minimizing the angle between $\mv{y}$ and $\mv{e}$ as depicted in Fig.~\ref{fig:scene:first}. 
+The contraction constraint \eqref{eq:cstr:ctrc:proj} and the input saturation constraint $\mysat(\mv{y})\le0$ restrict the feasible space of $\mv{y}$ in the outside of blue eclipse and the inside of red eclipse, respectively.
+
+
+The green lines represent the energy-based constraint \eqref{eq:cstr:energy}.
 
 
 \section{Numerical Validation}
@@ -596,69 +604,37 @@ where $\sigma=10$, $\rho=28$, and $\beta=\tfrac{8}{3}$ are system parameters.
    \hline
    (C$_2$) \protect\colorLine{my_cyan}{solid} & CV-STEM (\cite{Tsukamoto:2021ae}) \\
    \hline
-   (C$_3$) \protect\colorLine{gray}{solid} & Desired controller \\
+   (C$_3$) \protect\colorLine{gray}{solid} & Desired controller, \ie $\mv{u}=\mv{u}_d$ \\
    \hline
    \end{tabular}
    \label{table:controllers}
 \end{table}
 
-
-\begin{figure*}[t]
+\begin{figure}[t]
    \centering
-   \subfloat[State trajectories.]{
-      \includegraphics[width=0.49\linewidth]
-      {
+   \includegraphics[width=0.99\linewidth]
+   {
       src/script_simulation/figures/compare/Fig1.eps
-      }%
-      \label{fig:result:state}}
-   \hfill
-   \subfloat[Control inputs.]{
-      \includegraphics[width=0.49\linewidth]
-      {
-      src/script_simulation/figures/compare/Fig3.eps
-      }%
-      \label{fig:result:control}}
-   \vfill
-   \subfloat[Norms of tracking errors.]{
-      \includegraphics[width=0.49\linewidth]
-      {
-      src/script_simulation/figures/compare/Fig6.eps
-      }%
-      \label{fig:result:error:norm}}
-   \hfill
-   \subfloat[Norms of control inputs.]{
-      \includegraphics[width=0.49\linewidth]
-      {
-      src/script_simulation/figures/compare/Fig5.eps
-      }%
-      \label{fig:result:control:norm}}
+   }
    \caption{
-   Numerical validation results of (C$_1$) \protect\colorLine{blue}{solid}, (C$_2$) \protect\colorLine{my_cyan}{solid}, (C$_3$) \protect\colorLine{gray}{solid}, (C$_4$) \protect\colorLine{magenta}{solid}, and desired trajectory $x_d$ \protect\colorLine{red}{dashed}.
-}
-\label{fig:result}
-\end{figure*}
+      Numerical validation results of (C$_1$) \protect\colorLine{blue}{solid}, (C$_2$) \protect\colorLine{my_cyan}{solid}, (C$_3$) \protect\colorLine{gray}{solid}, and desired trajectory $x_d$ \protect\colorLine{red}{dashed}   
+   }
+   \label{fig:sim:result:control}
+\end{figure}
 
 \begin{figure}[t]
    \centering
-   \subfloat[State trajectories (3D-view).]{
-      \includegraphics[width=0.48\linewidth]
-      {
+   \includegraphics[width=0.99\linewidth]
+   {
       src/script_simulation/figures/compare/Fig2.eps
-      }%
-      \label{fig:result:state:3d}}
-   \hfill
-   \subfloat[Control input loci (3D-view).]{
-      \includegraphics[width=0.48\linewidth]
-      {
-      % src/script_simulation/figures/compare/Fig4.eps
-      src/script_simulation/figures/compare/Fig4.png
-      }%
-      \label{fig:result:control:3d}}
+   }
    \caption{
-   Numerical validation results of (C$_1$) \protect\colorLine{blue}{solid}, (C$_2$) \protect\colorLine{my_cyan}{solid}, (C$_3$) \protect\colorLine{gray}{solid}, (C$_4$) \protect\colorLine{magenta}{solid}, and desired trajectory $x_d$ \protect\colorLine{red}{dashed}.
-}
-\label{fig:result:3D}
+      Optimization results of (C$_1$) \protect\colorLine{blue}{solid} and (C$_2$) \protect\colorLine{my_cyan}{solid}.
+   }
+   \label{fig:sim:result:opt}
 \end{figure}
+
+
 
 \section{Conclusion}
 

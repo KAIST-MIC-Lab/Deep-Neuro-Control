@@ -12,6 +12,8 @@ RESULT_SAVE_FLAG = 0;   % save the result as a .mat file in the results folder
 FIGURE_PLOT_FLAG = 1;   % plot the result
 FIGURE_SAVE_FLAG = 0;   % save the figure as .png and .eps
 
+PAPER_FIGURE_PLOT_FLAG = 0;   % plot the result
+
 %% SIMULATION SETTING
 T = .5;                 % simulation time
 % T = 1;                 % simulation time
@@ -69,8 +71,9 @@ num_t = length(t); % number of time steps
 % ctrl_opt 32: existing (small penalty)
 test_cases = [
     % struct('name', 'c1', 'ctrl_opt', 31, 'dist_on', 0, 'color', [.5 .5 .5]), ...
-    struct('name', 'c1', 'ctrl_opt', 32, 'dist_on', 0, 'color', [0 1 1]), ...
-    struct('name', 'c1', 'ctrl_opt', 11, 'dist_on', 0, 'color', [0 0 1]), ...
+    struct('name', 'C3', 'ctrl_opt', 0, 'dist_on', 1, 'color', [.5 .5 .5]), ...
+    struct('name', 'C2', 'ctrl_opt', 32, 'dist_on', 1, 'color', [0 1 1]), ...
+    struct('name', 'C1', 'ctrl_opt', 11, 'dist_on', 1, 'color', [0 0 1]), ...
     ];
 case_num = length(test_cases);
 
@@ -102,6 +105,8 @@ for c_idx = 1:case_num
     recs{c_idx}.M_hist = zeros(1, num_t); % NCM: norm of M (contraction metric)
     recs{c_idx}.mu_hist = zeros(1, num_t); % NCM: upper bound of norm(M)
     recs{c_idx}.contraction_flag_hist = zeros(1, num_t); % NCM: contraction condition flag
+
+    recs{c_idx}.cmp_t_hist = zeros(1, num_t); % computation time history
 
 end
 
@@ -168,10 +173,13 @@ for t_idx = 1:1:num_t
             recs{c_idx}.mu_hist(:, t_idx) = recs{c_idx}.ncm.mu;
         end
         recs{c_idx}.contraction_flag_hist(:, t_idx) = recs{c_idx}.ncm.contraction_flag;
+        
+        recs{c_idx}.cmp_t_hist(:, t_idx) = recs{c_idx}.ncm.cmp_t;  % computation time
 
         % step forward
-        recs{c_idx}.x = system_step(dt, recs{c_idx}.x, recs{c_idx}.uSat, d_func(t(t_idx), recs{c_idx}.x), param);
-        recs{c_idx}.x_non = system_step(dt, recs{c_idx}.x_non, ud, d_func(t(t_idx), recs{c_idx}.x_non), param);
+        if recs{c_idx}.dist_on; d = d_func(t(t_idx), recs{c_idx}.x); else; d = zeros(x_num); end
+        recs{c_idx}.x = system_step(dt, recs{c_idx}.x, recs{c_idx}.uSat, d, param);
+        recs{c_idx}.x_non = system_step(dt, recs{c_idx}.x_non, ud, d, param);
 
         % fprintf("t: %.3f, Case %d, x1: %.3f, x2: %.3f, x3: %.3f\n", t(t_idx)*1e3, c_idx, recs{c_idx}.x(1), recs{c_idx}.x(2), recs{c_idx}.x(3));
     end
@@ -199,7 +207,7 @@ if RESULT_SAVE_FLAG
     fprintf("RESULT SAVING...\n")
 
     saveName = "results/"+whatTimeIsIt+".mat";
-    save(saveName, 'sys', 'param', 't', 'xd_hist', 'ud_hist')
+    save(saveName, 'recs', 'param', 't', 'xd_hist', 'ud_hist')
 
     fprintf("RESULT is Saved as \n \t%s\n", saveName)
 end
@@ -230,6 +238,13 @@ if FIGURE_PLOT_FLAG
     end
 end
 
+
+%% PLOT FOR PAPER
+if PAPER_FIGURE_PLOT_FLAG
+    plotter4paper
+end
+
+%% 
 beep()
 
 %% LOCAL FUNCTION

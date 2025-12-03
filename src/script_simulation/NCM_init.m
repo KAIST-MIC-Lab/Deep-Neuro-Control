@@ -16,6 +16,12 @@ function ncm = NCM_init(ctrl_dt, ctrl_opt)
     ncm.inv_R = R\eye(size(R));
 
     switch ctrl_opt
+        % NOMINAL
+        % ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        case 0
+            ncm.ctrl_no = 0;
+            ncm.M = 1; ncm.X = 1;
+
         % PROPOSED 1 – effective space
         % ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
         case 11 
@@ -35,7 +41,7 @@ function ncm = NCM_init(ctrl_dt, ctrl_opt)
         % EXISTING – penalty method
         % ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
         case 31 % large penalty -> poor tracking
-            ncm.ctrl_no = 0;
+            ncm.ctrl_no = 3;
 
             ncm.alpha = 1e1;    % decay rate (contracting)
 
@@ -47,7 +53,7 @@ function ncm = NCM_init(ctrl_dt, ctrl_opt)
             ncm.lbd = 1e-2 ; % penalty term
         
         case 32 % small penalty -> better but satuatrion occurs
-            ncm.ctrl_no = 0;
+            ncm.ctrl_no = 3;
 
             ncm.alpha = 1e1;    % decay rate (contracting)
 

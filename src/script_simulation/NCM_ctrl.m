@@ -1,10 +1,11 @@
     function ncm = NCM_ctrl(ncm, x, xd, ud, param)
     % for initial control
-    if ncm.init 
+    if ncm.init || ncm.ctrl_no == 0 
         ncm.optDone = 0;
         ncm.init = 0;
         ncm.contraction_flag = 1;
         ncm.u = ud;
+        ncm.cmp_t = 0;
         return
     end
 
@@ -29,7 +30,7 @@
 
     %% OPTIMIZATION PROBLEM DEFINITION
     switch ncm.ctrl_no 
-        case 0 % existing
+        case 3 % existing
             % prepare
             pre_W_bar = ncm.W_bar; 
             pre_mu = ncm.mu;
@@ -105,7 +106,7 @@
     
     %% OPTIMIZATION 
     switch ncm.ctrl_no
-        case 0
+        case 3
             ops = sdpsettings('verbose', 0);
             ops = sdpsettings(ops, 'debug',0);
     
@@ -127,7 +128,9 @@
     end
 
     % optimize!
+    tic;
     sol = optimize(con, obj, ops);
+    ncm.cmp_t = toc;
 
     % optimization result check 
     %   (0: success, 1: infeasible, 2: unbounded, 3: max iterations, 4: numerical error)
@@ -137,7 +140,7 @@
     ncm.optDone = sol.problem;
 
     switch ncm.ctrl_no
-        case 0 % existing
+        case 3 % existing
             if sol.problem == 0
                 ncm.mu = value(mu);
                 ncm.W_bar = value(W_bar);
@@ -184,7 +187,7 @@
 
     %% CONTRACTION CONDITION CHECK
     switch ncm.ctrl_no 
-        case 0 % existing
+        case 3 % existing
             pre_M = pre_mu*pre_W_bar\eye(size(pre_W_bar));
             cond_check = (ncm.M-pre_M)/dt + (SDC'*ncm.M + ncm.M*SDC) - 2*ncm.M*B*inv_R*B'*ncm.M + 2*alpha*ncm.M;
         case {13, 14, 12} % proposed 1 (effective space)
