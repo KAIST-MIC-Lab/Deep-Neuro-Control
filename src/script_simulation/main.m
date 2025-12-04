@@ -16,12 +16,8 @@ PAPER_FIGURE_PLOT_FLAG = 0;   % plot the result
 
 %% SIMULATION SETTING
 T = .5;                 % simulation time
-% T = 1;                 % simulation time
 ctrl_dt = 1/200;         % controller sampling time
-% dt = 1e-3;
 dt = ctrl_dt/10;
-% ctrl_dt = 1e-3;         % controller sampling time
-% dt = 1e-4;
 rpt_dt = 1e-1;          % report time )(on console)
 t = 0:dt:T;             % time vector
 
@@ -30,21 +26,16 @@ param.sig = 10;
 param.rho = 28;
 param.beta = 8/3;
 
-% param.B = rand(3)*2 + eye(3)*3;
-% param.B = diag([1 10 3]);
 param.B = eye(3);
-% param.max_u = 1.5e2;
 param.max_u = 160;
 
 % disturbance
 d_MAX = 1000;  % maximum disturbance;
-% d_func = @(t, x) [sin(t);-cos(t);sin(t)] * d_MAX;
-% d_func = @(t, x) [1;1;1] * heaviside(t,.1) * d_MAX;
 % d_func = @(t, x) [1;1;1] * (heaviside(t,.1)-heaviside(t,.1+dt)) * d_MAX;
-d_func = @(t, x) [1;1;1] * (heaviside(t,.1)-heaviside(t,.1+20*dt)) * d_MAX;
+d_func = @(t, x) [1;1;1] * (heaviside(t,.2)-heaviside(t,.2+20*dt)) * d_MAX;
 % d_func = @(t, x) randn(3,1) * heaviside(t,.1) * d_MAX;
 
-%% REPORT SETTING
+%% REPORT SETTING 
 fprintf("\n")
 fprintf("      *** SIMULATION INFORMATION ***\n")
 fprintf("Termiation Time  : %.2f\n", T)
@@ -103,7 +94,7 @@ for c_idx = 1:case_num
     recs{c_idx}.X_hist = zeros(1, num_t); % NCM: ratio (SS error)
     recs{c_idx}.optDone_hist = zeros(1, num_t); % NCM: optimization result flag
     recs{c_idx}.M_hist = zeros(1, num_t); % NCM: norm of M (contraction metric)
-    recs{c_idx}.mu_hist = zeros(1, num_t); % NCM: upper bound of norm(M)
+    recs{c_idx}.nu_hist = zeros(1, num_t); % NCM: upper bound of norm(M)
     recs{c_idx}.contraction_flag_hist = zeros(1, num_t); % NCM: contraction condition flag
 
     recs{c_idx}.cmp_t_hist = zeros(1, num_t); % computation time history
@@ -135,7 +126,7 @@ for t_idx = 1:1:num_t
             ncm = NCM_ctrl(ncm, x, xd, ud, param);  % controller call
             
             B = param.B;
-            % u = ud - ncm.inv_R*B' * inv(ncm.W_bar/ncm.mu) * (x-xd);
+            % u = ud - ncm.inv_R*B' * inv(ncm.W_bar/ncm.nu) * (x-xd);
             % u = ud - ncm.inv_R*B' * ncm.M * (x-xd);
             u = ncm.u;
 
@@ -162,15 +153,15 @@ for t_idx = 1:1:num_t
     for c_idx = 1:1:case_num
         % record to history
         recs{c_idx}.x_hist(:, t_idx) = recs{c_idx}.x;
-        recs{c_idx}.x_non_hist(:, t_idx) = recs{c_idx}.x_non;
+        % recs{c_idx}.x_non_hist(:, t_idx) = recs{c_idx}.x_non;
         recs{c_idx}.u_hist(:, t_idx) = recs{c_idx}.u;
         recs{c_idx}.uSat_hist(:, t_idx) = recs{c_idx}.uSat;
 
         recs{c_idx}.X_hist(t_idx) = recs{c_idx}.ncm.X;  % controller gain
         recs{c_idx}.optDone_hist(t_idx) = recs{c_idx}.ncm.optDone;  % optimization done flag
         recs{c_idx}.M_hist(:, t_idx) = norm(recs{c_idx}.ncm.M);
-        if isfield(recs{c_idx}.ncm, 'mu')
-            recs{c_idx}.mu_hist(:, t_idx) = recs{c_idx}.ncm.mu;
+        if isfield(recs{c_idx}.ncm, 'nu')
+            recs{c_idx}.nu_hist(:, t_idx) = recs{c_idx}.ncm.nu;
         end
         recs{c_idx}.contraction_flag_hist(:, t_idx) = recs{c_idx}.ncm.contraction_flag;
         
@@ -179,7 +170,7 @@ for t_idx = 1:1:num_t
         % step forward
         if recs{c_idx}.dist_on; d = d_func(t(t_idx), recs{c_idx}.x); else; d = zeros(x_num); end
         recs{c_idx}.x = system_step(dt, recs{c_idx}.x, recs{c_idx}.uSat, d, param);
-        recs{c_idx}.x_non = system_step(dt, recs{c_idx}.x_non, ud, d, param);
+        % recs{c_idx}.x_non = system_step(dt, recs{c_idx}.x_non, ud, d, param);
 
         % fprintf("t: %.3f, Case %d, x1: %.3f, x2: %.3f, x3: %.3f\n", t(t_idx)*1e3, c_idx, recs{c_idx}.x(1), recs{c_idx}.x(2), recs{c_idx}.x(3));
     end

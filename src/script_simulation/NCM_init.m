@@ -6,9 +6,9 @@ function ncm = NCM_init(ctrl_dt, ctrl_opt)
     ncm.x_num = 3;      % number of state variables
 
     % initial values
-    mu = 1e-3;  
+    nu = 1e-3;  
     W_bar = eye(ncm.x_num);  
-    M = (W_bar\eye(size(W_bar))) * mu; % W_bar / mu = W
+    M = (W_bar\eye(size(W_bar))) * nu; % W_bar / nu = W
     X = 1;
 
     % control gains
@@ -25,20 +25,20 @@ function ncm = NCM_init(ctrl_dt, ctrl_opt)
         % PROPOSED 1 – effective space
         % ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
         case 11 
-            ncm.ctrl_no = 12;
+            ncm.ctrl_no = 1;
                 
             ncm.alpha = 1e1;    % decay rate (contracting)
 
             ncm.M_energy = 3e1;
             ncm.M = eye(ncm.x_num)*ncm.M_energy;
 
-            % ncm.M = eye(ncm.x_num)*1e-3;
-            % ncm.M_bar = eye(ncmj.x_num);
-            ncm.mu = 1e-3;
+            ncm.nu = 1e-3;
             ncm.X = X;
             ncm.y = ncm.M*ones(ncm.x_num,1);
 
-        % EXISTING – penalty method
+            ncm.lbd = 12e0 ; % penalty term
+
+        % EXISTING – CV-STEM
         % ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
         case 31 % large penalty -> poor tracking
             ncm.ctrl_no = 3;
@@ -46,7 +46,7 @@ function ncm = NCM_init(ctrl_dt, ctrl_opt)
             ncm.alpha = 1e1;    % decay rate (contracting)
 
             ncm.W_bar = W_bar;
-            ncm.mu = mu;
+            ncm.nu = nu;
             ncm.M = M;    
             ncm.X = X;
 
@@ -58,7 +58,7 @@ function ncm = NCM_init(ctrl_dt, ctrl_opt)
             ncm.alpha = 1e1;    % decay rate (contracting)
 
             ncm.W_bar = W_bar;
-            ncm.mu = mu;   
+            ncm.nu = nu;   
             ncm.M = M;    
             ncm.X = X;
 

@@ -511,7 +511,7 @@ Thus, the following vector-valued convex optimization problem can be formulated 
 \begin{equation} \label{eq:opt:main}
    \begin{matrix}
       \min_{
-         \mv{y}
+         \mv{y},s
          } 
       \norm{\mv{y}}\norm{\mv{e}} - \mv{y}^\top \mv{e}
       +
@@ -620,9 +620,9 @@ For the desired trajectory, we simulated the desired system \eqref{eq:sys:desire
 where $\mv{r}:=(-8.485,8.485,27)^\top$ denotes the reference point.
 
 The proposed method (C$_1$) was compared with CV-STEM (C$_2$) \cite{Tsukamoto:2021ae} and the desired controller $\mv{u}=\mv{u}_d$ (C$_3$) as summarized in Table~\ref{table:controllers}.
-The selected parameters for (C$_1$) and (C$_2$) were $\mm{R}=\mm{I}_3$ and $\alpha=5$.
-
-for the proposed method were $\alpha=5$, $\mu=10$, $\epsilon=0.1$, and $\lambda=100$.
+The parameters shared by (C$_1$) and (C$_2$) were $\mm{R}=\mm{I}_3$ and $\alpha=10$.
+In addition, parameters were selected as $\mu=30$ and $\lambda=100$ for (C$_1$) and $\lambda=0.01$ for (C$_2$).
+To solve the optimization problems, \texttt{fmincon} function in MATLAB R2024a and \texttt{SeMeDi} were used for (C$_1$) and (C$_2$), respectively.
 
 
 \subsection{Numerical Validation Results}

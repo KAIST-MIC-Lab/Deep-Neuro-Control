@@ -276,19 +276,19 @@ ax.FontSize = font_size;
 ax.FontName = 'Times New Roman';
 
 % ============================================
-%     mu
+%     nu
 % ============================================
 nexttile;
 
 maxVal = -9999; minVal = 9999;
 for c_idx = 1:1:case_num
-    plot(t, recs{c_idx}.mu_hist(1,:), "Color", recs{c_idx}.color, "LineWidth", line_width, "LineStyle", "-"); hold on
-    maxVal = max(maxVal, max(recs{c_idx}.mu_hist(1,:)));
-    minVal = min(minVal, min(recs{c_idx}.mu_hist(1,:)));
+    plot(t, recs{c_idx}.nu_hist(1,:), "Color", recs{c_idx}.color, "LineWidth", line_width, "LineStyle", "-"); hold on
+    maxVal = max(maxVal, max(recs{c_idx}.nu_hist(1,:)));
+    minVal = min(minVal, min(recs{c_idx}.nu_hist(1,:)));
 end
 grid on; grid minor;
 xlabel('Time / s', 'FontSize', font_size, 'Interpreter', 'latex');
-ylabel('mu', 'FontSize', font_size, 'Interpreter', 'latex');
+ylabel('nu', 'FontSize', font_size, 'Interpreter', 'latex');
 len = maxVal-minVal; ratio = .1;
 if len ~= 0; ylim([minVal-len*ratio maxVal+len*ratio]);  end
 xlim([0 T])
