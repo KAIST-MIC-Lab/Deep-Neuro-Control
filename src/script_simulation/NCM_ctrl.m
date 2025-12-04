@@ -142,12 +142,12 @@
 
                 ncm.y = value(y);
                 ncm.nu = s; % <======== CORRECT!!!
-                ncm.M = eye(x_num) ... 
-                    - (e*e')/(e'*e) ...
-                    + (ncm.y*ncm.y')/(ncm.y'*e);
-                % ncm.M = pre_M ... 
-                %     - ((pre_M*e)*(e'*pre_M))/(e'*pre_M*e) ...
+                % ncm.M = eye(x_num) ... 
+                %     - (e*e')/(e'*e) ...
                 %     + (ncm.y*ncm.y')/(ncm.y'*e);
+                ncm.M = pre_M ... 
+                    - ((pre_M*e)*(e'*pre_M))/(e'*pre_M*e) ...
+                    + (ncm.y*ncm.y')/(ncm.y'*e);
                 ncm.X = cond(ncm.M);
             end
             ncm.u = ud - ncm.inv_R*B' * ncm.y;
@@ -175,6 +175,10 @@
 
             fprintf("c_vec: %d, c: %d, c*e: %d\n", con_check_vector<=1e-5, max_eig<=1e-5, e'*cond_check*e <= 1e-5);
 
+            if max_eig > 1e-9
+                fprintf("chec")
+            end
+            
         % EXISTING – CV-STEM
         % ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
         case 3 

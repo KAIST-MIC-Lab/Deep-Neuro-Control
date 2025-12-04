@@ -17,7 +17,7 @@ PAPER_FIGURE_PLOT_FLAG = 0;   % plot the result
 %% SIMULATION SETTING
 T = .5;                 % simulation time
 ctrl_dt = 1/200;         % controller sampling time
-dt = ctrl_dt/10;
+dt = ctrl_dt/1e1;
 rpt_dt = 1e-1;          % report time )(on console)
 t = 0:dt:T;             % time vector
 
