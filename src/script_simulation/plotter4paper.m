@@ -1,9 +1,9 @@
 
 
 %% FIGURE SETTING
-POSITION_FLAG = 1; % it will plot fiugures in the same position
+FIGURE_SAVE_FLAG = 1;   % save the figure as .png and .eps
 
-font_size = 18;
+font_size = 20;
 line_width = 2;
 lgd_size = 2;
 
