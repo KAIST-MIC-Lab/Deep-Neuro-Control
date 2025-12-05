@@ -201,61 +201,61 @@ ax.FontName = 'Times New Roman';
 % ax.FontSize = font_size; 
 % ax.FontName = 'Times New Roman';
 
-% % ============================================
-% %     Tracking error (norm)
-% % ============================================
-% nexttile;
-% 
-% maxVal = -9999; minVal = 9999;
-% for c_idx = 1:1:case_num
-% 
-%     err = time_norm(recs{c_idx}.x_hist-xd_hist);
-%     % err = recs{c_idx}.x_hist(x_idx,:) - xd_hist(x_idx,:);
-%     plot(t, err, "Color", recs{c_idx}.color, "LineWidth", line_width, "LineStyle", "-"); hold on
-% 
-%     maxVal = max(maxVal, max(err));
-%     minVal = min(minVal, min(err));
-% end
-% 
-% grid on; grid minor;
-% xlabel('Time / s', 'FontSize', font_size, 'Interpreter', 'latex');
-% ylabel("$\Vert e\Vert$", 'FontSize', font_size, 'Interpreter', 'latex');
-% len = maxVal-minVal; ratio = .1;
-% if len ~= 0; ylim([minVal-len*ratio maxVal+len*ratio]);  end
-% xlim([0 T])
-% 
-% ax = gca;
-% ax.FontSize = font_size; 
-% ax.FontName = 'Times New Roman';
+% ============================================
+%     Tracking error (norm)
+% ============================================
+nexttile;
 
-% ============================================
-%     Tracking error 
-% ============================================
-for x_idx = 1:1:num_x
-    nexttile;
-    
-    maxVal = -9999; minVal = 9999;
-    for c_idx = 1:1:case_num
-    
-        % err = time_norm(recs{c_idx}.x_hist-xd_hist);
-        err = recs{c_idx}.x_hist(x_idx,:) - xd_hist(x_idx,:);
-        plot(t, err, "Color", recs{c_idx}.color, "LineWidth", line_width, "LineStyle", "-"); hold on
-    
-        maxVal = max(maxVal, max(err));
-        minVal = min(minVal, min(err));
-    end
-    
-    grid on; grid minor;
-    xlabel('Time / s', 'FontSize', font_size, 'Interpreter', 'latex');
-    ylabel("$e_"+x_idx+"$", 'FontSize', font_size, 'Interpreter', 'latex');
-    len = maxVal-minVal; ratio = .1;
-    if len ~= 0; ylim([minVal-len*ratio maxVal+len*ratio]);  end
-    xlim([0 T])
-    
-    ax = gca;
-    ax.FontSize = font_size; 
-    ax.FontName = 'Times New Roman';
+maxVal = -9999; minVal = 9999;
+for c_idx = 1:1:case_num
+
+    err = time_norm(recs{c_idx}.x_hist-xd_hist);
+    % err = recs{c_idx}.x_hist(x_idx,:) - xd_hist(x_idx,:);
+    plot(t, err, "Color", recs{c_idx}.color, "LineWidth", line_width, "LineStyle", "-"); hold on
+
+    maxVal = max(maxVal, max(err));
+    minVal = min(minVal, min(err));
 end
+
+grid on; grid minor;
+xlabel('Time / s', 'FontSize', font_size, 'Interpreter', 'latex');
+ylabel("$\Vert e\Vert$", 'FontSize', font_size, 'Interpreter', 'latex');
+len = maxVal-minVal; ratio = .1;
+if len ~= 0; ylim([minVal-len*ratio maxVal+len*ratio]);  end
+xlim([0 T])
+
+ax = gca;
+ax.FontSize = font_size; 
+ax.FontName = 'Times New Roman';
+
+% % ============================================
+% %     Tracking error 
+% % ============================================
+% for x_idx = 1:1:num_x
+%     nexttile;
+% 
+%     maxVal = -9999; minVal = 9999;
+%     for c_idx = 1:1:case_num
+% 
+%         err = time_norm(recs{c_idx}.x_hist-xd_hist);
+%         err = recs{c_idx}.x_hist(x_idx,:) - xd_hist(x_idx,:);
+%         plot(t, err, "Color", recs{c_idx}.color, "LineWidth", line_width, "LineStyle", "-"); hold on
+% 
+%         maxVal = max(maxVal, max(err));
+%         minVal = min(minVal, min(err));
+%     end
+% 
+%     grid on; grid minor;
+%     xlabel('Time / s', 'FontSize', font_size, 'Interpreter', 'latex');
+%     ylabel("$e_"+x_idx+"$", 'FontSize', font_size, 'Interpreter', 'latex');
+%     len = maxVal-minVal; ratio = .1;
+%     if len ~= 0; ylim([minVal-len*ratio maxVal+len*ratio]);  end
+%     xlim([0 T])
+% 
+%     ax = gca;
+%     ax.FontSize = font_size; 
+%     ax.FontName = 'Times New Roman';
+% end
 
 % ============================================
 %     X

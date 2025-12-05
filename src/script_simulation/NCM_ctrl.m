@@ -50,6 +50,9 @@
             fc = transpose(-2*ud'*inv_R*B');
             cc = (ud'*ud - u_max^2);
 
+            max_Ctr_y = -1/2 * H\f;
+            max_Ctr = max_Ctr_y'*H*max_Ctr_y + f'*max_Ctr_y + c; 
+
             e_norm = norm(e,2);
             e_norm_sq = e'*e;
 
@@ -64,10 +67,15 @@
             con = [
                 (e'*y - M_energy*e_norm_sq)^2 <= (1e-2+s)*e_norm_sq^2; % energy constraint
                 s >= 0; % slack variable
-                y'*H*y + f'*y + c <= 0; % contraction constraint
                 (y'*Hc*y + fc'*y + cc)/abs(1e2) <= 0; % saturation constraint
                 % e'*y >= 1e-5;
             ];
+            
+            if max_Ctr > 0
+                con = [con, 
+                    y'*H*y + f'*y + c <= 0; % contraction constraint
+                ];
+            end
 
         % EXISTING – CV-STEM
         % ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

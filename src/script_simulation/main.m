@@ -30,9 +30,9 @@ param.B = eye(3);
 param.max_u = 200;
 
 % disturbance
-d_MAX = 1000;  % maximum disturbance;
-% d_func = @(t, x) [1;1;1] * (heaviside(t,.1)-heaviside(t,.1+dt)) * d_MAX;
-d_func = @(t, x) [1;1;1] * (heaviside(t,.2)-heaviside(t,.2+20*dt)) * d_MAX;
+d_MAX = 200;  % maximum disturbance;
+d_func = @(t, x) [1;1;1] *heaviside(t,.2) * d_MAX;
+% d_func = @(t, x) [1;1;1] * (heaviside(t,.2)-heaviside(t,.2+20*dt)) * d_MAX;
 % d_func = @(t, x) randn(3,1) * heaviside(t,.1) * d_MAX;
 
 %% REPORT SETTING 

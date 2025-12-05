@@ -29,7 +29,7 @@ function ncm = NCM_init(ctrl_dt, ctrl_opt)
                 
             ncm.alpha = 1e1;    % decay rate (contracting)
 
-            ncm.M_energy = 3.5e1;
+            ncm.M_energy = 3e1;
             ncm.M = eye(ncm.x_num)*ncm.M_energy;
 
             ncm.nu = 0;
