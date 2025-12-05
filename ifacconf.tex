@@ -19,6 +19,12 @@
 \usepackage{tikz}
 
 \usepackage{lipsum} % for dummy text
+\usepackage{multirow}
+\usepackage{multicol}
+
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
 % ============================================
 %         GENERAL MACROS
 % ============================================
@@ -40,6 +46,13 @@
 \newcommand{\cred}[1]{{\ctxt{awesome}{#1}}}
 \newcommand{\cblue}[1]{{\ctxt{airforceblue}{#1}}}
 
+\newcommand{\oneErr}{0.4937}
+\newcommand{\twoErr}{0.7929}
+\newcommand{\threeErr}{4.0534}
+
+\newcommand{\impOne}{87.82}
+\newcommand{\impTwo}{80.44}
+
 % ============================================
 %         MATH MACROS
 % ============================================
@@ -51,21 +64,15 @@
 \newcommand*{\mm}[1]{\boldsymbol{#1}} % my matrix
 \newcommand*{\norm}[1]{\lVert #1 \rVert} % euclidean norm
 
-\DeclareMathOperator{\myvec}{vec}       % vectorization
+\DeclareMathOperator{\myvec}{{vec}}       % vectorization
 \DeclareMathOperator{\myproj}{{Proj}}   % projection
 \DeclareMathOperator{\mysat}{{sat}}       % saturation
-\DeclareMathOperator{\myrow}{row}       % row of a matrix
-\DeclareMathOperator{\mycol}{Col}       % column of a matrix
-\DeclareMathOperator{\mysym}{sym}       % symmetric part of a matrix
-\DeclareMathOperator{\mydiag}{diag}     % diagonal matrix
-\DeclareMathOperator{\mysign}{sign}     % sign function
-\DeclareMathOperator{\mypoly}{Poly}     % polynomial
-
-% ============================================
-%         MOTOR SYMBOLS
-% ============================================
-\newcommand*{\ia}{i_\mathrm{\alpha}} % a-phase current
-\newcommand*{\ib}{i_\mathrm{\beta}} % b-phase current
+\DeclareMathOperator{\myrow}{{row}}       % row of a matrix
+\DeclareMathOperator{\mycol}{{Col}}       % column of a matrix
+\DeclareMathOperator{\mysym}{{sym}}       % symmetric part of a matrix
+\DeclareMathOperator{\mydiag}{{diag}}     % diagonal matrix
+\DeclareMathOperator{\mysign}{{sign}}     % sign function
+\DeclareMathOperator{\mypoly}{{Poly}}     % polynomial
 
 % ============================================
 %         FRACTIONS
@@ -93,14 +100,12 @@
    \tfrac{\partial {#1}}{\partial {#2}}
 }
 
-\input{\template/symbols/symbols_NN.tex}
-
 %===============================================================================
 \begin{document}
 \begin{frontmatter}
 
 \title{
-   Vector-Valued Optimization for Contraction-Based Control: An Energy-Based Effective Space Approach
+   Vector-Space Optimization for Contraction Theory-Based Control Design: An Energy-Based Effective Space Approach
    \thanksref{footnoteinfo}
 } 
 % Title, preferably not more than 10 words.
@@ -116,24 +121,24 @@
 \address[First]{
    Korea Advanced Institute of Science and Technology (KAIST), 
    Daejeon 34051, South Korea (e-mail: \{dding\_98,kh.choi\}@kaist.ac.kr)}
-% \address[Second]{
-%    Korea Advanced Institute of Science and Technology (KAIST), 
-%    Daejeon 34051, South Korea (e-mail: @kaist.ac.kr)}
 \address[Second]{
    Keimyung University, 
    Daegu 42601, South Korea (e-mail: yousesun@kmu.ac.kr)}
 
 \begin{abstract}                % Abstract of 50--100 words
-   In this paper, we propose a computationally efficient and numerically robust contraction metric calculation method for contraction-based control design.
+   In this paper, we propose a computationally efficient and numerically robust contraction metric calculation method for contraction theory-based control design.
    Conventional Linear Matrix Inequality (LMI) optimization frameworks for contraction metric calculation suffer from high computational complexity for real-time implementation and scale-invariance issues of the objective function which minimizes the condition number of the contraction metric.
-   To address these issues, we project the contraction metrics onto the trajectory error vector space, leading to a simplified vector-valued optimization framework within a lower-dimensional effective space.
-   Furthermore, energy-based constraints are incorporated to prevent the contraction metrics from \cred{collapsing or exploding}, thereby maintaining sufficient control effort.
+   To address these issues, we project the contraction metrics onto the trajectory error vector space, leading to a simplified vector-space optimization framework within a lower-dimensional effective space.
+   Furthermore, energy-based constraints are incorporated to obtain a unique solution and to maintain sufficient control effort.
    In addition, convex input saturation constraints are integrated to handle practical limitations of the actuators.
    The effectiveness and the feasibility of the proposed method are validated through numerical simulations using the Lorenz system.
 \end{abstract}
 
 \begin{keyword}
-   Contraction theory, numerical optimization, input saturation, energy-based control
+   Contraction theory, 
+   % vector-space optimization, 
+   input saturation, 
+   energy-based control
 \end{keyword}
 
 \end{frontmatter}
@@ -144,25 +149,20 @@
 \subsection{Motivation}
 
 Besides the traditional Lyapunov stability theory, contraction theory offers a interesting perspective on the stability of nonlinear systems.
-It allows us analyze the system stability by examining the convergence of trajectories.
-Recent developments in contraction theory based control have introduced computationally efficient methods for obtaining contraction metrics using linear matrix inequalities (LMIs).
+It allows us analyze the system stability by examining the convergence of trajectories, not the convergence to a specific equilibrium point \cite{LOHMILLER:1998aa}.
+Since the contraction property is defined in an differential sense, the Linear Time-Varying (LTV) system analysis techniques can be applied to the contraction theory-based design.
 
-\textbf{Conventional Approaches}
+Among recent developments in contraction theory-based control, Tsukamoto {\etal} proposed ConVex optimization-based Steady-state Tracking Error Minimization (CV-STEM) to systematically calculate the contraction metrics using Linear Matrix Inequalities (LMIs) \cred{\cite{Tsukamoto:2021ae}}.
 
-\begin{itemize}
-   \item LMI framework for contraction metric calculation
-\end{itemize}
 
-\textbf{Limitations}
+However, since the LMI framework optimizes the contraction metrics in the matrix space, the computational complexity is \cred{$\mathcal{O}(n^6)$ [..]}, which can be a critical issue for high-dimensional systems.
+Thereby, for the real-time implementation, it is necessary to approximate the contraction metrics using universal function approximators such as neural networks [...].
 
-\begin{itemize}
-   \item Computational complexity of LMI framework for contraction metric calculation
-   \item No consideration of input saturation issue
-\end{itemize}
+Moreover, 
 
-To the best of our knowledge, there has been no previous work that projects the contraction constraints onto the error space to reduce the computational complexity of the contraction metric calculation.
-Moreover, input saturation has not been considered in the conventional contraction theory based control design.
-Hence, the main objective of this paper is to simplify the contraction metric calculation and to incorporate the input saturation constraint into a convex optimization framework for contraction metric calculation.
+To the best of our knowledge, there has been no previous work that projects the contraction constraints onto a vector space to reduce the computational complexity of the contraction metric calculation.
+Moreover, input saturation has not been considered in the conventional contraction theory-based control design.
+Hence, the main objective of this paper is to simplify the contraction metric calculation from matrix-space optimization to vector-space optimization, while also incorporating the input saturation constraint.
 
 \subsection{Contributions}
 
@@ -430,7 +430,7 @@ Using the variable transformation $\mm{M}=:\mm{W}^{-1}$, we have the following L
       \end{cases}
    \end{matrix}
 \end{equation} 
-where $\overline{\mm{W}}:=\nu\mm{W}$ and $\nu\in\R_{>0}$ is a normalizing term of $\mm{M}$.
+where $\overline{\mm{W}}:=\nu\mm{W}$ and $\nu\in\R_{>0}$ is a penalty term of 2-norm of $\mm{M}$.
 Using $\lambda\in\R_{>0}$, the magnitude of the contraction metric $\mm{M}$ can be adjusted.
 
 As well known, the computational complexity of solving the above LMI optimization problem is \cred{$\mathcal{O}(n^6)$ [..], which can be a critical issue for high-dimensional systems.}
@@ -441,13 +441,13 @@ Thus, Theorem~\ref{thm:contraction:perturbed} cannot be directly applied to the 
 
 In conclusion, though CV-STEM provides a systematic framework for contraction metric calculation in LMI framework, there still remain several issues to be resolved for practical real-time implementation.
 
-\begin{rem}
+\begin{rem} \label{rem:scale:invariance}
    There exist a severe problem formulation issue in the conventional LMI framework.
    In the formulation, $\ddtt\overline{\mm{W}}=\ddtt(\nu\mm{W})$ is considered as same as $\nu\ddtt(\mm{W})$, which is not mathematically valid since $\nu$ is also a decision variable.
    Thus, the conventional LMI framework's solutions are typically decides $\overline{W}$ and $\chi$ to $\mm{I}_n$ and $1$, respectively, and modifies $\nu$ only.
 \end{rem}
 
-\section{Main Results}
+\section{Main Results} \label{sec:main:results}
 
 Since the contraction metric $\mm{M}$ is only applied to the trajectory error vector $\mv{e}:=\mv{x}-\mv{x}_d$ in the control law \eqref{eq:control:law}, we can project the contraction constraints onto the trajectory error vector space.
 By pre- and post-multiplying $\mv{e}^\top$ and $\mv{e}$ to the contraction constraint \eqref{eq:cstr:ctrc}, respectively, we have:
@@ -541,20 +541,38 @@ Thus, the following vector-valued optimization problem can be formulated to obta
 \label{fig:scene:first}
 \end{figure}
 
-After the optimization, the contraction metric $\mm{M}$ can be retrieved using Broyden–Fletcher–Goldfarb–Shanno (BFGS) method as follows:
-\begin{equation}
+After the optimization, the contraction metric $\mm{M}$ can be retrieved maintaining the condition number and the relationship $\mv{y}=\mm{M}\mv{e}$ as follows:
+\begin{equation} \label{eq:retrive:mm}
    \mm{M}
    =
-   \mm{M}_{\rm{pre}}
-   -
-   \tfrac{\mm{M}_{\rm{pre}} \mv{e} \mv{e}^\top \mm{M}_{\rm{pre}}}
-   {\mv{e}^\top \mm{M}_{\rm{pre}} \mv{e}}
-   +
-   \tfrac{\mv{y} \mv{y}^\top}
-   {\mv{e}^\top \mv{y}}
+   \tfrac{1}{\sqrt{\chi}}
+   \mydiag
+   \left(
+      \begin{pmatrix}
+         \sqrt{\chi}, 1, \ldots, 1, \tfrac{1}{\sqrt{\chi}}
+      \end{pmatrix}
+   \right)
+   \cdot
+   \tfrac{1}{\norm{\mv{e}}\norm{\mv{y}}}
    ,
 \end{equation}
-which satisfies $\mm{M}\mv{e}=\mv{y}$.
+where $\chi=\tfrac{1+\sin(\theta)}{1-\sin(\theta)}$ denotes the minimum condition number of $\mm{M}$ when the angle $\theta$ between $\mv{y}$ and $\mv{e}$ is given.
+   
+The overall procedure of the proposed method is summarized in Algorithm~\ref{alg:alg:1}.
+
+\begin{algorithm}[!t]
+   \caption{Proposed method} \label{alg:alg:1}
+   \begin{algorithmic}[1]
+      \State \textbf{Initialize:} $\mv{y}_0=\mv{1}_{n\times 1}$, $s_0=0$, $\mm{M}_{0}=\mu\mm{I}_n$
+      \For{$k = 1 $ to $\infty$}
+            \State Get current $\mv{x}_k$, $\mv{x}_{d,k}$, $\mv{u}_{d,k}$ and $\mv{e}_k$
+            \State Assign $\mv{y}_k \leftarrow \mv{y}_{k-1}$, $s_k \leftarrow s_{k-1}$ for warm-start
+            \State Solve optimization problem \eqref{eq:opt:main} to get $\mv{y}_k^\star$ and $s_k^\star$
+            \State Calculate $\mm{M}_{k}$ using $\mv{y}_k^\star$ and $\mv{e}_k$ \eqref{eq:retrive:mm}
+            \State Apply the control law \eqref{eq:control:law} using $\mm{M}_{k}$
+      \EndFor
+   \end{algorithmic}
+\end{algorithm}
 
 \cred{For better understanding}, the optimization problem \eqref{eq:opt:main} is illustrated in two-dimensional space in Fig.~\ref{fig:scene:first}.
 The contraction constraint \eqref{eq:cstr:ctrc:proj} and the input saturation constraint \eqref{eq:cstr:sat} restrict the feasible space of $\mv{y}$ in the outside of blue eclipse and the inside of red eclipse, respectively.
@@ -587,45 +605,67 @@ We employed the Lorenz system \MSRY{REF} to validate the proposed method which i
       \end{pmatrix}
    }_{=:\mv{f}(\mv{x})}
    +
-   \underbrace{
-      \begin{pmatrix}
-         u_x\\u_y\\u_z
-      \end{pmatrix}
-   }_{=:\mv{u}}
+   \mysat
+   \bigg(
+      \underbrace{
+         \begin{pmatrix}
+            u_x\\u_y\\u_z
+         \end{pmatrix}
+      }_{=:\mv{u}}
+   \bigg)
    +
-   \underbrace{
-      \begin{pmatrix}
-         d_x\\d_y\\d_z
-      \end{pmatrix}
-   }_{=:\mv{d}}
+   % \underbrace{
+   %    \begin{pmatrix}
+   %       d_x\\d_y\\d_z
+   %    \end{pmatrix}
+   % }_{=:\mv{d}}
+   \mv{d}(t)
    ,
 \end{equation}
 where $\sigma=10$, $\rho=28$, and $\beta=\tfrac{8}{3}$ are system parameters.
-The external disturbances $\mv{d}$ were modeled as follows:
+The input saturation function $\mysat(\cdot)$ was defined as follows:
+\begin{equation}
+   \mysat(\mv{u})
+   :=
+   \begin{cases}
+      \mv{u}
+      ,
+      & \text{if } \norm{\mv{u}} \le \overline{u}
+      ,
+      \\
+      \overline{u} \tfrac{\mv{u}}{\norm{\mv{u}}}
+      ,
+      & \text{otherwise}
+      ,
+   \end{cases}
+\end{equation}
+where $\overline{u}=200$ denotes the maximum input magnitude.
+The external disturbances $\mv{d}(t)$ were modeled as follows:
 \begin{equation}
    \mv{d}(t)
    :=
    1000 (H(t-0.1)-H(t-0.11))
+   \cdot
+   \mv{1}_{3\times1}
    ,
 \end{equation}
 where $H(\cdot)$ denotes the Heaviside step function.
 
-For the desired trajectory, we simulated the desired system \eqref{eq:sys:desired} with the following desired feedback-linearization control input:
-\begin{equation}
+For the desired trajectory, we simulated the desired system \eqref{eq:sys:desired} with the following desired feedback-linearization control input
+% \begin{equation}
+$
    \mv{u}_d
    :=
    -\mv{f}_d - 2(\mv{x}_d - \mv{r})
    ,
-\end{equation}
+$
+% \end{equation}
 where $\mv{r}:=(-8.485,8.485,27)^\top$ denotes the reference point.
 
-The proposed method (C$_1$) was compared with CV-STEM (C$_2$) \cite{Tsukamoto:2021ae} and the desired controller $\mv{u}=\mv{u}_d$ (C$_3$) as summarized in Table~\ref{table:controllers}.
+The proposed method (C$_1$) was compared with CV-STEM (C$_2$) \cite{Tsukamoto:2021ae} and the desired controller, \ie $\mv{u}=\mv{u}_d$, (C$_3$) as summarized in Table~\ref{table:controllers}.
 The parameters shared by (C$_1$) and (C$_2$) were $\mm{R}=\mm{I}_3$ and $\alpha=10$.
 In addition, parameters were selected as $\mu=30$ and $\lambda=100$ for (C$_1$) and $\lambda=0.01$ for (C$_2$).
-To solve the optimization problems, \texttt{fmincon} function in MATLAB R2024a and \texttt{SeMeDi} were used for (C$_1$) and (C$_2$), respectively.
-
-
-\subsection{Numerical Validation Results}
+To solve the optimization problems, \texttt{fmincon} function in MATLAB R2024b and \texttt{SeMeDi} toolbox were used for (C$_1$) and (C$_2$), respectively.
 
 \begin{table}[t]
    \renewcommand{\arraystretch}{1.3}
@@ -637,15 +677,35 @@ To solve the optimization problems, \texttt{fmincon} function in MATLAB R2024a a
    & \textbf{Description} \\
    \hline
    \hline 
-   (C$_1$) \protect\colorLine{blue}{solid} & Proposed controller \\ 
+   (C$_1$) \protect\colorLine{blue}{solid} & Proposed controller. \\ 
    \hline
-   (C$_2$) \protect\colorLine{my_cyan}{solid} & CV-STEM (\cite{Tsukamoto:2021ae}) \\
+   (C$_2$) \protect\colorLine{my_cyan}{solid} & CV-STEM (\cite{Tsukamoto:2021ae}). \\
    \hline
-   (C$_3$) \protect\colorLine{gray}{solid} & Desired controller, \ie $\mv{u}=\mv{u}_d$ \\
+   (C$_3$) \protect\colorLine{gray}{solid} & Desired controller, \ie $\mv{u}=\mv{u}_d$. \\
    \hline
    \end{tabular}
    \label{table:controllers}
 \end{table}
+
+The simulation was conducted for $T=0.5$ seconds with the sampling time of $T_s=0.005$ seconds for the controllers and $10$ times finer time step for the system simulation.
+The initial conditions were set to $\mv{x}(0)=(10,5,13)^\top$ and $\mv{x}_d(0)=(11,4,15)^\top$.
+
+\subsection{Numerical Validation Results}
+
+The numerical validation results are illustrated in Figs.~\ref{fig:sim:result:control} and \ref{fig:sim:result:opt}.
+When only the desired controller was applied, the trajectories does not coincide due to the effect of initial condition mismatch.
+Significantly, after the disturbance occurrence at $t=0.2$ seconds, the trajectory deviates further from the desired trajectory as shown in Fig.~\ref{fig:sim:result:control}.
+
+Both (C$_1$) and (C$_2$) successfully drive the trajectory to closely follow the desired trajectory even in the presence of disturbances, minimizing $L_2$ norm of the tracking error about \impOne \% and \impTwo \% compared to (C$_3$) as summarized in Table~\ref{table:performance}.
+However, in terms of the input saturation, (C$_2$) reaches the saturation limit when the disturbance occurs, while (C$_1$) effectively avoids input saturation as shown in Fig.~\ref{fig:sim:result:opt}.
+Moreover, (C$_1$) effectively tracked the desired trajectory faster than (C$_2$) while satisfying the input saturation constraint.
+
+In addition, the expected condition numbers $\chi$ of the contraction metrics in Section~\ref{sec:main:results} through Fig.~\ref{fig:scene:first} of (C$_1$) can be observed in Fig.~\ref{fig:sim:result:opt}.
+As the constraint constraint \eqref{eq:cstr:ctrc} and the input saturation constraint \eqref{eq:cstr:sat} become active, the angle between $\mv{y}$ and $\mv{e}$ increases, resulting in the increase of the condition number.
+In contrast, (C$_2$) shows a smallest condition number, $\chi=1$, due to the problem formulation issue discussed in Remark~\ref{rem:scale:invariance}.
+
+
+
 
 \begin{figure}[t]
    \centering
@@ -666,268 +726,43 @@ To solve the optimization problems, \texttt{fmincon} function in MATLAB R2024a a
       src/script_simulation/figures/compare/Fig2.eps
    }
    \caption{
-      Optimization results of (C$_1$) \protect\colorLine{blue}{solid} and (C$_2$) \protect\colorLine{my_cyan}{solid}.
+      Control input norms, condition numbers, penalty term and slack variable. % of (C$_1$) \protect\colorLine{blue}{solid}, (C$_2$) \protect\colorLine{my_cyan}{solid}, and (C$_3$) \protect\colorLine{gray}{solid}
    }
    \label{fig:sim:result:opt}
 \end{figure}
 
-
-
-\section{Conclusion}
-
-In this study, ...
-
-\begin{comment}
-
-\section{Introduction}
-This document is a template for \LaTeXe. If you are reading a paper or
-PDF version of this document, please download the electronic file
-\texttt{ifacconf.tex}. You will also need the class file
-\texttt{ifacconf.cls}. Both files are available on the IFAC web site.
-
-Please stick to the format defined by the \texttt{ifacconf} class, and
-do not change the margins or the general layout of the paper. It
-is especially important that you do not put any running header/footer
-or page number in the submitted paper.\footnote{
-This is the default for the provided class file.}
-Use \emph{italics} for emphasis; do not underline.
-
-Page limits may vary from conference to conference. Please observe the 
-page limits of the event for which your paper is intended.
-
-% $\vec$
-
-\section{Procedure for Paper Submission}
-
-Next we see a few subsections.
-
-\subsection{Review Stage}
-
-For submission guidelines, follow instructions on paper submission
-system as well as the event website.
-
-Note that conferences impose strict page limits, so it will be better
-for you to prepare your initial submission in the camera ready layout
-so that you will have a good estimate for the paper
-length. Additionally, the effort required for final submission will be
-minimal.
-
-\subsection{Equations}
-
-Some words might be appropriate describing equation~(\ref{eq:sample}), if 
-we had but time and space enough. 
-
-\begin{equation} \label{eq:sample}
-{{\partial F}\over {\partial t}} = D{{\partial^2 F}\over {\partial x^2}}.
-\end{equation}
-
-See \cite{Abl:56}, \cite{AbTaRu:54}, \cite{Keo:58} and \cite{Pow:85}.
-
-\subsubsection{Example.} This equation goes far beyond the
-celebrated theorem ascribed to the great Pythagoras by his followers.
-
-\begin{thm}   % use the thm environment for theorems
-The square of the length of the hypotenuse of a right triangle equals
-the sum of the squares of the lengths of the other two sides.
-\end{thm}
-
-\begin{pf}    % and the pf environment for proofs
-The square of the length of the hypotenuse of a right triangle equals the sum of the squares 
-of the lengths of the other two sides.
-\end{pf}
-
-%% There are a number of predefined theorem-like environments in
-%% ifacconf.cls:
-%%
-%% \begin{thm} ... \end{thm}            % Theorem
-%% \begin{lem} ... \end{lem}            % Lemma
-%% \begin{claim} ... \end{claim}        % Claim
-%% \begin{conj} ... \end{conj}          % Conjecture
-%% \begin{cor} ... \end{cor}            % Corollary
-%% \begin{fact} ... \end{fact}          % Fact
-%% \begin{hypo} ... \end{hypo}          % Hypothesis
-%% \begin{prop} ... \end{prop}          % Proposition
-%% \begin{crit} ... \end{crit}          % Criterion
-
-Of course LaTeX manages equations through built-in macros. You may
-wish to use the \texttt{amstex} package for enhanced math
-capabilities.
-
-\subsection{Figures}
-
-To insert figures, use the \texttt{graphicx} package. Although other
-graphics packages can also be used, \texttt{graphicx} is simpler to
-use. See  Fig.~\ref{fig:bifurcation} for an example.
-
-\begin{figure}
-\begin{center}
-\includegraphics[width=8.4cm]{bifurcation}    % The printed column width is 8.4 cm.
-\caption{Bifurcation: Plot of local maxima of $x$ with damping $a$ decreasing} 
-\label{fig:bifurcation}
-\end{center}
-\end{figure}
-
-Figures must be centered, and have a caption at the bottom. 
-
-\subsection{Tables}
-Tables must be centered and have a caption above them, numbered with
-Arabic numerals. See table~\ref{tb:margins} for an example.
-
-\begin{table}[hb]
-\begin{center}
-\caption{Margin settings}\label{tb:margins}
-\begin{tabular}{cccc}
-Page & Top & Bottom & Left/Right \\\hline
-First & 3.5 & 2.5 & 1.5 \\
-Rest & 2.5 & 2.5 & 1.5 \\ \hline
-\end{tabular}
-\end{center}
+\begin{table}[t]
+   \renewcommand{\arraystretch}{1.3}
+   \caption{Tracking performances in $L_2$ norm.}
+   \centering
+   \begin{tabular}{c c c c }
+   % \begin{tabular}{c c c c c}
+   \hline
+   & (C$_1$) \protect\colorLine{blue}{solid} & (C$_2$) \protect\colorLine{my_cyan}{solid} & (C$_3$) \protect\colorLine{gray}{solid} \\
+   \hline
+   \hline 
+   \multirow{2}{*}{
+   $\int_0^T\norm{\mv{e}}\,\der t$
+   } & \oneErr & \twoErr & \threeErr \\
+   & (-\impOne \%)  & (-\impTwo \%) & (–) \\
+   \hline
+   \end{tabular}
+   \label{table:performance}
 \end{table}
 
-\subsection{Final Stage}
-
-Authors are expected to mind the margins diligently.  Papers need to
-be stamped with event data and paginated for inclusion in the
-proceedings. If your manuscript bleeds into margins, you will be
-required to resubmit and delay the proceedings preparation in the
-process.
-
-\subsubsection{Page margins.} See table~\ref{tb:margins} for the
-page margins specification. All dimensions are in \emph{centimeters}.
-
-
-\subsection{PDF Creation}
-
-All fonts must be embedded/subsetted in the PDF file. Use one of the
-following tools to produce a good quality PDF file:
-
-\subsubsection{PDFLaTeX} is a special version of LaTeX by Han The
-Thanh which produces PDF output directly using Type-1 fonts instead of
-the standard \texttt{dvi} file. It accepts figures in JPEG, PNG, and PDF
-formats, but not PostScript. Encapsulated PostScript figures can be
-converted to PDF with the \texttt{epstopdf} tool or with Adobe Acrobat
-Distiller.
-
-\subsubsection{Generating PDF from PostScript} is the classical way of
-producing PDF files from LaTeX. The steps are:
-
-\begin{enumerate}
-  \item Produce a \texttt{dvi} file by running \texttt{latex} twice.
-  \item Produce a PostScript (\texttt{ps}) file with \texttt{dvips}.
-  \item Produce a PDF file with \texttt{ps2pdf} or Adobe Acrobat
-  Distiller.
-\end{enumerate}
-
-\subsection{Copyright Form}
-
-IFAC will put in place an electronic copyright transfer system in due
-course. Please \emph{do not} send copyright forms by mail or fax. More
-information on this will be made available on IFAC website.
-
-
-\section{Units}
-
-Use SI as primary units. Other units may be used as secondary units
-(in parentheses). This applies to papers in data storage. For example,
-write ``$15\,\mathrm{Gb}/\mathrm{cm}^2$ ($100\,\mathrm{Gb}/\mathrm{in}^2$)''. 
-An exception is when
-English units are used as identifiers in trade, such as ``3.5 in
-disk drive''. Avoid combining SI and other units, such as current in
-amperes and magnetic field in oersteds. This often leads to confusion
-because equations do not balance dimensionally. If you must use mixed
-units, clearly state the units for each quantity in an equation.  The
-SI unit for magnetic field strength $\mathbf{H}$ is $\mathrm{A}/\mathrm{m}$. However, if you wish to
-use units of $\mathrm{T}$, either refer to magnetic flux density $\mathbf{B}$ or
-magnetic field strength symbolized as $\mu_0\,\mathbf{H}$. Use the center dot to
-separate compound units, e.g., ``$\mathrm{A} \cdot \mathrm{m}^2$''.
-
-\section{Helpful Hints}
-
-\subsection{Figures and Tables}
-
-Figure axis labels are often a source of confusion. Use words rather
-than symbols. As an example, write the quantity ``Magnetization'', or
-``Magnetization M'', not just ``M''. Put units in parentheses. Do not
-label axes only with units.  For example, write ``Magnetization
-($\mathrm{A}/\mathrm{m}$)'' or ``Magnetization ($\mathrm{A} \mathrm{m}^{-1}$)'', not just
- ``$\mathrm{A}/\mathrm{m}$''. Do not
-label axes with a ratio of quantities and units. For example, write
-``Temperature ($\mathrm{K}$)'', not ``$\mbox{Temperature}/\mathrm{K}$''.
-
-Multipliers can be especially confusing. Write ``Magnetization
-($\mathrm{kA}/\mathrm{m}$)'' or ``Magnetization ($10^3 \mathrm{A}/\mathrm{m}$)''. Do not write
-``Magnetization $(\mathrm{A}/\mathrm{m}) \times 1000$'' because the reader would not know
-whether the axis label means $16000\,\mathrm{A}/\mathrm{m}$ or $0.016\,\mathrm{A}/\mathrm{m}$.
-
-\subsection{References}
-
-Use Harvard style references (see at the end of this document). With
-\LaTeX, you can process an external bibliography database 
-using \texttt{bibtex},\footnote{In this case you will also need the \texttt{ifacconf.bst}
-file, which is part of the \texttt{ifaconf} package.}
-or insert it directly into the reference section. Footnotes should be avoided as
-far as possible.  Please note that the references at the end of this
-document are in the preferred referencing style. Papers that have not
-been published should be cited as ``unpublished''.  Capitalize only the
-first word in a paper title, except for proper nouns and element
-symbols.
-
-\subsection{Abbreviations and Acronyms}
-
-Define abbreviations and acronyms the first time they are used in the
-text, even after they have already been defined in the
-abstract. Abbreviations such as IFAC, SI, ac, and dc do not have to be
-defined. Abbreviations that incorporate periods should not have
-spaces: write ``C.N.R.S.'', not ``C. N. R. S.'' Do not use abbreviations
-in the title unless they are unavoidable (for example, ``IFAC'' in the
-title of this article).
-
-\subsection{Equations}
-
-Number equations consecutively with equation numbers in parentheses
-flush with the right margin, as in (\ref{eq:sample}).  To make your equations more
-compact, you may use the solidus ($/$), the $\exp$ function, or
-appropriate exponents. Use parentheses to avoid ambiguities in
-denominators. Punctuate equations when they are part of a sentence, as
-in
-
-\begin{equation} \label{eq:sample2}
-\begin{array}{ll}
-\int_0^{r_2} & F (r, \varphi ) dr d\varphi = [\sigma r_2 / (2 \mu_0 )] \\
-& \cdot \int_0^{\inf} exp(-\lambda |z_j - z_i |) \lambda^{-1} J_1 (\lambda  r_2 ) J_0 (\lambda r_i ) d\lambda 
-\end{array}
-\end{equation}
-
-Be sure that the symbols in your equation have been defined before the
-equation appears or immediately following. Italicize symbols ($T$
-might refer to temperature, but T is the unit tesla). Refer to
-``(\ref{eq:sample})'', not ``Eq. (\ref{eq:sample})'' or ``equation
-(\ref{eq:sample})'', except at the beginning of a sentence: ``Equation
-(\ref{eq:sample}) is \ldots''.
-
-\subsection{Other Recommendations}
-
-Use one space after periods and colons. Hyphenate complex modifiers:
-``zero-field-cooled magnetization''. Avoid dangling participles, such
-as, ``Using (1), the potential was calculated'' (it is not clear who or
-what used (1)). Write instead: ``The potential was calculated by using
-(1)'', or ``Using (1), we calculated the potential''.
-
-A parenthetical statement at the end of a sentence is punctuated
-outside of the closing parenthesis (like this). (A parenthetical
-sentence is punctuated within the parentheses.) Avoid contractions;
-for example, write ``do not'' instead of ``don' t''. The serial comma
-is preferred: ``A, B, and C'' instead of ``A, B and C''.
-
-
 \section{Conclusion}
 
-A conclusion section is not required. Although a conclusion may review
-the main points of the paper, do not replicate the abstract as the
-conclusion. A conclusion might elaborate on the importance of the work
-or suggest applications and extensions.
+In this study, we proposed a vector-space optimization framework for contraction metric calculation in contraction theory-based control design.
+By projecting the contraction constraints onto the trajectory error vector space, the contraction metrics can be calculated in a lower-dimensional effective space, significantly reducing the computational complexity of the conventional LMI framework.
 
-\end{comment}
+The objective function to minimize the steady-state error bound was reformulated to minimize the angle between the projected contraction metric and the trajectory error vector, which minimizes the condition number of the contraction metric.
+To resolve scale-invariance issues of the objective function, \ie infinite number of solutions yielding the same condition number, energy-based constraints were introduced maintaining sufficient control effort.
+Additionally, in the vector-space, convex input saturation constraints were easily incorporated into the proposed framework.
+
+The effectiveness and the feasibility of the proposed method were validated through numerical simulations using the Lorenz system.
+
+As a future work, we will extend the proposed method to handle state constraints and validate through real-world experiments.
+
 
 % \begin{ack}
 % Place acknowledgments here.
@@ -935,100 +770,4 @@ or suggest applications and extensions.
 
 \bibliography{template/refs, localRefs}             % bib file to produce the bibliography
                                     % with bibtex (preferred)
-
-% \appendix
-% \section{SDC Derivation} \label{sec:appendix:SDC}
-
-% In this appendix, the SDC $\mathbb{A}$ will be derived in detail.
-% First, we follow the definition of the SDC in \eqref{eq:SDC} as follows:
-% \begin{equation}
-%    \begin{aligned}
-%       \mathbb{A}
-%       =&
-%       \textstyle\int_0^1 
-%       \left[
-%          \pptfrac{}{\mv{x}}
-%          \left(
-%             \mm{A} \mv{x}
-%             +
-%             \mm{B} \mv{u}_d
-%          \right)
-%       \right]
-%       \big(
-%          c \mv{x} + (1-c) \mv{x}_d
-%       \big)
-%       \,
-%       \der c
-%       \\
-%       =&
-%       \textstyle\int_0^1
-%       \left[
-%          \left(
-%             \mm{A}
-%             +
-%             \begin{bmatrix}
-%                0 & 0 
-%                \\
-%                b_1 & 0
-%             \end{bmatrix}
-%          \right)
-%       \right]
-%       \big(
-%          c \mv{x} + (1-c) \mv{x}_d      
-%       \big)
-%       \,
-%       \der c
-%       ,
-%    \end{aligned}
-% \end{equation}
-% where 
-% $
-%    b_1
-%    :=
-%    b_1(\mv{x},\mv{x}_d)
-%    = 
-%    - \tfrac{3P^2\Phi}{2J}
-%    \left(
-%       \cos(P x_1) {u_1}_d
-%       +
-%       \sin(P x_1) {u_2}_d
-%    \right)
-% $.
-% Then, we can rewrite the SDC as follows:
-% \begin{equation} \label{eq:SDC:explicit:2}
-%    \mathbb{A}
-%    =
-%    \begin{bmatrix}
-%       0 & 1 \\
-%       b_2(\mv{x},\mv{x}_d) & -\tfrac{f_v}{J}
-%    \end{bmatrix}
-%    ,
-% \end{equation}
-% where 
-% \begin{equation*}
-%    \begin{aligned}
-%       b_2(\mv{x},\mv{x}_d)
-%       :=&
-%       \tfrac{3P\Phi}{2J(x_1-{x_1}_d)}
-%       \big[
-%          \left\{
-%             \sin(P x_1)
-%             -
-%             \sin(P{ x_1}_d)
-%          \right\}
-%          {u_1}_d
-%       \\
-%       &
-%          +
-%          \left\{
-%             \cos(P x_1)
-%             -
-%             \cos(P {x_1}_d)
-%          \right\}
-%          {u_2}_d
-%       \big]
-%       .
-%    \end{aligned}
-% \end{equation*}
-
 \end{document}

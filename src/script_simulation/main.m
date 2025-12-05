@@ -48,8 +48,8 @@ fprintf("FIGURE_PLOT_FLAG : %d\n", FIGURE_PLOT_FLAG)
 fprintf("FIGURE_SAVE_FLAG : %d\n", FIGURE_SAVE_FLAG)
 
 %% INITIAL POINTS SETTING
-x = [10;5;13];     % initial state
-% x = [10;4;16];     % initial state
+% x = [10;5;13];     % initial state
+x = [10;10;10];     % initial state
 xd = [11;4;15];             % desired initial state
 u = [0;0;0];        % initial input
 

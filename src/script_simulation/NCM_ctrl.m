@@ -38,6 +38,7 @@
             % prepare
             pre_M = ncm.M; 
             pre_y = ncm.y;
+            pre_s = ncm.nu;
             M_energy = ncm.M_energy;
             
             % pre-calculation
@@ -54,7 +55,7 @@
 
             % optimization variable
             y = sdpvar(x_num,1); assign(y, pre_y);
-            s = sdpvar(1,1); assign(s, 1);
+            s = sdpvar(1,1); assign(s, pre_s);
 
             % objective function
             obj = (e_norm*norm(y,2) - e'*y) + ncm.lbd*s;
@@ -107,7 +108,7 @@
             ops = sdpsettings(ops, 'debug',0);
             ops = sdpsettings(ops, 'usex0', 1);
 
-            % ops = sdpsettings(ops, 'fmincon.MaxIter', 1e3);
+            ops = sdpsettings(ops, 'fmincon.MaxIter', 1e9);
             % ops = sdpsettings(ops, 'fmincon.TolFun', 1e-5); % obj tol
             % ops = sdpsettings(ops, 'fmincon.TolCon', 1e-5); % cstr tol 
             % ops = sdpsettings(ops, 'fmincon.TolX', 1e-7); % step tol
@@ -138,18 +139,34 @@
         % PROPOSED 1 – effective space
         % ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
         case 1 
-            if sol.problem == 0
+            if sol.problem == 0 || norm(e) > 1e-9
                 assert(value(y)'*e >= 0, "y'*e is negative")
 
                 ncm.y = value(y);
-                ncm.nu = s; % <======== CORRECT!!!
+                ncm.nu = value(s); % <======== CORRECT!!!
+
+                % condition number and metric
+                th = acos(e'*ncm.y/(norm(e)*norm(ncm.y)));
+                th = real(th); % numerical correction
+                X = (1+sin(th))/(1-sin(th));
+
+                M = diag([sqrt(X);ones(x_num-2,1);1/sqrt(X)]);
+                ncm.M = (M/norm(M)) * (norm(ncm.y)/norm(e));
+
+                if ~isreal(ncm.M)
+                    fprintf("check")
+                end
+
+                ncm.X = cond(ncm.M);
+
+                % BFGS
                 % ncm.M = eye(x_num) ... 
                 %     - (e*e')/(e'*e) ...
                 %     + (ncm.y*ncm.y')/(ncm.y'*e);
-                ncm.M = pre_M ... 
-                    - ((pre_M*e)*(e'*pre_M))/(e'*pre_M*e) ...
-                    + (ncm.y*ncm.y')/(ncm.y'*e);
-                ncm.X = cond(ncm.M);
+                % ncm.M = pre_M ... 
+                %     - ((pre_M*e)*(e'*pre_M))/(e'*pre_M*e) ...
+                %     + (ncm.y*ncm.y')/(ncm.y'*e);
+
             end
             ncm.u = ud - ncm.inv_R*B' * ncm.y;
 
@@ -173,22 +190,25 @@
             con_check_vector = ncm.y'*H*ncm.y + f'*ncm.y + c;
             cond_check = (ncm.M-pre_M)/dt + (SDC'*ncm.M + ncm.M*SDC) - 2*ncm.M*B*inv_R*B'*ncm.M + 2*alpha*ncm.M;
             max_eig = max(eig(cond_check));
+            % 
+            % fprintf("c_vec: %d, c: %d, c*e: %d\n", con_check_vector<=1e-5, max_eig<=1e-5, e'*cond_check*e <= 1e-5);
+            % 
+            % if max_eig > 1e-9
+            %     fprintf("chec")
+            % end
 
-            fprintf("c_vec: %d, c: %d, c*e: %d\n", con_check_vector<=1e-5, max_eig<=1e-5, e'*cond_check*e <= 1e-5);
+            ncm.contraction_flag = con_check_vector <= 1e-9;
 
-            if max_eig > 1e-9
-                fprintf("chec")
-            end
-            
         % EXISTING – CV-STEM
         % ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
         case 3 
             pre_M = pre_nu*pre_W_bar\eye(size(pre_W_bar));
             cond_check = (ncm.M-pre_M)/dt + (SDC'*ncm.M + ncm.M*SDC) - 2*ncm.M*B*inv_R*B'*ncm.M + 2*alpha*ncm.M;
             max_eig = max(eig(cond_check));
-    
+
+            ncm.contraction_flag = max_eig <= 1e-9;
+
     end
-    ncm.contraction_flag = max_eig <= 1e-9;
     
 
 end

@@ -20,7 +20,7 @@ function ncm = NCM_init(ctrl_dt, ctrl_opt)
         % ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
         case 0
             ncm.ctrl_no = 0;
-            ncm.M = 1; ncm.X = 1;
+            ncm.M = 0; ncm.X = 1;
 
         % PROPOSED 1 – effective space
         % ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -29,16 +29,17 @@ function ncm = NCM_init(ctrl_dt, ctrl_opt)
                 
             ncm.alpha = 1e1;    % decay rate (contracting)
 
-            ncm.M_energy = 3e1;
+            ncm.M_energy = 3.5e1;
             ncm.M = eye(ncm.x_num)*ncm.M_energy;
 
-            ncm.nu = 1e-3;
+            ncm.nu = 0;
             ncm.X = X;
             ncm.y = ncm.M*ones(ncm.x_num,1);
 
-            ncm.lbd = 12e0 ; % penalty term
-
-        % EXISTING – CV-STEM
+            ncm.lbd = 50e1 ; % penalty term
+            % ncm.lbd = 50e-2 ; % penalty term
+        
+            % EXISTING – CV-STEM
         % ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
         case 31 % large penalty -> poor tracking
             ncm.ctrl_no = 3;
@@ -50,7 +51,7 @@ function ncm = NCM_init(ctrl_dt, ctrl_opt)
             ncm.M = M;    
             ncm.X = X;
 
-            ncm.lbd = 1e-2 ; % penalty term
+            ncm.lbd = 1e-1 ; % penalty term
         
         case 32 % small penalty -> better but satuatrion occurs
             ncm.ctrl_no = 3;
@@ -62,7 +63,7 @@ function ncm = NCM_init(ctrl_dt, ctrl_opt)
             ncm.M = M;    
             ncm.X = X;
 
-            ncm.lbd = 1e-9; % penalty term
+            ncm.lbd = 1e-10; % penalty term
         
         otherwise
             error("Invalid control option")
