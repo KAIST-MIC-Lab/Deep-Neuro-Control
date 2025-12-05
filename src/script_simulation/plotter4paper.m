@@ -15,22 +15,21 @@ x_vec = "\xi";
 %% MAIN PLOT FUNCTIONS
 figure(1); clf; 
 hF = gcf; 
-hF.Position(3:4) = [800, 400];
+hF.Position(3:4) = [800, 500];
 tl = tiledlayout(3, 2, 'Padding', 'none', 'TileSpacing', 'compact');
 
 % ============================================
 %     STATE VARIABLE
 % ============================================
 for x_idx = 1:1:num_x
-    nexttile;
+    nexttile(2*(x_idx-1)+1);
 
     maxVal = -9999; minVal = 9999;
     for c_idx = 1:1:case_num
         plot(t, recs{c_idx}.x_hist(x_idx,:), "Color", recs{c_idx}.color, "LineWidth", line_width, "LineStyle", "-"); hold on
-        % plot(t, recs{c_idx}.x_non_hist(x_idx,:), "Color", recs{c_idx}.color, "LineWidth", line_width, "LineStyle", "--"); hold on
 
-        maxVal = max(maxVal, max([recs{c_idx}.x_hist(x_idx,:), recs{c_idx}.x_non_hist(x_idx,:), xd_hist(x_idx,:)]));
-        minVal = min(minVal, min([recs{c_idx}.x_hist(x_idx,:), recs{c_idx}.x_non_hist(x_idx,:), xd_hist(x_idx,:)]));
+        maxVal = max(maxVal, max([recs{c_idx}.x_hist(x_idx,:), xd_hist(x_idx,:)]));
+        minVal = min(minVal, min([recs{c_idx}.x_hist(x_idx,:), xd_hist(x_idx,:)]));
     end
     plot(t, xd_hist(x_idx,:), "Color", "red", "LineWidth", line_width, "LineStyle", "--"); hold on
 
@@ -50,7 +49,7 @@ end
 %     CONTROL INPUT
 % ============================================
 for u_idx = 1:1:num_u
-    nexttile;
+    nexttile(2*(u_idx));
 
     maxVal = -9999; minVal = 9999;
     for c_idx = 1:1:case_num
@@ -78,7 +77,7 @@ end
 figure(2); clf; 
 hF = gcf; 
 hF.Position(3:4) = [800, 150];
-tl = tiledlayout(1, 3, 'Padding', 'none', 'TileSpacing', 'compact');
+tl = tiledlayout(1, 2, 'Padding', 'none', 'TileSpacing', 'compact');
 
 % ============================================
 %     Control norm
@@ -148,7 +147,7 @@ for c_idx = 1:1:case_num
 end
 grid on; grid minor;
 xlabel('Time / s', 'FontSize', font_size, 'Interpreter', 'latex');
-ylabel('$\Xi$ / ', 'FontSize', font_size, 'Interpreter', 'latex');
+ylabel('$\chi$ / ', 'FontSize', font_size, 'Interpreter', 'latex');
 len = maxVal-minVal; ratio = .1;
 if len ~= 0; ylim([minVal-len*ratio maxVal+len*ratio]);  end
 xlim([0 T])
@@ -160,23 +159,23 @@ ax.FontName = 'Times New Roman';
 % ============================================
 %     contraction condition satisfaction
 % ============================================
-nexttile;
-
-maxVal = -9999; minVal = 9999;
-for c_idx = 1:1:case_num
-    plot(t, recs{c_idx}.contraction_flag_hist(1,:), "Color", recs{c_idx}.color, "LineWidth", line_width, "LineStyle", "-"); hold on
-    maxVal = 1; minVal = 0;
-end
-grid on; grid minor;
-xlabel('Time / s', 'FontSize', font_size, 'Interpreter', 'latex');
-ylabel('Contraction Cond.', 'FontSize', font_size, 'Interpreter', 'latex');
-len = maxVal-minVal; ratio = .1;
-if len ~= 0; ylim([minVal-len*ratio maxVal+len*ratio]);  end
-xlim([0 T])
-
-ax = gca;
-ax.FontSize = font_size; 
-ax.FontName = 'Times New Roman';
+% nexttile;
+% 
+% maxVal = -9999; minVal = 9999;
+% for c_idx = 1:1:case_num
+%     plot(t, recs{c_idx}.contraction_flag_hist(1,:), "Color", recs{c_idx}.color, "LineWidth", line_width, "LineStyle", "-"); hold on
+%     maxVal = 1; minVal = 0;
+% end
+% grid on; grid minor;
+% xlabel('Time / s', 'FontSize', font_size, 'Interpreter', 'latex');
+% ylabel('Contraction Cond.', 'FontSize', font_size, 'Interpreter', 'latex');
+% len = maxVal-minVal; ratio = .1;
+% if len ~= 0; ylim([minVal-len*ratio maxVal+len*ratio]);  end
+% xlim([0 T])
+% 
+% ax = gca;
+% ax.FontSize = font_size; 
+% ax.FontName = 'Times New Roman';
 
 
 %% SAVE FIGURES

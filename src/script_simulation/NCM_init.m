@@ -62,7 +62,7 @@ function ncm = NCM_init(ctrl_dt, ctrl_opt)
             ncm.M = M;    
             ncm.X = X;
 
-            ncm.lbd = 1e-3; % penalty term
+            ncm.lbd = 1e-9; % penalty term
         
         otherwise
             error("Invalid control option")

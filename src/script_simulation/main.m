@@ -27,7 +27,7 @@ param.rho = 28;
 param.beta = 8/3;
 
 param.B = eye(3);
-param.max_u = 160;
+param.max_u = 200;
 
 % disturbance
 d_MAX = 1000;  % maximum disturbance;
@@ -49,6 +49,7 @@ fprintf("FIGURE_SAVE_FLAG : %d\n", FIGURE_SAVE_FLAG)
 
 %% INITIAL POINTS SETTING
 x = [10;5;13];     % initial state
+% x = [10;4;16];     % initial state
 xd = [11;4;15];             % desired initial state
 u = [0;0;0];        % initial input
 

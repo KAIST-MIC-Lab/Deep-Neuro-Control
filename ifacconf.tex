@@ -100,7 +100,7 @@
 \begin{frontmatter}
 
 \title{
-   Convex Optimization for Contraction-Based Control: An Energy-Based Effective Space Approach
+   Vector-Valued Optimization for Contraction-Based Control: An Energy-Based Effective Space Approach
    \thanksref{footnoteinfo}
 } 
 % Title, preferably not more than 10 words.
@@ -126,14 +126,14 @@
 \begin{abstract}                % Abstract of 50--100 words
    In this paper, we propose a computationally efficient and numerically robust contraction metric calculation method for contraction-based control design.
    Conventional Linear Matrix Inequality (LMI) optimization frameworks for contraction metric calculation suffer from high computational complexity for real-time implementation and scale-invariance issues of the objective function which minimizes the condition number of the contraction metric.
-   To address these issues, we project the contraction metrics onto the trajectory error vector space, leading to a simplified convex optimization framework within a lower-dimensional effective space.
-   Furthermore, energy-based constraints are incorporated to prevent the contraction metrics from collapsing or exploding, thereby maintaining sufficient control authority.
+   To address these issues, we project the contraction metrics onto the trajectory error vector space, leading to a simplified vector-valued optimization framework within a lower-dimensional effective space.
+   Furthermore, energy-based constraints are incorporated to prevent the contraction metrics from \cred{collapsing or exploding}, thereby maintaining sufficient control effort.
    In addition, convex input saturation constraints are integrated to handle practical limitations of the actuators.
    The effectiveness and the feasibility of the proposed method are validated through numerical simulations using the Lorenz system.
 \end{abstract}
 
 \begin{keyword}
-   Contraction theory, convex optimization, input saturation, energy-based control
+   Contraction theory, numerical optimization, input saturation, energy-based control
 \end{keyword}
 
 \end{frontmatter}
@@ -493,7 +493,7 @@ According to Theorem~\ref{thm:contraction:perturbed}, the steady-state error bou
 We can indirectly minimize the condition number by minimizing the angle between $\mv{y}$ and $\mv{e}$, since the optimal condition number of $\mm{M}$ is achieved when $\mv{y}$ is parallel to $\mv{e}$, resulting $\mm{M}=\gamma \mm{I}_n$ for some $\gamma\in\R_{>0}$.
 
 However, there is infinite number of solutions $\mv{y}$ which is parallel to $\mv{e}$, \ie since the condition number is scale-invariant.
-To this end, energy-based constraint is introduced to obtain a unique solution, maintaining sufficient control authority
+To this end, energy-based constraint is introduced to obtain a unique solution, maintaining sufficient control effort
 Specifically, the following energy-based constraint is considered:
 \begin{equation} \label{eq:cstr:energy}
    \left(
@@ -507,7 +507,7 @@ Specifically, the following energy-based constraint is considered:
 \end{equation}
 where $\mu\in\R_{>0}$ denotes the desired energy level, and $\epsilon\in\R_{>0}$ and $s\in\R_{\ge0}$ denote allowable small energy variation and a slack variable to enhance the robust feasibility of the optimization problem.
 
-Thus, the following vector-valued convex optimization problem can be formulated to obtain the projected contraction metric $\mv{y}$:
+Thus, the following vector-valued optimization problem can be formulated to obtain the projected contraction metric $\mv{y}$:
 \begin{equation} \label{eq:opt:main}
    \begin{matrix}
       \min_{
@@ -556,13 +556,13 @@ After the optimization, the contraction metric $\mm{M}$ can be retrieved using B
 \end{equation}
 which satisfies $\mm{M}\mv{e}=\mv{y}$.
 
-For better intuition, the optimization problem \eqref{eq:opt:main} is illustrated in two-dimensional space in Fig.~\ref{fig:scene:first}.
+\cred{For better understanding}, the optimization problem \eqref{eq:opt:main} is illustrated in two-dimensional space in Fig.~\ref{fig:scene:first}.
 The contraction constraint \eqref{eq:cstr:ctrc:proj} and the input saturation constraint \eqref{eq:cstr:sat} restrict the feasible space of $\mv{y}$ in the outside of blue eclipse and the inside of red eclipse, respectively.
 The green line represents the energy-based constraint \eqref{eq:cstr:energy} assuming that the allowable energy variation $\epsilon$ is approximately zero.
 
 Neglecting the input saturation constraint, the optimal solution is obtained at the point (a) accordingly the objective function.
 Considering the input saturation constraint, the optimal solution is obtained at the point (b) by increasing the slack variable $s$.
-This also ensures that there exists a unique optimal solution in the optimization problem \eqref{eq:opt:main}.
+This also ensures that there exists a \cred{unique} optimal solution in the optimization problem \eqref{eq:opt:main}.
 
 \section{Numerical Validation}
 
@@ -929,9 +929,9 @@ or suggest applications and extensions.
 
 \end{comment}
 
-\begin{ack}
-Place acknowledgments here.
-\end{ack}
+% \begin{ack}
+% Place acknowledgments here.
+% \end{ack}
 
 \bibliography{template/refs, localRefs}             % bib file to produce the bibliography
                                     % with bibtex (preferred)

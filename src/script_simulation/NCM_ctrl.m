@@ -54,7 +54,7 @@
 
             % optimization variable
             y = sdpvar(x_num,1); assign(y, pre_y);
-            s = sdpvar(1,1); assign(s, 0);
+            s = sdpvar(1,1); assign(s, 1);
 
             % objective function
             obj = (e_norm*norm(y,2) - e'*y) + ncm.lbd*s;
@@ -75,10 +75,11 @@
             pre_W_bar = ncm.W_bar; 
             pre_nu = ncm.nu;
 
-            % optimization variable
-            W_bar = sdpvar(x_num ,x_num); assign(W_bar, pre_W_bar);
-            nu = sdpvar(1,1); assign(nu, pre_nu);
-            X = sdpvar(1,1); assign(X, ncm.X);
+            % optimization variable 
+            % (for SEMUDI solver, warm-start not supported)
+            W_bar = sdpvar(x_num ,x_num); % assign(W_bar, pre_W_bar);
+            nu = sdpvar(1,1); % assign(nu, pre_nu);
+            X = sdpvar(1,1); % assign(X, ncm.X);
 
             % objective function
             obj = X + ncm.lbd * nu;
