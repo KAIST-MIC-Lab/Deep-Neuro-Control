@@ -27,7 +27,7 @@ function ncm = NCM_init(ctrl_dt, ctrl_opt)
         case 11 
             ncm.ctrl_no = 1;
                 
-            ncm.alpha = 1e1;    % decay rate (contracting)
+            ncm.alpha = .5e1;    % decay rate (contracting)
 
             ncm.M_energy = 3e1;
             ncm.M = eye(ncm.x_num)*ncm.M_energy;
@@ -36,7 +36,7 @@ function ncm = NCM_init(ctrl_dt, ctrl_opt)
             ncm.X = X;
             ncm.y = ncm.M*ones(ncm.x_num,1);
 
-            ncm.lbd = 50e1 ; % penalty term
+            ncm.lbd = 50e0 ; % penalty term
             % ncm.lbd = 50e-2 ; % penalty term
         
             % EXISTING – CV-STEM
@@ -44,7 +44,7 @@ function ncm = NCM_init(ctrl_dt, ctrl_opt)
         case 31 % large penalty -> poor tracking
             ncm.ctrl_no = 3;
 
-            ncm.alpha = 1e1;    % decay rate (contracting)
+            ncm.alpha = .5e1;    % decay rate (contracting)
 
             ncm.W_bar = W_bar;
             ncm.nu = nu;
@@ -56,14 +56,14 @@ function ncm = NCM_init(ctrl_dt, ctrl_opt)
         case 32 % small penalty -> better but satuatrion occurs
             ncm.ctrl_no = 3;
 
-            ncm.alpha = 1e1;    % decay rate (contracting)
+            ncm.alpha = 5e1;    % decay rate (contracting)
 
             ncm.W_bar = W_bar;
             ncm.nu = nu;   
             ncm.M = M;    
             ncm.X = X;
 
-            ncm.lbd = 1e-10; % penalty term
+            ncm.lbd = 1e-6; % penalty term
         
         otherwise
             error("Invalid control option")

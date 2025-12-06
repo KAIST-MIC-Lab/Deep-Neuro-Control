@@ -207,7 +207,7 @@ ax.FontName = 'Times New Roman';
 nexttile;
 
 maxVal = -9999; minVal = 9999;
-for c_idx = 1:1:case_num
+for c_idx = [2,3]
 
     err = time_norm(recs{c_idx}.x_hist-xd_hist);
     % err = recs{c_idx}.x_hist(x_idx,:) - xd_hist(x_idx,:);

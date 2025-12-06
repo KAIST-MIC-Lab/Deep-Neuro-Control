@@ -16,6 +16,7 @@ PAPER_FIGURE_PLOT_FLAG = 0;   % plot the result
 
 %% SIMULATION SETTING
 T = .5;                 % simulation time
+% T = 5;                 % simulation time
 ctrl_dt = 1/200;         % controller sampling time
 dt = ctrl_dt/1e1;
 rpt_dt = 1e-1;          % report time )(on console)
@@ -27,12 +28,13 @@ param.rho = 28;
 param.beta = 8/3;
 
 param.B = eye(3);
-param.max_u = 200;
+param.max_u = 160;
 
 % disturbance
-d_MAX = 200;  % maximum disturbance;
-d_func = @(t, x) [1;1;1] *heaviside(t,.2) * d_MAX;
-% d_func = @(t, x) [1;1;1] * (heaviside(t,.2)-heaviside(t,.2+20*dt)) * d_MAX;
+% d_MAX = 200;  % maximum disturbance;
+% d_func = @(t, x) [1;1;1] *heaviside(t,.2) * d_MAX;
+d_MAX = 1000;  % maximum disturbance;
+d_func = @(t, x) [1;1;1] * (heaviside(t,.2)-heaviside(t,.2+20*dt)) * d_MAX;
 % d_func = @(t, x) randn(3,1) * heaviside(t,.1) * d_MAX;
 
 %% REPORT SETTING 
@@ -48,8 +50,8 @@ fprintf("FIGURE_PLOT_FLAG : %d\n", FIGURE_PLOT_FLAG)
 fprintf("FIGURE_SAVE_FLAG : %d\n", FIGURE_SAVE_FLAG)
 
 %% INITIAL POINTS SETTING
-% x = [10;5;13];     % initial state
-x = [10;10;10];     % initial state
+% x = [5;10;20];     % initial state
+x = [10;5;13];     % initial state
 xd = [11;4;15];             % desired initial state
 u = [0;0;0];        % initial input
 

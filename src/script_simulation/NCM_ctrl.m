@@ -67,15 +67,10 @@
             con = [
                 (e'*y - M_energy*e_norm_sq)^2 <= (1e-2+s)*e_norm_sq^2; % energy constraint
                 s >= 0; % slack variable
+                y'*H*y + f'*y + c <= 0; % contraction constraint
                 (y'*Hc*y + fc'*y + cc)/abs(1e2) <= 0; % saturation constraint
                 % e'*y >= 1e-5;
             ];
-            
-            if max_Ctr > 0
-                con = [con, 
-                    y'*H*y + f'*y + c <= 0; % contraction constraint
-                ];
-            end
 
         % EXISTING – CV-STEM
         % ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -147,8 +142,10 @@
         % PROPOSED 1 – effective space
         % ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
         case 1 
-            if sol.problem == 0 || norm(e) > 1e-9
-                assert(value(y)'*e >= 0, "y'*e is negative")
+            if sol.problem == 0 || norm(e) > 1e-9 
+                if value(y)'*e < -1e-5
+                    error("y'*e is negative")
+                end
 
                 ncm.y = value(y);
                 ncm.nu = value(s); % <======== CORRECT!!!

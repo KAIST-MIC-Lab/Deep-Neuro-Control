@@ -113,7 +113,7 @@ for c_idx = 1:1:case_num
     maxVal = max(maxVal, max(u_norm));
     minVal = min(minVal, min(u_norm));
 end
-text(0+.02, param.max_u+30, "Input limit $\overline{u}$", "FontSize", font_size-4, "FontName", 'Times New Roman', "Interpreter", "latex")
+text(.3+.02, param.max_u+70, "Input limit $\overline{u}$", "FontSize", font_size-4, "FontName", 'Times New Roman', "Interpreter", "latex")
 
 grid on; grid minor;
 xlabel('Time / s', 'FontSize', font_size, 'Interpreter', 'latex');
@@ -199,7 +199,7 @@ end
 grid on; grid minor;
 xlabel('Time / s', 'FontSize', font_size, 'Interpreter', 'latex');
 ylabel('Penalty term $\nu$', 'FontSize', font_size, 'Interpreter', 'latex');
-% minVal = 25;
+minVal = 50;
 len = maxVal-minVal; ratio = .1;
 if len ~= 0; ylim([minVal-len*ratio maxVal+len*ratio]);  end
 xlim([0 T])
@@ -250,6 +250,9 @@ ylabel('(13) satisfied', 'FontSize', font_size, 'Interpreter', 'latex');
 len = maxVal-minVal; ratio = .1;
 if len ~= 0; ylim([minVal-len*ratio maxVal+len*ratio]);  end
 xlim([0 T])
+
+yticks([0 1])
+yticklabels({'false','true'})
 
 ax = gca;
 ax.FontSize = font_size; 
