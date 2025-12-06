@@ -658,7 +658,8 @@
 \newtheorem{defn}[thm]{Definition}
 % \newtheorem{exmp}[thm]{Example}
 \newtheorem{exmp}{Example}
-\newtheorem{rem}[thm]{Remark}
+% \newtheorem{rem}[thm]{Remark}
+\newtheorem{rem}{Remark}
 \newtheorem{prob}[thm]{Problem}
 \newtheorem{prin}[thm]{Principle}
 \newtheorem{alg}{Algorithm}

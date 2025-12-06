@@ -66,14 +66,17 @@ for u_idx = 1:1:num_u
     % hF.Position(3:4) = [fig_width, fig_height];
     nexttile(2*(u_idx));
 
+    plot(t, recs{2}.uSat_hist(u_idx,:), "Color", "#008B8B", "LineWidth", line_width, "LineStyle", "-"); hold on
+
     maxVal = -9999; minVal = 9999;
     for c_idx = 1:1:case_num
         plot(t, recs{c_idx}.u_hist(u_idx,:), "Color", recs{c_idx}.color, "LineWidth", line_width, "LineStyle", "-"); hold on
-        plot(t, recs{c_idx}.uSat_hist(u_idx,:), "Color", recs{c_idx}.color, "LineWidth", line_width, "LineStyle", "--"); hold on
+        % plot(t, recs{c_idx}.uSat_hist(u_idx,:), "Color", recs{c_idx}.color, "LineWidth", line_width, "LineStyle", "--"); hold on
 
         maxVal = max(maxVal, max([recs{c_idx}.u_hist(u_idx,:), recs{c_idx}.uSat_hist(u_idx,:), ud_hist(u_idx,:)]));
         minVal = min(minVal, min([recs{c_idx}.u_hist(u_idx,:), recs{c_idx}.uSat_hist(u_idx,:), ud_hist(u_idx,:)]));
     end
+
     plot(t, ud_hist(u_idx,:), "Color", "red", "LineWidth", line_width, "LineStyle", "--"); hold on
 
     grid on; grid minor;
