@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Draft - Contraction Theory based Control – Energy Based Approach + Convex Input Constraint + Effective Space (Simple).md",
+                "file": "Stochastic Contraction Theory-Based Control.md",
                 "mode": "source",
                 "source": false,
                 "backlinks": true,
@@ -28,7 +28,55 @@
                 }
               },
               "icon": "lucide-file",
-              "title": "Draft - Contraction Theory based Control – Energy Based Approach + Convex Input Constraint + Effective Space (Simple)"
+              "title": "Stochastic Contraction Theory-Based Control"
+            }
+          },
+          {
+            "id": "3a63195c2791b96d",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Welcome.md",
+                "mode": "source",
+                "source": false,
+                "backlinks": true,
+                "backlinkOpts": {
+                  "collapseAll": false,
+                  "extraContext": false,
+                  "sortOrder": "alphabetical",
+                  "showSearch": false,
+                  "searchQuery": "",
+                  "backlinkCollapsed": false,
+                  "unlinkedCollapsed": true
+                }
+              },
+              "icon": "lucide-file",
+              "title": "Welcome"
+            }
+          },
+          {
+            "id": "3185907e8e439233",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Stochastic Contraction Theory-Based Control.md",
+                "mode": "source",
+                "source": false,
+                "backlinks": true,
+                "backlinkOpts": {
+                  "collapseAll": false,
+                  "extraContext": false,
+                  "sortOrder": "alphabetical",
+                  "showSearch": false,
+                  "searchQuery": "",
+                  "backlinkCollapsed": false,
+                  "unlinkedCollapsed": true
+                }
+              },
+              "icon": "lucide-file",
+              "title": "Stochastic Contraction Theory-Based Control"
             }
           }
         ]
@@ -160,8 +208,19 @@
               "icon": "lucide-list",
               "title": "Outline of 중간 보고"
             }
+          },
+          {
+            "id": "8763746d8916a530",
+            "type": "leaf",
+            "state": {
+              "type": "github-copilot-chat-view",
+              "state": {},
+              "icon": "bot-message-square",
+              "title": "Copilot Chat"
+            }
           }
-        ]
+        ],
+        "currentTab": 4
       }
     ],
     "direction": "horizontal",
@@ -183,16 +242,18 @@
   },
   "active": "cc19b82d1dc10335",
   "lastOpenFiles": [
-    "New New approach—y-space.md",
-    "Draft - Contraction Theory based Control – Energy Based Approach + Convex Input Constraint + Effective Space (Simple).md",
-    "Untitled.md",
-    "중간 보고.md",
     "Welcome.md",
-    "New approach—y-space.md",
-    "Contraction Theory Based Control Under Input Saturation–LMI Approach.md",
-    "scene_one.jpg",
-    "scene_two.jpg",
+    "Stochastic Contraction Theory-Based Control.md",
+    "notes for IFAC 2026 paper/중간 보고.md",
+    "notes for IFAC 2026 paper/Contraction Theory Based Control Under Input Saturation–LMI Approach.md",
+    "notes for IFAC 2026 paper/Draft - Contraction Theory based Control – Energy Based Approach + Convex Input Constraint + Effective Space (Simple).md",
     "Dream.md",
-    "Screenshot 2025-10-12 at 2.55.33 PM.png"
+    "notes for IFAC 2026 paper/Screenshot 2025-10-12 at 2.55.33 PM copy.pdf",
+    "notes for IFAC 2026 paper/scene_one.jpg",
+    "notes for IFAC 2026 paper",
+    "notes for IFAC 2026 paper/New New approach—y-space.md",
+    "notes for IFAC 2026 paper/New approach—y-space.md",
+    "notes for IFAC 2026 paper/scene_two.jpg",
+    "notes for IFAC 2026 paper/Screenshot 2025-10-12 at 2.55.33 PM.png"
   ]
 }

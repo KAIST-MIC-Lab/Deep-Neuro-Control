@@ -52949,6 +52949,8 @@ var defaultModels = [
   { label: "GPT-o1", value: "o1-2024-12-17" },
   { label: "GPT-o3-mini", value: "o3-mini" },
   { label: "GPT-o4-mini", value: "o4-mini" },
+  { label: "GPT-5", value: "gpt-5" },
+  { label: "GPT-5-mini", value: "gpt-5-mini" },
   { label: "Claude 3.7 Sonnet Thinking", value: "claude-3.7-sonnet-thought" },
   { label: "Claude 3.7 Sonnet", value: "claude-3.7-sonnet" },
   { label: "Claude 3.5 Sonnet", value: "claude-3.5-sonnet" },
@@ -53380,6 +53382,10 @@ var CopilotPluginSettingTab = class extends import_obsidian9.PluginSettingTab {
       })
     );
     containerEl.createEl("h1", { text: "Copilot Chat Settings" });
+    containerEl.createEl("p", {
+      text: "When authenticating in Copilot Chat, a personal token will be encrypted and stored as a file in the plugin folder. This file is called `secure-credentials.dat`. It is only decrytable by your machine but you should never share it with anyone.",
+      cls: "copilot-settings-warning"
+    });
     new import_obsidian9.Setting(containerEl).setName("Invert Enter/Shift+Enter behavior").setDesc(
       "When enabled, pressing Enter will create a new line and Shift+Enter will send the message. By default, Enter sends the message and Shift+Enter creates a new line."
     ).addToggle(
@@ -67000,7 +67006,7 @@ var crypt32_default = __toBinary("TVqQAAMAAAAEAAAA//8AALgAAAAAAAAAQAAAAAAAAAAAAA
 var CopilotPlugin = class extends import_obsidian19.Plugin {
   constructor() {
     super(...arguments);
-    this.version = "1.1.6";
+    this.version = "1.1.8";
     this.tabSize = Vault_default.DEFAULT_TAB_SIZE;
   }
   async onload() {
