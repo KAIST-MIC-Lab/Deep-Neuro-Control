@@ -1,57 +1,25 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%2345678901234567890123456789012345678901234567890123456789012345678901234567890
-%        1         2         3         4         5         6         7         8
+\documentclass[letterpaper, 10 pt, conference]{ieeeconf} 
 
-\documentclass[letterpaper, 10 pt, conference]{ieeeconf}  % Comment this line out
-                                                          % if you need a4paper
-%\documentclass[a4paper, 10pt, conference]{ieeeconf}      % Use this line for a4
-                                                          % paper
-
-\IEEEoverridecommandlockouts                              % This command is only
-                                                          % needed if you want to
-                                                          % use the \thanks command
+\IEEEoverridecommandlockouts
 \overrideIEEEmargins
-% See the \addtolength command later in the file to balance the column lengths
-% on the last page of the document
 
+\def\pub{false} % true for publication, false for draft
+\newcommand*{\template}{../../template} 
+\input{\template/preamble/preamble_conf.tex}
 
-
-% The following packages can be found on http:\\www.ctan.org
-%\usepackage{graphics} % for pdf, bitmapped graphics files
-%\usepackage{epsfig} % for postscript graphics files
-%\usepackage{mathptmx} % assumes new font selection scheme installed
-%\usepackage{times} % assumes new font selection scheme installed
-%\usepackage{amsmath} % assumes amsmath package installed
-%\usepackage{amssymb}  % assumes amsmath package installed
 
 \title{\LARGE \bf
-Point-Wise Contraction-Based Control Based on Vector-Space Optimization under State and input Constraints
+    Point-Wise Contraction-Based Control Based on Vector-Space Optimization under State and input Constraints
 }
 
-%\author{ \parbox{3 in}{\centering Huibert Kwakernaak*
-%         \thanks{*Use the $\backslash$thanks command to put information here}\\
-%         Faculty of Electrical Engineering, Mathematics and Computer Science\\
-%         University of Twente\\
-%         7500 AE Enschede, The Netherlands\\
-%         {\tt\small h.kwakernaak@autsubmit.com}}
-%         \hspace*{ 0.5 in}
-%         \parbox{3 in}{ \centering Pradeep Misra**
-%         \thanks{**The footnote marks may be inserted manually}\\
-%        Department of Electrical Engineering \\
-%         Wright State University\\
-%         Dayton, OH 45435, USA\\
-%         {\tt\small pmisra@cs.wright.edu}}
-%}
-
 \author{
-   Myeongseok Ryu, Kyunghwan Choi and Sesun You
-\thanks{This work was not supported by any organization}% <-this % stops a space
-\thanks{H. Kwakernaak is with Faculty of Electrical Engineering, Mathematics and Computer Science,
-        University of Twente, 7500 AE Enschede, The Netherlands
-        {\tt\small h.kwakernaak@autsubmit.com}}%
-\thanks{P. Misra is with the Department of Electrical Engineering, Wright State University,
-        Dayton, OH 45435, USA
-        {\tt\small pmisra@cs.wright.edu}}%
+    Myeongseok Ryu, Kyunghwan Choi and Sesun You
+    \thanks{This work was not supported by any organization}% <-this % stops a space
+    \thanks{M. Ryu and K. Choi are with Cho Chun Shik Graduate School of Mobility, Korea Advanced Institute of Science and Technology (KAIST), 193 Daejeon, Republic of Korea
+    {\tt\small \{dding\_98, kh.choi\}@kaist.ac.kr}}%
+    \thanks{P. Misra is with the Department of Electrical Engineering, Wright State University,
+    Dayton, OH 45435, USA
+    {\tt\small pmisra@cs.wright.edu}}%
 }
 
 
@@ -66,7 +34,7 @@ Point-Wise Contraction-Based Control Based on Vector-Space Optimization under St
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{abstract}
-
+    Contraction theory offers 
 
 
 \end{abstract}
@@ -76,19 +44,24 @@ Point-Wise Contraction-Based Control Based on Vector-Space Optimization under St
 \section{Introduction}
 
 \begin{itemize}
-   \item Advantages of contraction-based control
-   \item Challenges in existing methods
-   \begin{itemize}
-      \item Absence of explicit handling of constraints
-      \item Requirements of prior computation of contraction metrics
-      \item Limitations to online optimization in real-time applications (computational complexity)
-   \end{itemize}
-   \item Potentional of vector-space optimization
-   \begin{itemize}
-      \item Integration of constraints directly into the optimization framework
-      \item Input constraints and state constraints can be handled explicitly
-      \item CBF based constraints can be easily integrated
-   \end{itemize}
+    \item Advantages of contraction-based control
+    \item Challenges in existing methods
+    \begin{itemize}
+        \item Absence of explicit handling of constraints
+        \item Requirements of prior computation of contraction metrics
+        \item Limitations to online optimization in real-time applications (computational complexity)
+    \end{itemize}
+    \item Potentional of vector-space optimization
+    \begin{itemize}
+        \item Integration of constraints directly into the optimization framework
+        \item Input constraints and state constraints can be handled explicitly
+        \item CBF based constraints can be easily integrated
+    \end{itemize}
+    \item Justification of the proposed method
+    \begin{itemize}
+        \item Examples of effectiveness of point-wise control
+        \item Examples of point-wise reference
+    \end{itemize}
 \end{itemize}
 
 
@@ -96,7 +69,139 @@ Point-Wise Contraction-Based Control Based on Vector-Space Optimization under St
 
 \section{Main Results}
 
+\begin{itemize}
+\item Constraint vs Stability analysis
+\end{itemize}
+
+% state 발산?
+% 추종은 괜찮
+
+% CBF 조건 만족 -> state safe set forward invariant
+% 안정성 문제 없음
+% 입력같은 경우도 <- CBF+입력제한 조건 만족 -> 입력제한 set forward invariant
+
+% contraction -> error bound 
+% error bound >> e(CBF, 입력 포화량)
+
+% - ACC 구현 기존거 돌려보기
+% - 메인 리저트 쓰기 (렘마화 명확히 + CBF)
+
 \section{Numerical Validations}
+
+\subsection{Validation Setup}
+
+
+\begin{itemize}
+\item LK
+\item 
+\end{itemize}
+
+\begin{equation}
+    \ddtt
+    \begin{pmatrix}
+        \beta\\
+        r\\
+        \theta_f\\
+        \theta_r
+    \end{pmatrix}
+    =
+    \begin{pmatrix}
+        \tfrac{1}{m v_x} \left(F_f+F_r\right) - r
+        \\
+        \tfrac{1}{I_z} \left(l_f F_f - l_r F_r\right)
+        \\
+        \tfrac{1}{\tau} \left(\omega_f - \theta_f\right)
+        \\
+        \tfrac{1}{\tau} \left(\omega_r - \theta_r\right)
+    \end{pmatrix}
+    ,
+\end{equation}
+where the lateral tire forces $F_f$ and $F_r$ are simplified as 
+\begin{equation}
+    F_f = F_{\max} \tanh\left( \tfrac{C_f}{F_{\max}} \alpha_f \right)
+    ,
+    F_r = F_{\max} \tanh\left( \tfrac{C_r}{F_{\max}} \alpha_r \right)
+    ,
+\end{equation}
+with the slip angles $\alpha_f$ and $\alpha_r$ defined as
+\begin{equation}
+    \alpha_f(\beta,r,\theta_f) = \beta + \tfrac{l_f r}{v_x} - \theta_f
+    ,
+    \alpha_r(\beta,r,\theta_r) = \beta - \tfrac{l_r r}{v_x} - \theta_r
+    .
+\end{equation}
+
+By denoting the state vector as $\mv{x}=\left(\beta,r,u_f,u_r\right)^\top\in\R^4$ and the control input as $\mv{u}=\left(w_f,w_r\right)\in\R^2$, the system can be represented in the SDC formulation as
+\begin{equation} \label{sim:state:space}
+    \ddtt \mv{x}
+    =
+    \mm{A}\mv{x} + \mm{B} u
+    ,
+\end{equation}
+where $\mv{x}=\left(\beta,r,u_f,u_r\right)^\top\in\R^4$ is the state vector, 
+
+\hfill
+
+Following constraints are considered for the validation:
+\subsubsection*{State Constraints}
+To prevent tire slip, the slip angles $\alpha_f$ and $\alpha_r$ are constrained as
+\begin{equation}
+    \vert \alpha_f \vert \leq \alpha_{f,\max}, \quad \vert \alpha_r \vert \leq \alpha_{r,\max}
+    ,
+\end{equation}
+
+\subsubsection*{Input Constraints}
+Considering physical limitations of the steering system, the control inputs, steering angle rate, are constrained as
+\begin{equation}
+    \vert w_f \vert \leq w_{f,\max}, \quad  \vert w_r \vert \leq w_{r,\max}
+    .
+\end{equation}
+
+\subsection{Controllers for Comparison}
+
+We compare the following controllers including the proposed controller as follows:
+
+\subsubsection*{Proposed Method}
+
+\begin{itemize}
+    \item Vector-space optimization
+    \item CBF + Input saturation
+\end{itemize}
+
+\subsubsection*{CV-STEM}
+
+\subsubsection*{Desired control law only}
+
+
+
+\begin{table}[t]
+\renewcommand{\arraystretch}{1.3}
+\caption{Vehicle Dynamics Parameters.}
+\centering
+\begin{tabular}{c m{9.5em} c c c }
+    % \begin{tabular}{c c c c c}
+    \hline
+    \textbf{Symbol} & \textbf{Description} & \textbf{Value} \\
+    \hline
+    \hline 
+    $m$ & Vehicle Mass & \qty{1650}{\kilo\gram} \\
+    \hline
+    $(l_f,l_r)$  & Front and Rear Wheelbase & (\qty{1.11}{}, \qty{1.59}{}) \qty{}{\meter} \\  
+    \hline
+    $(C_f,C_r)$ & Front and Rear Cornering Stiffness & (\qty{133}{}, \qty{98.8}{}) \qty{}{\kilo\newton\per\radian} \\
+    \hline
+    $F_{\max}$ & Maximum Tire Force & \qty{8000}{\newton} \\
+    \hline
+    $I_z$ & Yaw Moment of Inertia & \qty{2315.3}{\kilo\gram\meter\squared} \\
+    \hline
+    $v_x$ & Longitudinal Velocity & \qty{27.7}{\meter\per\second} ($\approx$ \qty{100}{\kilo\meter\per\hour}) \\
+    \hline
+    \end{tabular}
+    \label{table:example}
+\end{table}
+
+
+\subsection{Validation Results}
 
 \section{Conclusions}
 
