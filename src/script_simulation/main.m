@@ -29,6 +29,7 @@ param.beta = 8/3;
 
 param.B = eye(3);
 param.max_u = 160;
+% param.max_u = 16000;
 
 % disturbance
 % d_MAX = 200;  % maximum disturbance;

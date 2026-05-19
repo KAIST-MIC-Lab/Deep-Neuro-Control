@@ -201,7 +201,8 @@ for c_idx = 2
 end
 grid on; grid minor;
 xlabel('Time / s', 'FontSize', font_size, 'Interpreter', 'latex');
-ylabel('Penalty term $\nu$', 'FontSize', font_size, 'Interpreter', 'latex');
+ylabel('Scaling factor $\nu$', 'FontSize', font_size, 'Interpreter', 'latex');
+% ylabel('Penalty term $\nu$', 'FontSize', font_size, 'Interpreter', 'latex');
 minVal = 50;
 len = maxVal-minVal; ratio = .1;
 if len ~= 0; ylim([minVal-len*ratio maxVal+len*ratio]);  end
@@ -248,7 +249,7 @@ for c_idx = [2,3]
 end
 grid on; grid minor;
 xlabel('Time / s', 'FontSize', font_size, 'Interpreter', 'latex');
-ylabel('(13) satisfied', 'FontSize', font_size, 'Interpreter', 'latex');
+ylabel('(11) satisfied', 'FontSize', font_size, 'Interpreter', 'latex');
 % ylabel('Contraction Cond.', 'FontSize', font_size, 'Interpreter', 'latex');
 len = maxVal-minVal; ratio = .1;
 if len ~= 0; ylim([minVal-len*ratio maxVal+len*ratio]);  end

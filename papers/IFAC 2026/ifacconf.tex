@@ -51,20 +51,20 @@
 
 \begin{comment}
 L2 Norm of Tracking Error:
-C1: 2.0486
-C2: 1.6893
+C1: 1.3539
+C2: 1.2804
 C3: 6.8005
 Improvement over C3:
-C1: 69.88 %
-C2: 75.16 %
+C1: 80.09 %
+C2: 81.17 %
 \end{comment}
 
-\newcommand{\oneErr}{{2.0486}}
-\newcommand{\twoErr}{{1.6893}}
+\newcommand{\oneErr}{{1.3539}}
+\newcommand{\twoErr}{{1.2804}}
 \newcommand{\threeErr}{{6.8005}}
 
-\newcommand{\impOne}{{69.88}}
-\newcommand{\impTwo}{{75.16}}
+\newcommand{\impOne}{{80.09}}
+\newcommand{\impTwo}{{81.17}}
 
 % ============================================
 %         MATH MACROS
@@ -118,7 +118,8 @@ C2: 75.16 %
 \begin{frontmatter}
 
 \title{
-   Vector-Space Optimization for Contraction Theory-Based Control Design: An Energy-Based Effective Space Approach
+   % Vector-Space Optimization for Contraction Theory-Based Control Design
+   Vector-Space Optimization Framework Based on Projected Contraction Condition for Control Design with Input Saturation 
    \thanksref{footnoteinfo}
 } 
 % Title, preferably not more than 10 words.
@@ -135,24 +136,22 @@ C2: 75.16 %
    Korea Advanced Institute of Science and Technology (KAIST), 
    Daejeon 34051, South Korea (e-mail: \{dding\_98, kh.choi\}@kaist.ac.kr)}
 \address[Second]{
-   Keimyung University, 
-   Daegu 42601, South Korea (e-mail: yousesun@kmu.ac.kr)}
+   Incheon National University, 
+   Incheon 22012, South Korea (e-mail: yousesun@inu.ac.kr)}
 
 \begin{abstract}                % Abstract of 50--100 words
-   In this paper, we propose a novel vector-space optimization framework for contraction theory-based control design with input saturation.
-   Conventional Linear Matrix Inequality (LMI) optimization frameworks suffer from computational complexity issues for high-dimensional systems and limited flexibility in handling various constraints, including input saturation.
-   Moreover, there exists ill-posed problem in the objective function minimizing the condition number of the contraction metric.
-   To address these issues, we project the contraction metrics onto the trajectory error vector space, leading to a simplified vector-space optimization framework within a lower-dimensional effective space.
-   Furthermore, energy-based constraints are incorporated to obtain a finite number of locally optimal solutions and to maintain sufficient control effort.
-   In addition, convex input saturation constraints are integrated to handle the practical limitations of actuators.
-   The effectiveness and feasibility of the proposed method are validated through numerical simulations using the Lorenz system.
+   Conventional feedback control design based on contraction theory typically requires matrix-valued contraction metrics, which can limit real-time applicability as the system dimension increases and make direct handling of input saturation nontrivial.
+   To address these issues, we project the contraction condition onto the instantaneous trajectory-error direction and introduce the metric-weighted error vector as the optimization variable.
+   This yields a lower-dimensional formulation that avoids direct optimization over the full matrix-valued metric and enables input saturation constraints to be incorporated directly.
+   Additionally, an energy-based constraint is introduced to resolve the scale ambiguity of condition-number minimization and maintain sufficient control effort.
+   The effectiveness of the proposed method is validated through numerical simulations using the Lorenz system.
 \end{abstract}
 
 \begin{keyword}
    Contraction theory, 
    optimization-based control,
-   input saturation, 
-   energy-based control
+   input saturation
+   % energy-based control
 \end{keyword}
 
 \end{frontmatter}
@@ -162,63 +161,90 @@ C2: 75.16 %
 
 \subsection{Motivation}
 
-Besides the traditional Lyapunov stability theory, contraction theory offers an interesting perspective on the stability analysis of nonlinear systems.
-It allows us to analyze system stability by examining the convergence of trajectories rather than the convergence of states to a specific equilibrium point \cite{LOHMILLER:1998aa}.
-For this analysis, the differential dynamics of the system are considered to find a Riemann metric, called a contraction metric, which guarantees that all trajectories exponentially converge to a unique trajectory.
-One of the advantages of contraction theory-based approaches is that Linear Matrix Inequalities (LMIs) can be used to efficiently obtain global optimal contraction metrics, utilizing the differential nature of contraction theory \cite{Andrieu:2019aa,Manchester:2014aa}.
-Additionally, Linear Time-Varying (LTV) system analysis techniques can be applied to design feedback controllers using the contraction metric as a feedback gain \cite{Tsukamoto:2019aa}.
+Besides the traditional Lyapunov stability theory, contraction theory provides a powerful framework for analyzing nonlinear systems from an incremental stability perspective.
+Rather than studying convergence to a fixed equilibrium point, contraction theory examines whether infinitesimally close trajectories exponentially converge to each other under a Riemann metric, called a contraction metric \citep{LOHMILLER:1998aa}.
+Contraction theory has been extended to control and observer design, as reviewed in \citep{Tsukamoto:2021aa} and \citep{Bernard:2022aa}, respectively.
 
-Among recent developments in contraction theory-based control, Tsukamoto {\etal} proposed ConVex optimization-based Steady-state Tracking Error Minimization (CV-STEM), which systematically calculates the contraction metrics in an LMI optimization problem \cite{Tsukamoto:2019aa} to minimize the steady-state tracking error bound in the presence of bounded disturbances.
-CV-STEM has demonstrated its effectiveness and has been extended to various systems, including stochastic systems \cite{Tsukamoto:2021ad} and uncertain systems \cite{Tsukamoto:2021af}.
+Specifically, control contraction metrics (CCMs) have been developed for feedback control design, providing universal stability certificates by introducing convex feasibility problems \citep{Manchester:2014aa,Manchester:2017aa}.
+In CCM-based control design, the contraction metric is typically constructed over a prescribed operating domain in advance, often through gridding, sampling, or finite-dimensional parameterization.
+Using the obtained contraction metric, a feedback control law can be obtained by integrating a differential feedback law along a shortest path, called a geodesic, between the current and the desired trajectories in the Riemannian space defined by the contraction metric.
 
-However, since the LMI framework requires matrix-space optimization, the computational complexity increases with respect to the system dimension, as the number of optimization variables is proportional to the square of the system dimension \cite{Boyd:2004aa}.
-This makes real-time implementation difficult for high-dimensional systems.
-To resolve this, CV-STEM has been combined with deep neural networks (DNNs) to approximate the contraction metrics off-line and implement them in real-time \cite{Tsukamoto:2021ae,Tsukamoto:2021ac}.
-For practical real-time implementation, however, it is desirable to reduce the computational complexity of the contraction metric calculation without relying on DNNs.
+However, enforcing the contraction condition over an entire operating domain can be computationally demanding, and the burden can increase rapidly with the dimension and size of the operating region.
+Moreover, the resulting metric is tied to the selected domain and discretization, so the design may need to be repeated when the operating region or system configuration changes.
+These limitations motivate step-wise formulations that compute a contraction metric at each time instant, rather than constructing a global metric over the full domain offline.
 
-Moreover, there has been limited consideration of input saturation in conventional contraction theory-based control design, which limits the practical applicability of the method.
-For instance, in \cite{Tsukamoto:2019aa}, the input saturation constraint is considered in a conservative manner by limiting the maximum norm of the control input, rather than directly incorporating the contraction metric into the LMI framework.
-This may lead to the infeasibility of the optimization problem when the input saturation constraint is tight.
-In addition, if the input saturation effect is not properly handled, the system performance may degrade significantly or even become unstable \cite{Ryu:2025aa}.
+Among recent developments in contraction theory-based control, Tsukamoto {\etal} proposed ConVex optimization-based Steady-state Tracking Error Minimization (CV-STEM) \citep{Tsukamoto:2019aa}.
+CV-STEM is a systematic framework for contraction metric calculation that solves a linear matrix inequality (LMI) optimization problem to minimize the steady-state tracking error bound in the presence of bounded disturbances at each time instant.
+% Unlike conventional CCM-based approaches that construct a global metric over a prescribed domain offline, CV-STEM computes the contraction metric at each time instant for the current state and desired trajectory.
+The framework has been developed in both state-dependent coefficient (SDC)-based and CCM-based formulations \citep{Tsukamoto:2021aa}.
+In the SDC-based formulation, the error dynamics are transformed into a linear parameter-varying (LPV) system using the SDC formulation, and the contraction metric is directly applied as a feedback gain for the trajectory error.
+In the CCM-based formulation, the offline-computed CCM is substituted with the obtained contraction metric at each time instant, and the control law is obtained similarly to \citep{Manchester:2017aa}.
+CV-STEM has demonstrated its effectiveness and has been extended to various systems, including stochastic systems \citep{Tsukamoto:2021ad} and uncertain systems \citep{Tsukamoto:2021af}.
 
-There is also the issue of an ill-posed problem in the objective function minimizing the condition number of the contraction metric, which is proportional to the steady-state error bound.
-Since the condition number is scale-invariant, there exist an infinite number of solutions for the contraction metric that yield the same condition number.
-In conventional approaches, this issue has been tackled by introducing a scaling parameter for the contraction metric and tuning it with weighting factors in the objective function \cite{Tsukamoto:2019aa,Tsukamoto:2021ae}.
-However, this approach may determine insufficient control effort to achieve the desired trajectory or lead to excessive control effort.
+Despite these advances, CV-STEM still relies on matrix-space LMI optimization problems when the metric is computed at each time instant.
+For an $n$-dimensional system, the contraction metric is an $n\times n$ symmetric positive definite matrix.
+Thus, the number of optimization variables grows quadratically with the system dimension and the scalability of online contraction-metric computation can be limited for high-dimensional systems.
+Hence, it is desirable to reduce the dimension of the optimization variable to enhance the scalability.
+% Although some studies have proposed offline approximation of the contraction metric using deep neural networks (DNNs) \citep{Tsukamoto:2021ae,Tsukamoto:2021ac}, it is desirable to reduce the dimension of the optimization variable without relying on offline approximation.
 
-On the other hand, by formulating the problem in vector space rather than matrix space, flexibility in handling various constraints, including nonlinear input and state constraints, can be improved.
-In addition, the dependency of computational complexity on the system dimension can be alleviated.
-If the contraction metric is utilized as a feedback gain for the trajectory error, the contraction metric can be projected onto the trajectory error vector space.
-This allows us to simplify the contraction metric calculation from matrix-space optimization to vector-space optimization within a lower-dimensional effective space.
+Moreover, there has been limited consideration of input saturation in conventional contraction theory-based control design.
+For example, in \citep{Tsukamoto:2019aa}, the input saturation constraint is considered in a conservative manner by limiting the maximum norm of the control input.
+This may lead to the infeasibility of the optimization problem when the input saturation constraint is imposed too conservatively.
+In addition, if the input saturation effect is not properly handled, the control performance may degrade, and invalidate the nominal stability certificate \citep{Ryu:2025aa}.
 
-To the best of our knowledge, there has been no previous work that projects the contraction constraints onto a vector space to reduce the dependency on the system dimension for contraction metric calculation.
-Moreover, input saturation has not been actively considered in conventional contraction theory-based control design.
-Hence, the main objective of this paper is to simplify the contraction metric calculation from matrix-space optimization to vector-space optimization, while also incorporating the input saturation constraint and maintaining sufficient control effort.
+% Another issue arises from the condition-number objective used in LMI optimization problems.
+% Since the steady-state tracking-error bound is proportional to the condition number of the contraction metric, the objective is to minimize the condition number.
+% However, the condition number is invariant under positive scaling of the contraction metric, and therefore condition-number minimization alone does not uniquely determine the magnitude of the metric.
+% Consequently, the resulting feedback gain and control effort can become ambiguous: different scaling of the metric can yield the same condition number but different control magnitudes.
+
+% There is also the issue of an ill-posed problem in the objective function minimizing the condition number of the contraction metric, which is proportional to the steady-state error bound.
+% Since the condition number is scale-invariant, there exist an infinite number of solutions for the contraction metric that yield the same condition number.
+% In conventional approaches, this issue has been tackled by introducing a scaling parameter for the contraction metric and tuning it with weighting factors in the objective function \citep{Tsukamoto:2019aa,Tsukamoto:2021ae}.
+% However, this approach may determine insufficient control effort to achieve the desired trajectory or lead to excessive control effort.
+
+Motivated by these observations, this paper develops a vector-space optimization framework based on a projected contraction condition.
+The key idea is to optimize a metric-weighted error vector, which is the feedback-relevant action of the contraction metric, instead of directly solving for the full matrix-valued metric.
+This also allows input constraints and scale regulation to be handled in the same vector-space optimization framework.
+
+% \cred{이거도 마찬가지임}
+% On the other hand, by formulating the problem in vector space rather than matrix space, flexibility in handling various constraints, including nonlinear input and state constraints, can be improved.
+% In addition, the dependency of computational complexity on the system dimension can be alleviated.
+% If the contraction metric is utilized as a feedback gain for the trajectory error, the contraction metric can be projected onto the trajectory error vector space.
+% This allows us to simplify the contraction metric calculation from matrix-space optimization to vector-space optimization within a lower-dimensional effective space.
+
+% To the best of our knowledge, there has been no previous work that projects the contraction constraints onto a vector space to reduce the dependency on the system dimension for contraction metric calculation.
+% Moreover, input saturation has not been actively considered in conventional contraction theory-based control design.
+% Hence, the main objective of this paper is to simplify the contraction metric calculation from matrix-space optimization to vector-space optimization, while also incorporating the input saturation constraint and maintaining sufficient control effort.
 
 \subsection{Contributions}
 
 The main contributions of this paper are:
 \begin{itemize}
-   \item The contraction metrics can be calculated in a lower-dimensional effective space by projecting the contraction constraints onto the trajectory error vector space. This significantly reduces the computational complexity of the LMI framework for contraction metric calculation, enabling real-time implementation;
-   \item The scale-invariance issues of the objective function minimizing the condition number of the contraction metric are resolved by introducing energy-based constraints to obtain locally optimal solutions and maintain sufficient control effort;
-   \item A convex input saturation constraint is incorporated into the proposed optimization framework, which handles the practical limitations of actuators; and
-   \item The robust feasibility of the proposed method is enhanced by introducing slack variables to relax the energy-based constraints, thereby avoiding infeasibility due to the input saturation constraint.
+   \item A vector-space optimization framework is proposed by projecting the contraction condition onto the trajectory error direction;
+   \item By introducing the metric-weighted error vector as the optimization variable, the number of optimization variables is reduced, thereby improving scalability;
+   % \item An energy-based constraint is introduced to resolve the scale ambiguity of condition-number minimization and to maintain sufficient control effort; and
+   \item The input saturation constraint is directly incorporated into the proposed optimization framework, enhancing the practical applicability of the method.
+
+   % \item The contraction metrics can be calculated in a lower-dimensional effective space by projecting the contraction constraints onto the trajectory error vector space. This significantly reduces the computational complexity of the LMI framework for contraction metric calculation, enabling real-time implementation;
+   % \item The scale-invariance issues of the objective function minimizing the condition number of the contraction metric are resolved by introducing energy-based constraints to obtain locally optimal solutions and maintain sufficient control effort;
+   % \item A convex input saturation constraint is incorporated into the proposed optimization framework, which handles the practical limitations of actuators; and
+   % \item The robust feasibility of the proposed method is enhanced by introducing slack variables to relax the energy-based constraints, thereby avoiding infeasibility due to the input saturation constraint.
 \end{itemize}
 
 \subsection{Paper Organization}
 
 The remainder of this paper is organized as follows.
 Section \ref{sec:preliminaries} reviews the preliminaries of contraction theory.
-Section \ref{sec:problem} formulates the problem of contraction theory-based control design with input saturation.
-Section \ref{sec:conv:lmi} discusses the conventional LMI framework for contraction metric calculation and its limitations.
-Section \ref{sec:main:results} presents the proposed vector-space optimization framework for contraction metric calculation and provides an illustrative example.
+Section \ref{sec:problem} formulates the problem of contraction theory-based control design.
+Section \ref{sec:conv:lmi} discusses the conventional matrix-space optimization framework for contraction metric calculation and its limitations.
+Section \ref{sec:main:results} presents the proposed vector-space optimization framework and provides an illustrative example.
 Section \ref{sec:validation} validates the proposed method through numerical simulations.
 Finally, Section \ref{sec:conclusion} concludes the paper.
 
 \section{Preliminaries} \label{sec:preliminaries}
 
 Before presenting the proposed method, we first review contraction theory and related theorems.
-A detailed explanation of contraction theory can be found in \cite{LOHMILLER:1998aa,Tsukamoto:2021aa}.
+A detailed explanation of contraction theory can be found in \citep{LOHMILLER:1998aa,Manchester:2017aa,Tsukamoto:2021aa}.
 
 \subsection{Contraction Property and Contraction Metric} \label{sec:sub:contraction}
 
@@ -236,9 +262,9 @@ $
    =
    \pptfrac{\mv{f}}{\mv{x}} \delta\mv{x}
 $
-, \cite[Chap 4]{Kirk:2004aa}.
+, \citep[Chap 4]{Kirk:2004aa}.
 
-According to \cite{LOHMILLER:1998aa}, the system \eqref{eq:pre:sys} is said to be \textit{contracting}, \ie all trajectories converge incrementally exponentially to a unique trajectory, if the following condition holds:
+According to \citep{LOHMILLER:1998aa}, the system \eqref{eq:pre:sys} is said to be \textit{contracting}, \ie all trajectories converge incrementally exponentially to a unique trajectory, if the following condition holds:
 \begin{equation} \label{eq:pre:contraction:condition}
    \ddtt\mm{M} 
    + 
@@ -251,9 +277,9 @@ According to \cite{LOHMILLER:1998aa}, the system \eqref{eq:pre:sys} is said to b
    ,
 \end{equation}
 where $\mm{M}$ denotes the \textit{contraction metric}, $\alpha\in\R_{>0}$ denotes the \textit{contraction rate}, and $\mysym(\mm A):=\tfrac{1}{2}(\mm A+\mm A^\top)$.
-The contraction metric $\mm{M}$ is a symmetric positive definite matrix satisfying $\overline{m}\mm{I}_n\succeq\mm{M}\succeq\underline{m}\mm{I}_n$ with $\overline{m},\underline{m}\in\R_{>0}$.
+The contraction metric $\mm{M}$ is a symmetric positive definite matrix satisfying $\underline{m}\mm{I}_n\preceq\mm{M}\preceq\overline{m}\mm{I}_n$ with $\overline{m},\underline{m}\in\R_{>0}$.
 
-Notably, the initial conditions are exponentially forgotten in a contracting system \cite{LOHMILLER:1998aa}.
+Notably, the initial conditions are exponentially forgotten in a contracting system \citep{LOHMILLER:1998aa}.
 
 \subsection{Perturbed Contracting System} \label{sec:sub:contraction:perturbed}
 
@@ -266,7 +292,7 @@ If the system \eqref{eq:pre:sys} is subjected to bounded disturbances, it can be
    \mv{d}(t)
    , 
 \end{equation}
-where $\mv{d}(t)\in\R^n$ denotes the external disturbances with $\norm{\mv{d}(t)}\leq \overline{d}$, where $\overline{d}\in\R_{>0}$.
+where $\mv{d}(t)\in\R^n$ denotes the external disturbance satisfying $\norm{\mv{d}(t)}\leq \overline{d}$, with $\overline{d}\in\R_{>0}$.
 
 The following theorem states that all solutions of the perturbed system \eqref{eq:pre:sys:perturbed} exponentially converge to a bounded ball around the solution of the nominal system \eqref{eq:pre:sys}.
 \begin{thm} \label{thm:contraction:perturbed}
@@ -283,11 +309,11 @@ The following theorem states that all solutions of the perturbed system \eqref{e
       (1-\exp(-\alpha t))
       ,
    \end{equation}
-   where $\chi:=\overline{m}/\underline{m}$ denotes the condition number of $\mm{M}$, yielding a steady-state error bound of $\tfrac{\overline d}{\alpha}\chi$.
+   where $\chi:=\overline{m}/\underline{m}$ denotes the condition number of $\mm{M}$, yielding a steady-state error bound of $\tfrac{\overline d}{\alpha}\sqrt{\chi}$.
 \end{thm}
 
 \begin{pf}
-   See the proof of Theorem 2.4 in \cite{Tsukamoto:2021aa}.
+   See the proof of Theorem 2.4 in \citep{Tsukamoto:2021aa}.
 \end{pf}
 
 \section{Problem Formulation} \label{sec:problem}
@@ -306,8 +332,19 @@ Let us consider the following nonlinear system:
       ,
    \end{aligned}
 \end{equation}
-where $\mv{x}\in\R^n$ and $\mv{u}\in\R^m$ denote the state variables and control inputs, respectively; $\mv{d}:=\mv{d}(t)\in\R^n$ denotes the bounded external disturbances, \ie $\norm{\mv{d}} \leq \overline{d}$; and $\mv{f}(\mv{x},t)$ and $\mm{B}(\mv{x},t)$ denote the system functions.
-The input saturation function is denoted by $\mysat(\cdot)$ and can be defined as any physically feasible convex function.
+where $\mv{x}\in\R^n$ and $\mv{u}\in\R^m$ denote the state variables and control inputs, respectively; $\mv{d}:=\mv{d}(t)\in\R^n$ denotes the bounded external disturbance, \ie $\norm{\mv{d}} \leq \overline{d}$; and $\mv{f}(\mv{x},t)$ and $\mm{B}(\mv{x},t)$ denote the system functions.
+The input saturation function is denoted by $\mysat(\cdot)$ and can be defined as any physically feasible function.
+
+The system \eqref{eq:sys} is assumed to satisfy the following assumptions:
+
+\begin{assum}[Smoothness of System Functions] \label{assum:sys:smooth}
+   The system functions $\mv{f}(\mv{x},t)$ and $\mm{B}(\mv{x},t)$ are smooth in $\mv{x}$ and $t$, implying Lipschitz continuity.
+\end{assum}
+
+\begin{assum}[Full row rank of $\mm{B}$] \label{assum:sys:B}
+   The control effectiveness matrix $\mm{B}(\mv{x},t)$ has full row rank for all $\mv{x}\in\R^n$ and $t\in\R_{\geq 0}$.
+\end{assum}
+
 
 We assume that a desired control input $\mv{u}_d\in\R^m$ is pre-designed to achieve the desired trajectory $\mv{x}_d\in\R^n$ under ideal conditions, \ie $\mv{d}=0$, by simulating the following desired system:
 \begin{equation} \label{eq:sys:desired}
@@ -318,6 +355,33 @@ We assume that a desired control input $\mv{u}_d\in\R^m$ is pre-designed to achi
    .
 \end{equation}
 
+The following state feedback control law is considered using the contraction metric $\mm{M}$ as a feedback gain for the trajectory error $\mv{e}:=\mv{x}-\mv{x}_d$, as follows:
+\begin{equation} \label{eq:control:law}
+   \mv{u}
+   =
+   \mv{u}_d
+   -
+   \mm{R}^{-1} \mm{B}^\top \mm{M}
+   % ( 
+   %    \mv{x} - \mv{x}_d
+   % )
+   \mv{e}
+   ,
+\end{equation}
+where $\mm{R}\in\R^{m\times m}$ denotes a positive definite weighting matrix for the control input.
+This control law design is justified in the subsequent section.
+
+The control objective is to design the metric-based feedback input \eqref{eq:control:law} so that the tracking error is regulated under bounded external disturbances while respecting the input saturation constraint.
+The conventional approach addresses this objective by computing the contraction metric $\mm M$, whereas the proposed method reformulates the problem in terms of the metric-weighted error vector $\mv y=\mm M\mv e$.
+
+\section{Conventional matrix-space optimization formulation} \label{sec:conv:lmi}
+
+% In \citep{Tsukamoto:2019aa,Tsukamoto:2021ae}, Tsukamoto {\etal} proposed ConVex optimization-based Steady-state Tracking Error Minimization (CV-STEM) to obtain the contraction metric $\mm{M}$ in the control input \eqref{eq:control:law} by formulating an LMI optimization problem.
+
+% In this section, we review the CV-STEM framework proposed by Tsukamoto {\etal} in \citep{Tsukamoto:2021aa}, and discuss its potential limitations.
+% It should be noted that the input saturation effect is not explicitly handled in CV-STEM framework.
+
+In this section, the conventional SDC-based CV-STEM framework proposed by Tsukamoto {\etal} in \citep{Tsukamoto:2021aa} is reviewed, and its potential limitations are discussed.
 The error dynamics between the system \eqref{eq:sys} and the desired system \eqref{eq:sys:desired} can be expressed as follows:
 \begin{equation} \label{eq:error:dyn:1}
    \begin{aligned}
@@ -330,11 +394,9 @@ The error dynamics between the system \eqref{eq:sys} and the desired system \eqr
       ,
    \end{aligned}
 \end{equation}
-where $\mv{e}:=\mv{x}-\mv{x}_d$ denotes the trajectory error vector, and the arguments of $\mv{f}$, $\mv{f}_d$, $\mm{B}$, and $\mm{B}_d$ are omitted for brevity.
-Using the state-dependent coefficient (SDC) formulation \cite{Dani:2015aa}, \ie 
+where the arguments of $\mv{f}$, $\mv{f}_d$, $\mm{B}$, and $\mm{B}_d$ are omitted for brevity.
+Using the SDC formulation \citep{Dani:2015aa}, \ie 
 $
-   \mathbb{A}
-   :=
    \mathbb{A}(\mv{x},\mv{x}_d)
    =
    \int_0^1 
@@ -346,8 +408,8 @@ $
    \big)
    \,\der c
    ,
-$
-where $\overline{\mv{f}}:=\mv{f}-\mv{f}_d+(\mm{B}-\mm{B}_d)\mv{u}_d$, the error dynamics \eqref{eq:error:dyn:1} can be linearized as follows:
+$ 
+where $\overline{\mv{f}}:=\mv{f}-\mv{f}_d+(\mm{B}-\mm{B}_d)\mv{u}_d$, the error dynamics \eqref{eq:error:dyn:1} can be represented as follows:
 \begin{equation} \label{eq:error:dyn:2}
    \begin{aligned}
       \ddtt\mv{e}
@@ -370,7 +432,8 @@ where $\overline{\mv{f}}:=\mv{f}-\mv{f}_d+(\mm{B}-\mm{B}_d)\mv{u}_d$, the error 
       + \mm{B} \mv{\phi}(\mv{u}) + \mv{d}
       \\
       =&
-      \mathbb{A} \mv{e}
+      \mathbb{A}(\mv{x},\mv{x}_d)
+      \mv{e}
       + \mm{B} 
       (\mv{u} - \mv{u}_d)
       + \mm{B} \mv{\phi}(\mv{u}) + \mv{d}
@@ -379,20 +442,7 @@ where $\overline{\mv{f}}:=\mv{f}-\mv{f}_d+(\mm{B}-\mm{B}_d)\mv{u}_d$, the error 
 \end{equation}
 where $\mv{\phi}(\mv{u}):=\mysat(\mv{u}) - \mv{u}$ denotes the input saturation effect.
 
-To simplify the control design, we use the following state feedback control law:
-\begin{equation} \label{eq:control:law}
-   \mv{u}
-   =
-   \mv{u}_d
-   -
-   \mm{R}^{-1} \mm{B}^\top \mm{M}
-   % ( 
-   %    \mv{x} - \mv{x}_d
-   % )
-   \mv{e}
-   ,
-\end{equation}
-where $\mm{R}\in\R^{m\times m}$ denotes a positive definite weighting matrix for the control input.
+To cancel the desired control law $\mv{u}_d$ and transform the error dynamics into a closed-loop form, the control law is designed as in \eqref{eq:control:law}. 
 Substituting the control law \eqref{eq:control:law} into the error dynamics \eqref{eq:error:dyn:2}, we obtain:
 \begin{equation} \label{eq:error:dyn:3}
    \ddtt\mv{e}
@@ -405,16 +455,11 @@ Substituting the control law \eqref{eq:control:law} into the error dynamics \eqr
    .
 \end{equation}
 
-Finally, the control objective is to obtain the contraction metric $\mm{M}$ in \eqref{eq:control:law} which guarantees that the system \eqref{eq:sys} is contracting with respect to the desired trajectory $\mv{x}_d$ in the presence of input saturation and external disturbances.
 
-\section{Conventional LMI-Approach} \label{sec:conv:lmi}
 
-In \cite{Tsukamoto:2019aa,Tsukamoto:2021ae}, Tsukamoto {\etal} proposed ConVex optimization-based Steady-state Tracking Error Minimization (CV-STEM) to obtain the contraction metric $\mm{M}$ in the control input \eqref{eq:control:law} by formulating an LMI optimization problem.
 
-To apply Theorem \ref{thm:contraction:perturbed}, the authors define
-the systems \eqref{eq:pre:sys} and \eqref{eq:pre:sys:perturbed} as \eqref{eq:sys} with $\mv{d}=\mv{0}$ and 
-\eqref{eq:sys}, respectively, and the virtual $\mv{q}$-system as $\ddtt(\mv{q}-\mv{x}_d)=(\mathbb{A}-\mm{B}\mm{R}^{-1}\mv{B}^\top\mm{M})(\mv{q}-\mv{x}_d)+\mu\mv{d},\ \mu\in[0,1]$, whose solutions are denoted by $\mv{q}(\mu=0,t)=:\mv{\xi}_1$ and $\mv{q}(\mu=1,t)=:\mv{\xi}_2$, respectively.
-Then, neglecting the input saturation effect, the steady-state error bound between the system \eqref{eq:sys} and the desired system \eqref{eq:sys:desired} can be reduced by minimizing the condition number $\chi$ of the contraction metric $\mm{M}$ proportionally, as follows:
+To apply Theorem \ref{thm:contraction:perturbed}, define the systems \eqref{eq:pre:sys} and \eqref{eq:pre:sys:perturbed} as \eqref{eq:sys} with $\mv{d}=\mv{0}$ and \eqref{eq:sys}, respectively, and the virtual $\mv{q}$-system as $\ddtt(\mv{q}-\mv{x}_d)=(\mathbb{A}-\mm{B}\mm{R}^{-1}\mm{B}^\top\mm{M})(\mv{q}-\mv{x}_d)+\mu\mv{d},\ \mu\in[0,1]$, whose solutions are denoted by $\mv{q}(\mu=0,t)=:\mv{\xi}_1$ and $\mv{q}(\mu=1,t)=:\mv{\xi}_2$, respectively.
+Then, neglecting the input saturation effect, the steady-state error bound between the system and the desired system can be reduced by minimizing the condition number $\chi$ of the contraction metric $\mm{M}$ proportionally, as follows:
 % \begin{equation} \label{eq:err:ss}
 $
    \lim_{t\to\infty}
@@ -424,7 +469,7 @@ $
    \tfrac{\sqrt{\chi}}{\alpha}
 $.
 % \end{equation}
-The contraction constraint \eqref{eq:pre:contraction:condition} in Theorem \ref{thm:contraction:perturbed}, which should be satisfied by the contraction metric $\mm{M}$, can be expressed for the error dynamics \eqref{eq:error:dyn:3} as follows:
+The contraction condition \eqref{eq:pre:contraction:condition} in Theorem \ref{thm:contraction:perturbed}, which should be satisfied by the contraction metric $\mm{M}$, can be expressed for the error dynamics \eqref{eq:error:dyn:3} as follows:
 \begin{equation} \label{eq:cstr:ctrc}
    \ddtt\mm{M}
    +
@@ -442,172 +487,200 @@ The contraction constraint \eqref{eq:pre:contraction:condition} in Theorem \ref{
 \end{equation}
 
 Using the variable transformation $\mm{M}=:\mm{W}^{-1}$, the following LMI optimization problem can be formulated:
-\begin{equation} \label{eq:opt:conv:lmi}
-   \begin{matrix}
-      \min_{
-         \overline{\mm{W}},\chi,\nu
-         } 
-      \chi + \lambda \nu
-      \\ 
-      \vspace{-.2cm}
-      \\
-      \text{s.t. }
-      \begin{cases}
-         -
-         \ddtt\overline{\mm{W}}
-         +
-         2\mysym(
-            \mathbb{A}\overline{\mm{W}}
-         )
-         -
-         2\nu\mm{B}\mm{R}^{-1} \mm{B}^\top 
-         \preceq
-         -2\alpha\overline{\mm{W}}
-         ,
-         \\
-         \mm{I}_n
-         \preceq
-         \overline{\mm{W}}
-         \preceq
-         \chi \mm{I}_n
-         ,
-      \end{cases}
-   \end{matrix}
-\end{equation} 
-where $\overline{\mm{W}}:=\nu\mm{W}$ and $\nu\in\R_{>0}$ is a penalty term for the 2-norm of $\mm{M}$.
-Using $\lambda\in\R_{>0}$, the magnitude of $\mm{M}$ can be adjusted by $\nu$.
+\begin{align} \label{eq:opt:conv:lmi}
+   \min_{
+      \overline{\mm{W}},\chi,\nu
+      } 
+   \quad &
+   \chi + \lambda_\nu \nu
+   \\
+   \text{subject to} 
+   \quad & \nonumber
+      \mm{I}_n
+      \preceq
+      \overline{\mm{W}}
+      \preceq
+      \chi \mm{I}_n
+      ,
+      \\  \nonumber   
+      -
+      \ddtt\overline{\mm{W}}
+      &
+      +
+      2\mysym(
+         \mathbb{A}\overline{\mm{W}}
+      )
+      -
+      2\nu\mm{B}\mm{R}^{-1} \mm{B}^\top 
+      \preceq
+      -2\alpha\overline{\mm{W}}
+      ,
+\end{align} 
+where $\overline{\mm{W}}:=\nu\mm{W}$ and $\nu\in\R_{>0}$ is a scaling factor for the 2-norm of $\mm{M}$.
+Using $\lambda_\nu\in\R_{>0}$, the magnitude of $\mm{M}$ can be adjusted by $\nu$.
+The term $-\ddtt\overline{\mm{W}}\approx-\nu\ddtt\mm{W}$ is obtained by $\ddtt\mm{M}=\ddtt(\mm{W}^{-1})=-\mm{W}^{-1}\ddtt\mm{W}\mm{W}^{-1}$.
 Since the LMI optimization problem \eqref{eq:opt:conv:lmi} is convex, a global optimal solution can be obtained.
 
-However, since CV-STEM penalizes the magnitude of the control input indirectly by penalizing $\mm{M}$, the input saturation constraint is not explicitly considered in \eqref{eq:opt:conv:lmi}.
-In \cite{Tsukamoto:2019aa}, the input saturation constraint is considered in a conservative manner by limiting the maximum norm of the control input, rather than directly incorporating $\mm{M}$, \ie $\norm{\mv{u}}\leq \overline{u}$ where $\overline{u}\in\R_{>0}$.
-This makes the optimization problem \eqref{eq:opt:conv:lmi} potentially infeasible when the input saturation constraint is too conservative.
-In addition, Theorem~\ref{thm:contraction:perturbed} cannot be directly applied to the system \eqref{eq:sys} with input saturation, since $\mv{\phi}(\mv{u})=\mysat(\mv{u})-\mv{u}$ is not considered a bounded disturbance.
+The optimization problem \eqref{eq:opt:conv:lmi} may yield an identity-like solution for $\overline{\mm W}$ because identity-like metrics result in a small condition number, and the scaling factor $\nu$ can be adjusted to satisfy the contraction constraint.
+It should be noted that the condition number is invariant with respect to scaling factor $\nu$, and thus the objective function is not affected by $\nu$.
+However, since the time variation of $\nu$ is neglected in the derivative term $-\ddtt\overline{\mm{W}}$, the obtained solution may fail to satisfy the original contraction constraint \eqref{eq:cstr:ctrc}.
 
-From the perspective of computational complexity, the complexity of solving the LMI optimization problem \eqref{eq:opt:conv:lmi} is quadratically dependent on the dimension.
-In addition, the LMI framework limits flexibility in handling various constraints, including nonlinear input and state constraints.
-Thus, these issues should be resolved for practical real-time implementation.
+In terms of input saturation, since the optimization variable is the inverse of $\mm M$, imposing input saturation constraints of the actual feedback input is not straightforward in the LMI framework.
+Indeed, the control law \eqref{eq:control:law} depends on $\mm M$, not on its inverse $\mm W$.
+Without explicitly accounting for the saturation residual $\mv\phi(\mv u)=\mysat(\mv u)-\mv u$, the contraction-based certificate in Theorem~\ref{thm:contraction:perturbed} is not directly applicable to the saturated closed-loop system.
+Additionally, from the perspective of scalability, the number of optimization variables in \eqref{eq:opt:conv:lmi} grows quadratically with the system dimension.
 
-In conclusion, although CV-STEM provides a systematic framework for contraction metric calculation in an LMI framework, several issues remain to be resolved for practical real-time implementation.
+These issues motivate the vector-space formulation developed in the next section, where the metric-weighted error vector is optimized directly instead of the full matrix-valued metric.
 
-\begin{rem} \label{rem:scale:invariance}
-   There exists a severe problem formulation issue in the conventional LMI framework.
-   In the formulation, $\ddtt\overline{\mm{W}}=\ddtt(\nu\mm{W})$ is considered the same as $\nu\ddtt(\mm{W})$, which is not mathematically valid since $\nu$ is also a decision variable.
-   Thus, the conventional LMI framework's solutions may determine $\overline{W}$ and $\chi$ to be $\mm{I}_n$ and $1$, respectively, and modify $\nu$ only, leading to potential violation of the contraction constraint \eqref{eq:cstr:ctrc}.
-\end{rem}
+% In conclusion, although CV-STEM provides a systematic framework for contraction metric calculation in an LMI framework, several issues remain to be resolved for practical real-time implementation.
+
+% \cred{
+% \begin{rem} \label{rem:scale:invariance} 
+%    A potential implementation issue arises when the scaling variable $\nu$ is treated as time-varying in the discretized derivative term.
+%    % There exists a severe problem formulation issue in the conventional LMI framework.
+%    In the formulation, $\ddtt\overline{\mm{W}}=\ddtt(\nu\mm{W})$ is considered the same as $\nu\ddtt(\mm{W})$, which does not hold since $\nu$ is also a decision variable.
+%    Thus, the conventional LMI framework's solutions may determine $\overline{W}$ and $\chi$ to be $\mm{I}_n$ and $1$, respectively, and modify $\nu$ only, leading to potential violation of the contraction constraint \eqref{eq:cstr:ctrc}.
+% \end{rem}
+% }
 
 \section{Main Results} \label{sec:main:results}
 
-Section \ref{sec:sub:vector:space:opt} presents the proposed vector-space optimization framework for contraction metric calculation, which resolves the issues in the conventional LMI framework discussed in Section \ref{sec:conv:lmi}.
-Furthermore, an illustrative example is provided in Section \ref{sec:sub:illustrative}.
-
 \subsection{Vector-Space Optimization Framework} \label{sec:sub:vector:space:opt}
 
-In the control law \eqref{eq:control:law}, since the contraction metric $\mm{M}$ is only applied to $\mv{e}$, we can project the contraction constraints \eqref{eq:cstr:ctrc} onto the trajectory error vector space.
-By pre- and post-multiplying the contraction constraint \eqref{eq:cstr:ctrc} by $\mv{e}^\top$ and $\mv{e}$, respectively, we have:
-\begin{equation} \label{eq:cstr:ctrc:proj}
+Because the feedback input depends on $\mm{M}$ only through $\mm{M}\mv{e}$, the contraction condition \eqref{eq:cstr:ctrc} is projected onto the trajectory-error direction by pre- and post-multiplying it by $\mv{e}^\top$ and $\mv{e}$, respectively, as follows:  
+\begin{align} \nonumber
+   &
+   -
    \mv{y}^\top 
-   \!
    \left(
-   \!
-      -\mm{B} \mm{R}^{-1} \mm{B}^\top
-   \!
+      2\mm{B} 
+      \mm{R}^{-1} 
+      \mm{B}^\top
    \right)
    \mv{y}
    +
    \mv{e}^\top
-   \!
    \left(
-      \tfrac{1}{T_s}+2\alpha
+      \tfrac{1}{T_s}
+      \mm{I}_n
       +
-      2\mathbb{A}^\top
-   \!
+      2
+      (
+         \alpha
+         \mm{I}_n
+         +
+      \mathbb{A}^\top
+      )
    \right)
    \mv{y}
+   \\ \label{eq:cstr:ctrc:proj}   
+   &
    -
-   \tfrac{\mv{e}^\top \mm{M}_{\rm{pre}} \mv{e}}{T_s}
-   \le 0
-   ,
-\end{equation}
-where $\mv{y}:=\mm{M}\mv{e}$ denotes a projected contraction metric onto the $\mv{e}$, serving as a new optimization variable.
-For discrete-time implementation, we approximate $\ddtt\mm{M}$ as $\tfrac{1}{T_s}(\mm{M}-\mm{M}_{\rm{pre}})$, where $T_s$ denotes the sampling time and $\mm{M}_{\rm{pre}}$ denotes the contraction metric obtained at the previous time step.
-
-For the input saturation constraint, we define a convex constraint function $c(\mv{y})=\mysat(\mv{u})$.
-Notably, the convexity of $c(\mv{y})$ is preserved, since $\mv{u}$ is linear with respect to $\mv{y}=\mm{M}\mv{e}$ in the control law \eqref{eq:control:law}.
-Thus, the input saturation constraint can be expressed as a convex constraint function of $\mv{y}$ as follows:
-\begin{equation} \label{eq:cstr:sat}
-   c(\mv{y})
-   =
-   \mysat(\mv{u})  
-   \le 0
-   .
-\end{equation}
-
-According to Theorem~\ref{thm:contraction:perturbed}, the steady-state error bound can be proportionally minimized by the condition number of the contraction metric $\mm{M}$.
-Alternatively, we define the objective function to minimize the angle between $\mv{y}$ and $\mv{e}$, since the optimal condition number $\chi=1$ is achieved when $\mv{y}$ is parallel to $\mv{e}$, resulting in $\mm{M}=\gamma \mm{I}_n$ for some $\gamma\in\R_{>0}$.
-Thus, the objective function can be defined as follows:
-\begin{equation} \label{eq:obj:angle}
-   \norm{\mv{y}}\norm{\mv{e}} - \mv{y}^\top \mv{e}
-   ,
-\end{equation}
-which is minimized when the angle between $\mv{y}$ and $\mv{e}$ is zero.
-
-However, there is an infinite number of solutions $\mv{y}$ parallel to $\mv{e}$, \ie since the condition number is scale-invariant, leading to an ill-posed optimization problem.
-To this end, an energy-based constraint is introduced to obtain a locally optimal solutions while maintaining sufficient control effort, as follows:
-\begin{equation} \label{eq:cstr:energy}
+   \tfrac{1}{T_s}
    \left(
-      \mv{e}^\top \mv{y} 
-      -
-      \mu \mv{e}^\top \mv{e}
-   \right)^2
-   \le
-   (\epsilon + s) \norm{\mv{e}}^2
+      \mv{e}^\top 
+      \mm{M}_{\rm{pre}} 
+      \mv{e}
+   \right)
+   \le 0
    ,
-\end{equation}
-where $\mu\in\R_{>0}$ denotes the desired energy level, and $\epsilon\in\R_{>0}$ and $s\in\R_{\ge0}$ denote the allowable small energy variation and a slack variable to enhance the robust feasibility of the optimization problem, respectively.
+\end{align}
+where $\mv{y}:=\mm{M}\mv{e}$ denotes the metric-weighted error vector, which serves as the new optimization variable.
+It should be noted that \eqref{eq:cstr:ctrc:proj} is only a necessary condition of the full contraction condition \eqref{eq:cstr:ctrc}; hence, the matrix $\mm{M}$ reconstructed from $\mv{y}=\mm{M}\mv{e}$, is treated as a metric candidate rather than a certified contraction metric in general.
+In addition, for discrete-time implementation, $\ddtt\mm{M}$ is approximated as $\tfrac{1}{T_s}(\mm{M}-\mm{M}_{\rm{pre}})$, where $T_s$ denotes the sampling time and $\mm{M}_{\rm{pre}}$ denotes the metric candidate reconstructed at the previous time step.
 
-Thus, the following vector-space optimization problem can be formulated:
-\begin{equation} \label{eq:opt:main}
-   \begin{matrix}
+The optimization problem can be formulated, as follows:
+\begin{subequations} \label{eq:opt:main}
+   \begin{align}
       \min_{
-         \mv{y},s
+         \mv{y},s\ge0
          } 
+         \quad &
       \norm{\mv{y}}\norm{\mv{e}} - \mv{y}^\top \mv{e}
+      % J(\mv{y})
       +
       \lambda s
-      \\ 
-      \vspace{-.2cm}
+      \label{eq:opt:main:obj}
       \\
-      \text{s.t. }
+      \text{subject to} 
+      \quad &
       % \begin{cases}
          \eqref{eq:cstr:ctrc:proj}
          ,
-         \eqref{eq:cstr:sat}
+         \label{eq:opt:main:ctrc:proj}
+         \\ &
+         \left(
+            \mv{e}^\top \mv{y} 
+            -
+            \mu \mv{e}^\top \mv{e}
+         \right)^2
+         \le
+         (\epsilon + s) \norm{\mv{e}}^2
          ,
-         \eqref{eq:cstr:energy}
+         \label{eq:opt:main:energy}
+         \\ &
+         c(\mv{y}) \le 0
          ,
+         \label{eq:opt:main:sat}
       % \end{cases}
-   \end{matrix}
-\end{equation}
+   \end{align}
+\end{subequations}
+where $s,\mu,\epsilon\in\R_{\ge0}$ denote the slack variable, desired energy level, and allowable small energy variation of the energy-based constraint \eqref{eq:opt:main:energy}, respectively; $\lambda\in\R_{>0}$ denotes the penalty weight for the slack variable $s$; and $c(\cdot)$ denotes input constraints, which can be designed to handle the input saturation effect.
 
-After the optimization, the contraction metric $\mm{M}$ can be retrieved while maintaining the condition number and the relationship $\mv{y}=\mm{M}\mv{e}$ as follows:
+The objective function \eqref{eq:opt:main:obj} is designed to minimize the angle between $\mv{y}$ and $\mv{e}$, which is equivalent to minimizing the condition number of $\mm{M}$.
+Additionally, the last term in \eqref{eq:opt:main:obj} is a penalty term to relax the energy-based constraint \eqref{eq:opt:main:energy} for robust feasibility.
+
+The projected contraction constraint \eqref{eq:opt:main:ctrc:proj} corresponds to the projected contraction condition \eqref{eq:cstr:ctrc:proj}.
+
+The energy-based constraint \eqref{eq:opt:main:energy} is introduced to make the optimization problem well posed by resolving the scale ambiguity of the angle-based objective.
+Since the objective function is invariant under positive scaling of $\mv y$, the magnitude of the metric-weighted error vector is not uniquely determined.
+The energy-based constraint removes this ambiguity by enforcing $\mv e^\top\mv y\approx\mu\mv e^\top\mv e$, or equivalently $\mv e^\top\mm M\mv e/\mv e^\top\mv e\approx\mu$.
+Moreover, the prescribed value $\mu$ helps maintain sufficient feedback effort.
+
+When the input saturation constraint \eqref{eq:opt:main:sat} becomes active, the optimizer may not be able to satisfy the projected contraction condition, the input constraint, and the prescribed energy level simultaneously.
+In this case, the slack variable $s$ relaxes the energy-based constraint so that the optimization problem remains feasible while prioritizing the projected contraction and input saturation constraints.
+
+The input saturation constraint \eqref{eq:opt:main:sat} can be designed to directly handle the input saturation effect by defining $c(\mv{y})$ to represent the admissible input set induced by the saturation function $\mysat(\cdot)$.
+Since the control input is affine with respect to $\mv y$, the admissible input set can be directly represented in the $\mv y$-space as
+$
+   c(\mv y):=
+   c_u\left(\mv u_d-\mm R^{-1}\mm B^\top\mv y\right),
+$
+where $c_u(\mv u)\le0$ describes the saturation-induced admissible input set.
+
+After solving the optimization problem \eqref{eq:opt:main}, the obtained $\mv{y}$ is used to reconstruct the metric candidate $\mm{M}$ while satisfying $\mv{y}=\mm{M}\mv{e}$ and $\mm{M}\succ0$, as follows:
+% \begin{equation} \label{eq:retrive:mm}
+%    \mm{M}
+%    =
+%    \tfrac{1}{\sqrt{\chi}}
+%    \mydiag
+%    \left(
+%       \begin{pmatrix}
+%          \sqrt{\chi}, 1, \ldots, 1, \tfrac{1}{\sqrt{\chi}}
+%       \end{pmatrix}
+%    \right)
+%    \cdot
+%    \tfrac{1}{\norm{\mv{e}}\norm{\mv{y}}}
+%    ,
+% \end{equation}
 \begin{equation} \label{eq:retrive:mm}
    \mm{M}
    =
-   \tfrac{1}{\sqrt{\chi}}
-   \mydiag
-   \left(
-      \begin{pmatrix}
-         \sqrt{\chi}, 1, \ldots, 1, \tfrac{1}{\sqrt{\chi}}
-      \end{pmatrix}
-   \right)
-   \cdot
-   \tfrac{1}{\norm{\mv{e}}\norm{\mv{y}}}
-   ,
+   \mm{I}_n
+   -
+   \frac{\mv{e}\mv{e}^\top}{\mv{e}^\top\mv{e}}
+   +
+   \frac{\mv{y}\mv{y}^\top}{\mv{y}^\top\mv{e}}
+   .
 \end{equation}
-where $\chi=\tfrac{1+\sin(\theta)}{1-\sin(\theta)}$ denotes the minimum condition number of $\mm{M}$ when the angle $\theta$ between $\mv{y}$ and $\mv{e}$ is given.
+% where $\chi=\tfrac{1+\sin(\theta)}{1-\sin(\theta)}$ denotes the minimum condition number of $\mm{M}$ when the angle $\theta$ between $\mv{y}$ and $\mv{e}$ is given.
+This reconstruction satisfies $\mm{M}\mv{e}=\mv{y}$. 
+Moreover, if $\mv{y}^\top\mv{e}>0$, then $\mm{M}\succ0$.
+The reconstructed metric candidate $\mm{M}$ is used as $\mm{M}_{\rm{pre}}$ for evaluating the projected contraction condition \eqref{eq:opt:main:ctrc:proj} at the subsequent time step.
 
-In conclusion, instead of solving the matrix-space optimization problem \eqref{eq:opt:conv:lmi}, the proposed method solves the vector-space optimization problem \eqref{eq:opt:main} to obtain the projected contraction metric $\mv{y}$.
-After that, to obtain the contraction metric $\mm{M}$ for the control law \eqref{eq:control:law} and $\mm{M}_{\rm{pre}}$ in \eqref{eq:cstr:ctrc}, the contraction metric $\mm{M}$ is retrieved using \eqref{eq:retrive:mm}.
+% In summary, the proposed formulation replaces the online search over a matrix-valued metric with the optimization of the feedback-relevant metric action $\mv y=\mm M\mv e$.
+% The obtained vector $\mv y$ directly determines the constrained feedback input, while a positive definite matrix $\mm M$ satisfying $\mm M\mv e=\mv y$ is reconstructed for evaluating the projected condition and for use in the subsequent time step.
+% Thus, the proposed framework should be interpreted as a projected contraction-based design that prioritizes scalable computation and direct input-constraint handling, while recovering the full contraction condition when the sufficient metric-scale and condition-number conditions in Theorem~\ref{thm:proj:ctrc:suff} are satisfied.
    
 The overall procedure of the proposed method is summarized in Algorithm~\ref{alg:alg:1}, in which the optimization problem \eqref{eq:opt:main} is solved at each time step.
 
@@ -619,8 +692,8 @@ The overall procedure of the proposed method is summarized in Algorithm~\ref{alg
             \State Get current $\mv{x}_k$, $\mv{x}_{d,k}$, $\mv{u}_{d,k}$ and $\mv{e}_k$
             \State Assign $\mv{y}_k \leftarrow \mv{y}_{k-1}$, $s_k \leftarrow s_{k-1}$ for warm-start
             \State Solve \eqref{eq:opt:main} to get optimal $\mv{y}_k$ and $s_k$
-            \State Calculate $\mm{M}_{k}$ using $\mv{y}_k$ and $\mv{e}_k$ using \eqref{eq:retrive:mm}
-            \State Apply the control law \eqref{eq:control:law} using $\mm{M}_{k}$
+            \State Reconstruct $\mm{M}_{k}$ from $\mv{y}_k$ and $\mv{e}_k$ using \eqref{eq:retrive:mm}
+            \State Apply the control law $\mv{u}_k \leftarrow \mv{u}_{d,k} - \mm{R}^{-1} \mm{B}^\top \mm{M}_k \mv{e}_k$
       \EndFor
    \end{algorithmic}
 \end{algorithm}
@@ -640,20 +713,20 @@ The overall procedure of the proposed method is summarized in Algorithm~\ref{alg
 \end{figure}
 
 To facilitate geometric interpretation, the optimization problem \eqref{eq:opt:main} is illustrated in two-dimensional space in Fig.~\ref{fig:scene:first}.
-The contraction constraint \eqref{eq:cstr:ctrc:proj} and the input saturation constraint \eqref{eq:cstr:sat} restrict the feasible space of $\mv{y}$ to the outside of the blue line and the inside of the red line, respectively.
-The green line represents the energy-based constraint \eqref{eq:cstr:energy}, assuming that the allowable energy variation $\epsilon$ is approximately zero.
+The projected contraction condition \eqref{eq:opt:main:ctrc:proj} and the input saturation constraint \eqref{eq:opt:main:sat} restrict the feasible space of $\mv{y}$ to the outside of the blue line and the inside of the red line, respectively.
+The green line represents the energy-based constraint \eqref{eq:opt:main:energy}, assuming that the allowable energy variation $\epsilon$ is approximately zero.
 
-Since the contraction constraint \eqref{eq:cstr:ctrc:proj} is an ellipse-shaped concave function and the input saturation constraint \eqref{eq:cstr:sat} is a convex function, there exist at most two intersection points of these constraints.
-If the initial guess is set near point (a), the optimal solution converges to $\mv{y}_a$, point (a), neglecting the input saturation constraint according to the objective function, \ie the minimum angle $\theta_a$ between $\mv{y}$ and $\mv{e}$.
-Considering the input saturation constraint, the optimal solution is obtained at $\mv{y}_b$, point (b), resulting in angle $\theta_b$, by increasing the slack variable $s$, which relaxes the energy-based constraint \eqref{eq:cstr:energy} to satisfy the input saturation constraint.
-In this manner, the condition number of the contraction metric can be increased when the contraction constraint \eqref{eq:cstr:ctrc:proj} or the input saturation constraint \eqref{eq:cstr:sat} conflict.
+% Since the projected contraction constraint \eqref{eq:opt:main:ctrc:proj} is an ellipse-shaped concave function and the input saturation constraint \eqref{eq:opt:main:sat} is a convex function, there exist at most two intersection points of these constraints.
+Without the input saturation constraint, the optimal solution is obtained at point (a), where \eqref{eq:opt:main:ctrc:proj} and \eqref{eq:opt:main:energy} are active, resulting in the minimum $\chi$ and desired $\mu$.
+However, when the input saturation constraint is considered, the optimal solution is obtained at point (b), where \eqref{eq:opt:main:sat} and \eqref{eq:opt:main:energy} are active, resulting in a relatively large $\chi$ and insufficient $\mu$.
+In this case, the slack variable $s$ is increased to relax the energy-based constraint \eqref{eq:opt:main:energy} to satisfy the input saturation constraint.
 
 \section{Numerical Validation} \label{sec:validation}
 
 \subsection{Numerical Validation Set Up}
 
 We employed the Lorenz system to validate the proposed method, which is represented as follows:
-\begin{equation}
+\begin{equation} \label{eq:sys:Lorenz}
    \ddtt
    \underbrace{
       \begin{pmatrix}
@@ -689,6 +762,7 @@ We employed the Lorenz system to validate the proposed method, which is represen
    ,
 \end{equation}
 where $\sigma=10$, $\rho=28$, and $\beta=\tfrac{8}{3}$ are system parameters.
+The system \eqref{eq:sys:Lorenz} satisfies Assumption~\ref{assum:sys:smooth} and Assumption~\ref{assum:sys:B}.
 The input saturation function $\mysat(\cdot)$ was defined as follows:
 \begin{equation}
    \mysat(\mv{u})
@@ -718,20 +792,20 @@ The external disturbances $\mv{d}(t)$ were modeled as follows:
 where $H(\cdot)$ denotes the Heaviside step function.
 
 For the desired trajectory, we simulated the desired system \eqref{eq:sys:desired} with the desired feedback-linearization control input as follows:
-\begin{equation}
-% $
+% \begin{equation}
+$
    \mv{u}_d
    :=
    -\mv{f}(\mv{x}_d) - 2(\mv{x}_d - \mv{r})
    ,
-% $
-\end{equation}
-where $\mv{r}:=(-8.485,8.485,27)^\top$ denotes the reference point.
+$
+% \end{equation}
+where $\mv{r}:=(-8.485,8.485,27)^\top$.
 The desired input was designed not to exceed the input saturation limit.
 
-The proposed method (C$_1$) was compared with CV-STEM (C$_2$) \cite{Tsukamoto:2021ae} and the pre-designed desired controller for nominal model, \ie $\mv{u}=\mv{u}_d$, (C$_3$) as summarized in Table~\ref{table:controllers}.
+The proposed method (C$_1$) was compared with CV-STEM (C$_2$) \citep{Tsukamoto:2021ae}, which is introduced in Section~\ref{sec:conv:lmi}, and the pre-designed desired controller for nominal model, \ie $\mv{u}=\mv{u}_d$, (C$_3$) as summarized in Table~\ref{table:controllers}.
 The parameters shared by (C$_1$) and (C$_2$) were $\alpha=5$ and $\mm{R}=\mm{I}_3$.
-In addition, parameters were selected as $\mu=30$ and $\lambda=50$ for (C$_1$) and $\lambda=10^{-6}$ for (C$_2$).
+In addition, parameters were selected as $\mu=30$ and $\lambda=50$ for \eqref{eq:opt:main} of (C$_1$), and $\lambda_\nu=10^{-6}$ for \eqref{eq:opt:conv:lmi} of (C$_2$).
 To solve the optimization problems, the \texttt{fmincon} function and \texttt{SeMeDi} toolbox were used for (C$_1$) and (C$_2$) in MATLAB R2024b, respectively.
 
 \begin{table}[t]
@@ -746,7 +820,7 @@ To solve the optimization problems, the \texttt{fmincon} function and \texttt{Se
    \hline 
    (C$_1$) \protect\colorLine{blue}{solid} & Proposed controller. \\ 
    \hline
-   (C$_2$) \protect\colorLine{my_cyan}{solid} & CV-STEM (\cite{Tsukamoto:2021ae}). \\
+   (C$_2$) \protect\colorLine{my_cyan}{solid} & CV-STEM (\citep{Tsukamoto:2021ae}). \\
    \hline
    (C$_3$) \protect\colorLine{gray}{solid} & Desired controller for nominal model, \ie $\mv{u}=\mv{u}_d$. \\
    \hline
@@ -757,7 +831,7 @@ To solve the optimization problems, the \texttt{fmincon} function and \texttt{Se
 The simulation was conducted for $T=0.5$ seconds with a sampling time of $T_s=0.005$ seconds for the controllers and a $10$ times finer time step for the system simulation.
 The initial conditions were set to $\mv{x}(0)=(10,5,13)^\top$ and $\mv{x}_d(0)=(11,4,15)^\top$.
 
-To facilitate reproducibility, the numerical validation source code is publicly available at \url{https://github.com/KAIST-MIC-Lab/Deep-Neuro-Control}
+% To facilitate reproducibility, the numerical validation source code is publicly available at \url{https://github.com/KAIST-MIC-Lab/Deep-Neuro-Control}
 
 \subsection{Numerical Validation Results}
 
@@ -765,7 +839,7 @@ To facilitate reproducibility, the numerical validation source code is publicly 
    \centering
    \subfloat[
       Trajectory tracking results and control input profiles.
-   ]{
+   ]{ 
       \includegraphics[width=0.99\linewidth]
       {
          src/figures/compare/Fig1.eps
@@ -834,31 +908,37 @@ To facilitate reproducibility, the numerical validation source code is publicly 
 \end{table}
 
 The numerical validation results are illustrated in Fig.~\ref{fig:sim:result}.
-When only the desired controller for nominal model, $\mv{u}=\mv{u}_d$, was applied, \ie (C$_3$), the trajectories of (C$_3$) and $\mv{x}_d$ do not coincide due to the effect of initial condition mismatch.
-Significantly, after the disturbance occurrence at $t=0.2$ seconds, the trajectory deviates further from the desired trajectory, as shown in Fig.~\ref{fig:sim:result:control}.
+When only the desired controller for nominal model, $\mv{u}=\mv{u}_d$, was applied, \ie (C$_3$), the trajectories of (C$_3$) and $\mv{x}_d$ did not coincide due to the effect of initial condition mismatch.
+Significantly, after the disturbance occurrence at $t=0.2$ seconds, the trajectory deviated further from the desired trajectory, as shown in Fig.~\ref{fig:sim:result:control}.
 
-By applying the contraction-based controllers, both (C$_1$) and (C$_2$) successfully drive the trajectory to closely follow the desired trajectory $\mv{x}_d$ even in the presence of disturbances, minimizing the $L_2$ norm of the tracking error to {\oneErr} and {\twoErr}, while (C$_3$) resulted in {\threeErr}, as summarized in Table~\ref{table:performance}.
-However, regarding input saturation, (C$_2$) reaches the saturation limit due to the initial condition mismatch and the disturbance at $t=0.2$, while (C$_1$) effectively avoids input saturation, as shown in Fig.~\ref{fig:sim:result:opt}.
+By applying the contraction-based controllers, both (C$_1$) and (C$_2$) successfully drove the trajectory to closely follow the desired trajectory $\mv{x}_d$ even in the presence of disturbances, minimizing the $L_2$ norm of the tracking error to {\oneErr} and {\twoErr}, while (C$_3$) resulted in {\threeErr}, as summarized in Table~\ref{table:performance}.
+However, regarding input saturation, (C$_2$) reached the saturation limit due to the initial condition mismatch and the disturbance at $t=0.2$, while (C$_1$) effectively avoided input saturation, as shown in Fig.~\ref{fig:sim:result:opt}.
 This demonstrates the effectiveness of the proposed method in handling input saturation constraints while achieving satisfactory tracking performance.
 
-In addition, the expected behavior of the condition number $\chi$ of the contraction metrics, discussed in Section \ref{sec:sub:illustrative} and Fig.~\ref{fig:scene:first}, can be observed for (C$_1$) in Fig.~\ref{fig:sim:result:opt}.
-As the contraction constraint \eqref{eq:cstr:ctrc} and the input saturation constraint \eqref{eq:cstr:sat} become active, the angle between $\mv{y}$ and $\mv{e}$ increases, resulting in an increase in the condition number to find an unsaturated optimal solution.
+In addition, the expected behavior of the condition number $\chi$, discussed in Section \ref{sec:sub:illustrative}, can be observed for (C$_1$) in Fig.~\ref{fig:sim:result:opt}.
+As the contraction constraint \eqref{eq:opt:main:ctrc:proj} and the input saturation constraint \eqref{eq:opt:main:sat} became active, the angle between $\mv{y}$ and $\mv{e}$ increased, resulting in an increase in the condition number to find an unsaturated optimal solution.
 Specifically, when the input saturation constraint became active, the condition number $\chi$ increased from $1$ and decreased again to $1$ after the saturation effect disappeared.
 
-In contrast, (C$_2$) shows the smallest condition number, $\chi=1$, due to the problem formulation issue discussed in Remark~\ref{rem:scale:invariance}.
-Instead of adjusting the condition number, (C$_2$) increases the penalty term $\nu$ to increase the control effort, as shown in Fig.~\ref{fig:sim:result:opt}, while making $\overline{W}$ close to the identity matrix, \ie $\mm{M}=\nu\mm{I}_n$.
-This results in the failure to satisfy the contraction constraint \eqref{eq:cstr:ctrc} during most of the simulation time, as shown in Fig.~\ref{fig:sim:result:opt}.
+In contrast, (C$_2$) kept the smallest condition number, $\chi=1$.
+This behavior follows from the objective of \eqref{eq:opt:conv:lmi}, which primarily minimizes the condition number of the contraction metric.
+Due to the scale invariance of the condition number, (C$_2$) instead adjusted the scaling factor $\nu$, making $\overline W$ close to the identity matrix and yielding $\mm M=\nu\mm I_n$.
+Consequently, the time variation of $\nu$ caused the resulting metric to violate the contraction constraint \eqref{eq:cstr:ctrc}, as shown in Fig.~\ref{fig:sim:result:opt}.
 
-Despite achieving better $L_2$ tracking performance, (C$_2$) violated both the contraction constraint \eqref{eq:cstr:ctrc} and the input saturation limits as shown in Fig.~\ref{fig:sim:result:opt}.
-These violations undermine stability guarantees, making the controller unsuitable for practical implementation.
+% As shown in Table~\ref{table:performance}, (C$_2$) achieves better $L_2$ tracking performance than (C$_1$).
+% Despite this result, (C$_2$) violates both the contraction constraint \eqref{eq:cstr:ctrc} and the input saturation limit, as shown in Fig.~\ref{fig:sim:result:opt}.
+% Thus, although (C$_2$) does not exhibit divergent behavior in this simulation, its contraction-based certificate and input admissibility are not preserved.
+
+Interestingly, the reconstructed contraction metric candidate $\mm{M}$ satisfied the full contraction condition \eqref{eq:cstr:ctrc} during the simulation, as shown in Fig.~\ref{fig:sim:result:opt}, even though the optimization problem \eqref{eq:opt:main} was designed to satisfy only the projected contraction condition \eqref{eq:cstr:ctrc:proj}.
+This observation suggests that there may exist sufficient conditions for the projected contraction condition to imply the full contraction certification.
 
 \section{Conclusion} \label{sec:conclusion}
 
-In this study, we presented a vector-space optimization framework for contraction metric calculation in contraction theory-based control design.
-By projecting the contraction constraints onto the trajectory error vector space, the contraction metrics can be calculated in a lower-dimensional effective space, resolving the scalability issue of the conventional LMI framework.
-The optimization problem was formulated to minimize the condition number of the contraction metric, where energy-based constraints were introduced to resolve the scale-invariance ambiguity and ensure sufficient control effort. 
-Additionally, convex input saturation constraints were easily incorporated into the proposed framework owing to its flexibility of vector-space optimization problem compared to the matrix-space optimization of conventional LMI framework.
-As future work, we will extend the proposed method to handle state constraints and validate it through real-world experiments.
+This study presented a vector-space optimization framework based on a projected contraction condition.
+By introducing the metric-weighted error vector as a new optimization variable, the proposed method reduces the number of optimization variables, improving scalability.
+In addition, it directly handles input saturation constraints that are difficult to incorporate in the conventional LMI framework.
+Numerical simulations on the Lorenz system demonstrated satisfactory tracking performance under input saturation.
+
+Future work will study sufficient conditions under which the projected contraction condition implies the full-contraction certification and extend the framework to state constraints and experiments.
 
 % \begin{ack}
 % Place acknowledgments here.
