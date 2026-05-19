@@ -66,7 +66,7 @@ for u_idx = 1:1:num_u
     % hF.Position(3:4) = [fig_width, fig_height];
     nexttile(2*(u_idx));
 
-    plot(t, recs{2}.uSat_hist(u_idx,:), "Color", "#008B8B", "LineWidth", line_width, "LineStyle", "-"); hold on
+    % plot(t, recs{2}.uSat_hist(u_idx,:), "Color", "#008B8B", "LineWidth", line_width, "LineStyle", "-"); hold on
 
     maxVal = -9999; minVal = 9999;
     for c_idx = 1:1:case_num

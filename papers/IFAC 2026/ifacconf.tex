@@ -51,19 +51,19 @@
 
 \begin{comment}
 L2 Norm of Tracking Error:
-C1: 1.3539
+C1: 1.3456
 C2: 1.2804
 C3: 6.8005
 Improvement over C3:
-C1: 80.09 %
+C1: 80.21 %
 C2: 81.17 %
 \end{comment}
 
-\newcommand{\oneErr}{{1.3539}}
+\newcommand{\oneErr}{{1.3456}}
 \newcommand{\twoErr}{{1.2804}}
 \newcommand{\threeErr}{{6.8005}}
 
-\newcommand{\impOne}{{80.09}}
+\newcommand{\impOne}{{80.21}}
 \newcommand{\impTwo}{{81.17}}
 
 % ============================================
@@ -459,16 +459,15 @@ Substituting the control law \eqref{eq:control:law} into the error dynamics \eqr
 
 
 To apply Theorem \ref{thm:contraction:perturbed}, define the systems \eqref{eq:pre:sys} and \eqref{eq:pre:sys:perturbed} as \eqref{eq:sys} with $\mv{d}=\mv{0}$ and \eqref{eq:sys}, respectively, and the virtual $\mv{q}$-system as $\ddtt(\mv{q}-\mv{x}_d)=(\mathbb{A}-\mm{B}\mm{R}^{-1}\mm{B}^\top\mm{M})(\mv{q}-\mv{x}_d)+\mu\mv{d},\ \mu\in[0,1]$, whose solutions are denoted by $\mv{q}(\mu=0,t)=:\mv{\xi}_1$ and $\mv{q}(\mu=1,t)=:\mv{\xi}_2$, respectively.
-Then, neglecting the input saturation effect, the steady-state error bound between the system and the desired system can be reduced by minimizing the condition number $\chi$ of the contraction metric $\mm{M}$ proportionally, as follows:
-% \begin{equation} \label{eq:err:ss}
+Then, neglecting the input saturation effect, the steady-state error bound between the system and the desired system can be reduced by minimizing the condition number $\chi$ of the contraction metric $\mm{M}$ proportionally, as 
 $
    \lim_{t\to\infty}
    \norm{\mv{e}(t)}
    =
    \overline{d}
    \tfrac{\sqrt{\chi}}{\alpha}
-$.
-% \end{equation}
+   .
+$
 The contraction condition \eqref{eq:pre:contraction:condition} in Theorem \ref{thm:contraction:perturbed}, which should be satisfied by the contraction metric $\mm{M}$, can be expressed for the error dynamics \eqref{eq:error:dyn:3} as follows:
 \begin{equation} \label{eq:cstr:ctrc}
    \ddtt\mm{M}
@@ -666,16 +665,24 @@ After solving the optimization problem \eqref{eq:opt:main}, the obtained $\mv{y}
 \begin{equation} \label{eq:retrive:mm}
    \mm{M}
    =
-   \mm{I}_n
+   \mm{M}_{\rm{pre}}
    -
-   \frac{\mv{e}\mv{e}^\top}{\mv{e}^\top\mv{e}}
+   \frac{
+      \mm{M}_{\rm{pre}}
+      \mv{e}\mv{e}^\top
+      \mm{M}_{\rm{pre}}
+   }{
+      \mv{e}^\top
+      \mm{M}_{\rm{pre}}
+      \mv{e}
+   }
    +
    \frac{\mv{y}\mv{y}^\top}{\mv{y}^\top\mv{e}}
-   .
+   ,
 \end{equation}
-% where $\chi=\tfrac{1+\sin(\theta)}{1-\sin(\theta)}$ denotes the minimum condition number of $\mm{M}$ when the angle $\theta$ between $\mv{y}$ and $\mv{e}$ is given.
+by applying Broyden--Fletcher--Goldfarb--Shanno (BFGS)-type update \citep{Nocedal:2006aa}.% where $\chi=\tfrac{1+\sin(\theta)}{1-\sin(\theta)}$ denotes the minimum condition number of $\mm{M}$ when the angle $\theta$ between $\mv{y}$ and $\mv{e}$ is given.
 This reconstruction satisfies $\mm{M}\mv{e}=\mv{y}$. 
-Moreover, if $\mv{y}^\top\mv{e}>0$, then $\mm{M}\succ0$.
+Moreover, since $\mv{y}^\top\mv{e}>0$ holds, $\mm{M}\succ0$.
 The reconstructed metric candidate $\mm{M}$ is used as $\mm{M}_{\rm{pre}}$ for evaluating the projected contraction condition \eqref{eq:opt:main:ctrc:proj} at the subsequent time step.
 
 % In summary, the proposed formulation replaces the online search over a matrix-valued metric with the optimization of the feedback-relevant metric action $\mv y=\mm M\mv e$.
@@ -857,7 +864,8 @@ The initial conditions were set to $\mv{x}(0)=(10,5,13)^\top$ and $\mv{x}_d(0)=(
       \label{fig:sim:result:opt}
    }
    \caption{
-      Numerical validation results of (C$_1$) \protect\colorLine{blue}{solid}, (C$_2$) \protect\colorLine{my_cyan}{solid}, (C$_3$) \protect\colorLine{gray}{solid}, and desired trajectory $x_d$ \protect\colorLine{red}{dashed}, and the saturated input of (C$_2$) \protect\colorLine{darkcyan}{solid}.
+      Numerical validation results of (C$_1$) \protect\colorLine{blue}{solid}, (C$_2$) \protect\colorLine{my_cyan}{solid}, (C$_3$) \protect\colorLine{gray}{solid}, and desired trajectory $x_d$ \protect\colorLine{red}{dashed}.
+      % , and the saturated input of (C$_2$) \protect\colorLine{darkcyan}{solid}.
    }
    \label{fig:sim:result}
 \end{figure}
@@ -922,7 +930,7 @@ Specifically, when the input saturation constraint became active, the condition 
 In contrast, (C$_2$) kept the smallest condition number, $\chi=1$.
 This behavior follows from the objective of \eqref{eq:opt:conv:lmi}, which primarily minimizes the condition number of the contraction metric.
 Due to the scale invariance of the condition number, (C$_2$) instead adjusted the scaling factor $\nu$, making $\overline W$ close to the identity matrix and yielding $\mm M=\nu\mm I_n$.
-Consequently, the time variation of $\nu$ caused the resulting metric to violate the contraction constraint \eqref{eq:cstr:ctrc}, as shown in Fig.~\ref{fig:sim:result:opt}.
+Consequently, the time variation of $\nu$ caused the resulting metric to violate the contraction constraint \eqref{eq:cstr:ctrc}, as shown in Fig.~\ref{fig:sim:result:opt}, as discussed in Section \ref{sec:conv:lmi}.
 
 % As shown in Table~\ref{table:performance}, (C$_2$) achieves better $L_2$ tracking performance than (C$_1$).
 % Despite this result, (C$_2$) violates both the contraction constraint \eqref{eq:cstr:ctrc} and the input saturation limit, as shown in Fig.~\ref{fig:sim:result:opt}.
