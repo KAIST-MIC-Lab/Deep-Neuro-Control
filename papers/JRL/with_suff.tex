@@ -888,17 +888,17 @@ The overall procedure of the proposed method is summarized in Algorithm~\ref{alg
 
 \subsection{Illustrative Example in Two-Dimensional Space} \label{sec:sub:illustrative}
 
-\begin{figure}[t]
-   \centering
-   \includegraphics[width=0.99\linewidth]
-   {
-      figures/scene_first.drawio.pdf
-   }
-   \caption{
-      Illustration of the optimization problem \eqref{eq:opt:main} in two-dimensional space; see Section \ref{sec:sub:illustrative} for details.
-   }
-\label{fig:scene:first}
-\end{figure}
+% \begin{figure}[t]
+%    \centering
+%    \includegraphics[width=0.99\linewidth]
+%    {
+%       figures/scene_first.drawio.pdf
+%    }
+%    \caption{
+%       Illustration of the optimization problem \eqref{eq:opt:main} in two-dimensional space; see Section \ref{sec:sub:illustrative} for details.
+%    }
+% \label{fig:scene:first}
+% \end{figure}
 
 To facilitate geometric interpretation, the optimization problem \eqref{eq:opt:main} is illustrated in two-dimensional space in Fig.~\ref{fig:scene:first}.
 The projected contraction condition \eqref{eq:opt:main:ctrc:proj} and the input saturation constraint \eqref{eq:opt:main:sat} restrict the feasible space of $\mv{y}$ to the outside of the blue line and the inside of the red line, respectively.
@@ -1023,32 +1023,32 @@ To facilitate reproducibility, the numerical validation source code is publicly 
 
 \subsection{Numerical Validation Results}
 
-\begin{figure}[t]
-   \centering
-   \subfloat[
-      Trajectory tracking results and control input profiles.
-   ]{ 
-      \includegraphics[width=0.99\linewidth]
-      {
-         src/figures/compare/Fig1.eps
-      }
-      \label{fig:sim:result:control}
-   }
-   \hfill
-   \subfloat[
-      Control input norms, error norms, and optimization variables.
-   ]{
-      \includegraphics[width=0.99\linewidth]
-      {
-         src/figures/compare/Fig2.eps
-      }
-      \label{fig:sim:result:opt}
-   }
-   \caption{
-      Numerical validation results of (C$_1$) \protect\colorLine{blue}{solid}, (C$_2$) \protect\colorLine{my_cyan}{solid}, (C$_3$) \protect\colorLine{gray}{solid}, and desired trajectory $x_d$ \protect\colorLine{red}{dashed}, and the saturated input of (C$_2$) \protect\colorLine{darkcyan}{solid}.
-   }
-   \label{fig:sim:result}
-\end{figure}
+% \begin{figure}[t]
+%    \centering
+%    \subfloat[
+%       Trajectory tracking results and control input profiles.
+%    ]{ 
+%       \includegraphics[width=0.99\linewidth]
+%       {
+%          src/figures/compare/Fig1.eps
+%       }
+%       \label{fig:sim:result:control}
+%    }
+%    \hfill
+%    \subfloat[
+%       Control input norms, error norms, and optimization variables.
+%    ]{
+%       \includegraphics[width=0.99\linewidth]
+%       {
+%          src/figures/compare/Fig2.eps
+%       }
+%       \label{fig:sim:result:opt}
+%    }
+%    \caption{
+%       Numerical validation results of (C$_1$) \protect\colorLine{blue}{solid}, (C$_2$) \protect\colorLine{my_cyan}{solid}, (C$_3$) \protect\colorLine{gray}{solid}, and desired trajectory $x_d$ \protect\colorLine{red}{dashed}, and the saturated input of (C$_2$) \protect\colorLine{darkcyan}{solid}.
+%    }
+%    \label{fig:sim:result}
+% \end{figure}
 
 % \begin{figure}[t]
 %    \centering
