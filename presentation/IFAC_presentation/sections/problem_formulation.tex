@@ -1,0 +1,169 @@
+\section{Problem Formulation and Preliminaries}
+
+% ════════════════════════════════════════════════════════════════
+% PROBLEM FORMULATION
+% ════════════════════════════════════════════════════════════════
+\subsection{Problem Formulation}
+
+\begin{frame}{\insertsubsectionhead}{}
+  
+  Consider a control-affine system under input saturation and external disturbance:
+  \begin{equation}
+    \ddtt\mv{x} = \mv{f}(\mv{x},t) + \mv{B}(\mv{x},t) \mysat{\mv{u}} + \mv{d}(t)
+    ,
+  \end{equation}
+  assuming that 
+  \begin{itemize}
+    \item The system functions are smooth implying Lipschitz continuity.
+    \item The control effectiveness matrix $\mv{B}(\mv{x},t)$ is full column rank.
+    \item The disturbance is bounded as $\norm{\mv{d}(t)} \le \overline{d}$.
+  \end{itemize}
+
+  \hfill
+
+  The desired trajectory is supposed to be given as $\mv{x}_d(t)$ and $\mv{u}_d(t)$, which satisfies the system dynamics:
+  \begin{equation}
+    \ddtt\mv{x}_d = \mv{f}(\mv{x}_d,t) + \mv{B}(\mv{x}_d,t) \mv{u}_d
+    ,
+  \end{equation}
+  without input saturation and external disturbance.
+
+  \begin{block}{Problem Statement}
+    The objective is to design a stabilizing controller $\mv{u}$ such that the error dynamics $\mv{e} = \mv{x} - \mv{x}_d$ is contracting under the input saturation and external disturbance.
+  \end{block}
+
+\end{frame}
+
+% ════════════════════════════════════════════════════════════════
+% REVISIT OF EXISTING APPROACH
+% ════════════════════════════════════════════════════════════════
+\subsection{Revisit of Existing Approach (CV-STEM)}
+
+\begin{frame}{\insertsubsectionhead}{}
+
+  Using state-dependent coefficient (SDC) formulation, the error dynamics can be derived in LPV form as follows:
+  \begin{equation}
+    \begin{aligned}
+      \ddtt\mv{e}
+      =&
+      \underbrace
+      {
+        \mv{f}-\mv{f}_d
+        +
+        (
+          \mm{B} 
+          - \mm{B}_d 
+        ) \mv{u}_d
+      }_{=: \mathbb{A}(\mv{x},\mv{x}_d) \mv{e}}
+      + \mm{B} 
+      (
+        \mv{u} - \mv{u}_d
+      )
+      + \mm{B} 
+      \underbrace{
+        \mysat{\mv{u}} - \mv{u}
+      }_{=: \mv{\phi}(\mv{u})} 
+      + 
+      \mv{d}
+      \\
+      =&
+      \mathbb{A}(\mv{x},\mv{x}_d)
+      \mv{e}
+      + \mm{B} 
+      (
+        \mv{u} - \mv{u}_d
+      )
+      + 
+      \mm{B} \mv{\phi}(\mv{u}) + \mv{d}
+      ,
+   \end{aligned}
+  \end{equation}
+
+  Consider the following control law:
+  \begin{equation}
+    \mv{u} = \mv{u}_d - \mv{R}^{-1}\mv{B}^\top \mm{M}(\mv{x}-\mv{x}_d)
+    ,
+  \end{equation}
+  where $\mm{M}$ is a \cred{contraction metric} which will be obtained.
+
+  If the control law can be realized without input saturation, the error dynamics can be rewritten as follows:
+  \begin{equation}
+    \ddtt\mv{e} =
+    \left(
+      \mathbb{A}(\mv{x},\mv{x}_d)
+      - \mm{B}\mv{R}^{-1}\mv{B}^\top \mm{M}
+    \right)
+    \mv{e}
+    +
+    \mm{B} \mv{\phi}(\mv{u}) + \mv{d}
+    .
+  \end{equation}
+  
+  Then, the steady tracking error is defined as follows:
+  \begin{equation}
+    \lim_{t\to\infty} \norm{\mv{e}(t)} 
+    \le 
+    \frac{\overline{d}}{\alpha} \sqrt{\chi}
+    ,
+    \quad
+    \left(
+      \text{
+        Theorem 2.4 in \cite{Tsukamoto:2021aa}
+        and
+        $\chi$ is cond. number of $\mm{M}$
+      }
+    \right)
+  \end{equation}
+
+\end{frame}
+
+% ————————————————————————————————————————————————————————————————
+\begin{frame}{\insertsubsectionhead}{}
+
+  The LMI problem can be formulated to minimize the condition number $\chi$ of the contraction metric $\mm{M}$ as follows \cite{Tsukamoto:2021ac}:
+  \begin{equation} \label{eq:opt:conv:lmi}
+    \begin{matrix}
+      \min_{
+        \overline{\mm{W}},\chi,\nu
+        } 
+      \chi + \lambda \nu
+      \\ 
+      \vspace{-.2cm}
+      \\
+      \text{s.t. }
+      \begin{cases}
+        -
+        \ddtt\overline{\mm{W}}
+        +
+        2\mysym(
+          \mathbb{A}\overline{\mm{W}}
+        )
+        -
+        2\nu\mm{B}\mm{R}^{-1} \mm{B}^\top 
+        \preceq
+        -2\alpha\overline{\mm{W}}
+        ,
+        \\
+        \mm{I}_n
+        \preceq
+        \overline{\mm{W}}
+        \preceq
+        \chi \mm{I}_n
+        ,
+      \end{cases}
+    \end{matrix}
+  \end{equation} 
+  where $\mm{M}=:\overline{\mm{W}}^{-1}$, $\overline{\mv{W}} = \nu \mv{W}$ is normalized $\mv{W}$, and $\nu$ is decision variable for magnitude of the contraction metric, and $\lambda$ is penalty parameter for $\nu$.
+  
+  \hfill
+
+  However, the existing approach requires
+  \begin{itemize}
+    \item To solve the LMI problem to obtain the contraction metric for the interested operating domain in advance.
+  \end{itemize}
+
+  \begin{block}{Our Approach}
+    We relax the contraction condition by projecting it onto the tracking error space.
+  \end{block}
+
+\end{frame}
