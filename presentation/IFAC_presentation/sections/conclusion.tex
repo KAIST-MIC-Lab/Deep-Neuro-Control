@@ -2,26 +2,18 @@
 
 \begin{frame}{Summary of this Work}{}
 
-    \textbf{IFAC}
+    \textbf{Conclusion}
 
     \begin{itemize}
-        \item Currently, effective-space formulation and input constraints are considered.
-        \item The input constraint will be removed and the effective-space formulation will be more rigorously justified.
+        \item Contraction condition is projected onto tracking error, resulting in vector-space optimization problem.
+        \item Input saturation is directly incorporated into the optimization problem.
     \end{itemize}
 
     \textbf{Future work}
 
     \begin{itemize}
         \item Additional constraints, such as state constraints and CBF-motivated constraints, and input constraints will be considered.
-        \item Real-time implementation of the proposed method will be investigated.
-    \end{itemize}
-
-    \textbf{Towards Deep Learning}
-
-    \begin{itemize}
-        \item Using obtained $\mv{y}$, we can extract the contraction metric $\mm{M}$.
-        \item Using neural networks, we can learn the mapping from the state $\mv{x}$ to the contraction metric $\mm{M}$.
-        \item Hence, if we can justify that the obtained metric is a valid contraction metric under imposed constraints, we can use the learned metric for control design and analysis.
+        \item Since projected contraction condition is necessary but not sufficient, we will investigate the conditions under which the projected contraction condition is sufficient.
     \end{itemize}
     
 \end{frame}

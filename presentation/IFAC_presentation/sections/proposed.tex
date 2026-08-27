@@ -31,9 +31,9 @@
 
 \begin{frame}{\insertsubsectionhead}{}
 
-  The contraction condition from Theorem 2.4 \cite{Tsukamoto:2021aa} is represented as follows:
+  The contraction condition from Theorem 2.4 \paperinfo{H.~Tsukamoto, S.-J. Chung, and J.-J.~E. Slotine, ``Contraction theory for nonlinear stability analysis and learning-based control: A tutorial overview,'' \emph{Annual Reviews in Control}, 2021} is represented as follows:
   \begin{equation} \label{eq:cstr:ctrc}
-  \ddtt\mm{M}
+  \underbrace{\ddtt\mm{M}}_{\approx(\mm{M}-\mm{M}_{\rm{pre}})/T_s}
   +
   2\mysym
   \left(
@@ -50,7 +50,8 @@
 
   \hfill
 
-  We note that eventually the metric is used as a feedback gain matrix as 
+  \onslide<2->
+  We note that eventually the metric $\mm{M}$ is used as a feedback gain matrix as follows:
   \begin{equation} \label{eq:control:law}
     \mv{u}
     =
@@ -63,13 +64,22 @@
     \mv{e}
     .
   \end{equation}
-  Therefore, the metric is only used in \cred{the subspace spanned by the error} $\mv{e} = \mv{x} - \mv{x}_d$.
+  Therefore, the metric $\mm{M}$ enters the control input only through its action on the error $\mv{e}$.
 
   \hfill
 
-  Thus, we can project the contraction condition onto $\mv{e}$, which results in a \cred{point-wise convex condition} with low computational burden.
+  \onslide<3->
+  Thus, we can project the contraction condition onto $\mv{e}$, which results in the following concave condition:
 
   \begin{equation} \label{eq:cstr:ctrc:proj}
+    \mv{e}^\top
+    \left(
+    \text{Eq. (15)}
+    \right)
+    \mv{e}
+    \quad
+    \rightarrow
+    \quad
     \mv{y}^\top 
     \!
     \left(
@@ -93,42 +103,36 @@
     \le 0
     ,
   \end{equation}
-  where $\mv{y}:=\mm{M}\mv{e}$ denotes a projected contraction metric onto the $\mv{e}$, serving as a new optimization variable.
+  where $\mv{y}:=\mm{M}\mv{e}$ denotes a \cblue{new decision variable which is a metric-weighted error vector}.
 
 \end{frame}
 
 % ————————————————————————————————————————————————————————————————
 \begin{frame}{\insertsubsectionhead}{Details of the Proposed Method}
 
-  \textbf{Objective Function (Condition Number)}:
-  According to Theorem 2.4 in \cite{Tsukamoto:2021aa}, the minimization of the condition number $\chi$ of $\mm{M}$ can be achieved by minimizing the following objective function:
+  \textbf{Obj Func.}:
+  Minimization of the condition number $\chi$ of $\mm{M}$
 
   \begin{equation}
     J = \norm{\mv{y}}\norm{\mv{e}} - \mv{y}^\top \mv{e}
-    .
+    \quad
+    (\text{promotes $\mm{M}$ to be isotropic — minimizing $\chi$})
   \end{equation}
-
     
-  \textbf{Contraction Condition}:
-  Rewrite the projected contraction condition as
+  \textbf{Cstr. 1 (Projected) Contraction Constraint}:
 
   \begin{equation} \label{eq:cstr:ctrc:proj}
     \mv{y}^\top 
-    \!
     \left(
-    \!
       -\mm{B} \mm{R}^{-1} \mm{B}^\top
-    \!
     \right)
     \mv{y}
     +
     \mv{e}^\top
-    \!
     \left(
       \tfrac{1}{T_s}+2\alpha
       +
       2\mathbb{A}^\top
-    \!
     \right)
     \mv{y}
     -
@@ -137,7 +141,7 @@
     .
   \end{equation}
 
-  \textbf{Energy Condition}: Minimizing the condition number may result in \cred{a very small control input}. To avoid this issue, we add the energy condition as follows:
+  \textbf{Cstr. 2 Energy-Based Constraint}: 
 
   \begin{equation} \label{eq:cstr:energy}
   \left(
@@ -148,12 +152,25 @@
   \le
   (\epsilon + s) \norm{\mv{e}}^2
   ,
+  \quad
+  (\text{
+    prevents $\mm{M}$ from being too small by obj. func.
+  })
   \end{equation}
-  where $\mu\in\R_{>0}$ denotes the \cblue{desired energy level}, and $\epsilon\in\R_{>0}$ and $s\in\R_{\ge0}$ denote the allowable small energy variation and a slack variable.
+  where 
+  \begin{itemize}
+    \item $\mu\in\R_{>0}$: desired energy level
+    \item $\epsilon\in\R_{>0}$: allowable small energy variation
+    \item $s\in\R_{\ge0}$: slack variable (for feasibility)
+  \end{itemize}
 
-  \textbf{Additional Constraints}:
+  \textbf{Cstr. 3 Input Constraints}:
   Any constraints can be added to the optimization problem.
- 
+
+  \begin{equation}
+    c(\mv{y}) \le 0
+  \end{equation}
+
 \end{frame}
 
 % ————————————————————————————————————————————————————————————————
@@ -174,54 +191,106 @@
       \\
       \text{s.t. }
       \begin{cases}
+      \ctxt{blue}{
         \mv{y}^\top 
-      \!
-      \left(
-      \!
-        -\mm{B} \mm{R}^{-1} \mm{B}^\top
-      \!
-      \right)
-      \mv{y}
-      +
-      \mv{e}^\top
-      \!
-      \left(
-        \tfrac{1}{T_s}+2\alpha
+        \!
+        \left(
+        \!
+          -\mm{B} \mm{R}^{-1} \mm{B}^\top
+        \!
+        \right)
+        \mv{y}
         +
-        2\mathbb{A}^\top
-      \!
-      \right)
-      \mv{y}
-      -
-      \tfrac{\mv{e}^\top \mm{M}_{\rm{pre}} \mv{e}}{T_s}
-      \le 0
-      ,
-      \\
-      \left(
-        \mv{e}^\top \mv{y} 
+        \mv{e}^\top
+        \!
+        \left(
+          \tfrac{1}{T_s}+2\alpha
+          +
+          2\mathbb{A}^\top
+        \!
+        \right)
+        \mv{y}
         -
-        \mu \mv{e}^\top \mv{e}
-      \right)^2
-      \le
-      (\epsilon + s) \norm{\mv{e}}^2
+        \tfrac{\mv{e}^\top \mm{M}_{\rm{pre}} \mv{e}}{T_s}
+        \le 0
+      }
       ,
-      \end{cases}
+      &
+      \text{— \textit{(Projected) contraction constraint}}
+      \\
+      \ctxt{teal}{
+        \left(
+          \mv{e}^\top \mv{y} 
+          -
+          \mu \mv{e}^\top \mv{e}
+        \right)^2
+        \le
+        (\epsilon + s) \norm{\mv{e}}^2
+      }
+      ,
+      &
+      \text{— \textit{Energy-based constraint}}
+      \\
+      \ctxt{red}{
+        c(\mv{y}) \le 0
+      }
+      ,
+      &
+      \text{— \textit{Input constraint}}
+    \end{cases}
     \end{matrix}
   \end{equation}
 
-$\lambda$ to achieve sufficient control effort and $\mu$ to determine the desired input energy
-
   \begin{figure}[t]
     \centering
-    \includegraphics[width=0.45\linewidth]
+    \includegraphics[width=0.5\linewidth]
     {
       figures/scene_first.drawio.pdf
     }
     \caption{
-      Example illustration of the proposed method with eclipse-shaped input saturation constraint.
+      Example illustration of the proposed optimization problem.
     }
   \label{fig:scene:first}
   \end{figure}
+
+\end{frame}
+
+% ————————————————————————————————————————————————————————————————
+\begin{frame}{\insertsubsectionhead}{}
+
+  \begin{columns}
+    \column{0.5\textwidth}     
+
+  \begin{figure}[t]
+    \centering
+    \includegraphics[width=0.95\linewidth]
+    {
+      figures/scene_first.drawio.pdf
+    }
+    % \caption{
+    %   Example illustration of the proposed optimization problem.
+    % }
+  \end{figure}
+
+  \column{0.5\textwidth}     
+  \textbf{Without Input Saturation}: 
+  (a) is the optimal solution.
+  \begin{itemize}
+    \item Minimum condition number $\chi$.
+    \item Input energy constraint satisfied.
+  \end{itemize}
+
+  \vspace{0.5cm}
+
+  \textbf{With Input Saturation}: 
+  (b) is the optimal solution.
+  \begin{itemize}
+    \item Input saturation constraint satisfied.
+    \item Minimum condition number under the input constraint.
+    \item Slack variable $s$ is non-zero, relaxing energy-based constraint.
+  \end{itemize}
+
+  \end{columns}
 
 \end{frame}
 

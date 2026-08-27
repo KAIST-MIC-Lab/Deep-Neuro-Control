@@ -7,7 +7,7 @@
 
 \begin{frame}{\insertsubsectionhead}{}
 
-  \textbf{Contraction Theory} is a powerful tool for analyzing the stability of nonlinear systems by examining \cblue{differential dynamics}, providing insights into the behavior of \cblue{trajectories} (not points) and their convergence properties \cite{LOHMILLER:1998aa}.
+  \textbf{Contraction Theory} is a powerful tool for analyzing the stability of nonlinear systems by examining \cblue{differential dynamics}, providing insights into the behavior of \cblue{trajectories} (not points) and their convergence properties \paperinfo{ W. Lohmiller and J.-J. E. Slotine, “On contraction analysis for non-linear systems,” Automatica, 1998}.
 
   \begin{equation} \label{eq:pre:sys}
     \ddtt\mv{x}
@@ -23,7 +23,9 @@
     .
   \end{equation}
 
-  Typically used Lyapunov function is defined with respect to $\delta\mv{x}$ rather than $\mv{x}$, as follows:
+  \onslide<2->
+  {
+  Typically used Lyapunov function is defined in terms of $\delta\mv{x}$ rather than $\mv{x}$, as follows:
   \begin{equation}
     V = \mv{x}^\top \mv{P} \mv{x}
     \quad
@@ -32,13 +34,17 @@
     V = \delta\mv{x}^\top \mv{M}(\mv{x},t) \delta\mv{x}
     .
   \end{equation}
+  }
 
+  \onslide<3->
+  {
   \begin{figure}
     \centering
     \includegraphics[width=.4\linewidth]{figures/contraction.png}
-    \caption{Lyapunov theory versus contraction theory \cite{Tsukamoto:2021aa}.}
+    \caption{Lyapunov theory versus contraction theory \paperinfo{H.~Tsukamoto, S.-J. Chung, and J.-J.~E. Slotine, ``Contraction theory for nonlinear stability analysis and learning-based control: A tutorial overview,'' \emph{Annual Reviews in Control}, 2021}.}
     \label{fig:contraction:theory}
   \end{figure}
+  }
 
 \end{frame}
 
@@ -47,10 +53,21 @@
 
   Therefore, in control design, \textbf{Contraction Theory} provides:
   \begin{itemize}
-    \item \textbf{Exponential Convergence}: Trajectories globally exponentially converge to each other regardless of initial conditions.
-    \item \textbf{Control Design}: Owing to nature of differential dynamics, \cblue{LPV control design} methods can be applied.
-    \item \cred{and more...}
+    \item <2-> \textbf{Exponential Convergence}: Trajectories globally exponentially converge \cblue{regardless of initial conditions}.
+    \item <3-> \textbf{Control Design}: Owing to nature of differential dynamics, \cblue{LPV control design} methods can be applied.
+    \item <4-> \textbf{Stability Analysis}: The stability analysis can be simplified.
   \end{itemize}
+
+  \vspace{1em}
+
+  \onslide<5->
+  {
+  Now, the question is how to use the contraction theory in control design?
+  \begin{enumerate}
+    \item \textbf{Stability Analysis Tools}: Stability under a given controller can be analyzed using contraction theory.
+    \item \textbf{Control Design Tools} (what we focus on): contraction theory can be used to design stabilizing controllers, \eg CCM, CV-STEM, etc. 
+  \end{enumerate}
+  }
 
 \end{frame}
 
@@ -61,7 +78,8 @@
 
 \begin{frame}{\insertsubsectionhead}{Control Contraction Metric (CCM)}
 
-  \textbf{Control Contraction Metric (CCM)} provides a framework for designing stabilizing controllers \cite{Manchester:2017aa}.
+  \textbf{Control Contraction Metric (CCM)} \paperinfo{I. R. Manchester and J.-J. E. Slotine, “Control contraction metrics: Convex and intrinsic criteria for nonlinear feedback design,” IEEE TAC, 2017}
+  % provides a framework for designing stabilizing controllers .
 
   Consider a control-affine system and Lyapunov function candidate as follows:
   \begin{equation}    
@@ -81,10 +99,17 @@
     ,
   \end{equation}
 
-  \begin{theorem}[Control Contraction Metric (CCM) \cite{Manchester:2017aa}]
+  \begin{theorem}[Control Contraction Metric (CCM), informal]
     For a given system, if there exists a bounded metric $\mm{M}(\mv{x},t)$ such that holds 
     \begin{equation}
-      \ddtt\mm{M} + 2\mysym\left( \mm{M}\pptfrac{\mv{f}}{\mv{x}} + \pptfrac{\mv{B}}{\mv{x}}\mm{M} \right) \le -2\alpha \mm{M}
+      \ddtt\mm{M} 
+      + 
+      2\mysym
+      \left( 
+        \mm{M}\pptfrac{\mv{f}}{\mv{x}} 
+      \right) 
+      \le 
+      -2\alpha \mm{M}
       ,
       \quad
       (
@@ -92,24 +117,22 @@
       )
       ,
     \end{equation}
-    for all $\delta\mv{x}\neq 0$ such that $\delta\mv{x}^\top \mm{M}\mv{B} = 0$, then the system is \cred{universally exponentially stabilizable} via state feedback.
+    for all $\delta\mv{x}\neq 0$ such that $\delta\mv{x}^\top \mm{M}\mv{B} = 0$, then the system is \cred{universally exponentially stabilizable} via state feedback \paperinfo{H.~Tsukamoto, \etal, ``Contraction theory for nonlinear stability analysis and learning-based control: A tutorial overview,'' \emph{Annual Reviews in Control}, 2021}.
   \end{theorem}
 
   \begin{columns}
     \column{0.5\textwidth}     
 
-  By using $\mm{M}$, a feedback controller $\mv{u}$ can be established considering the closest point on the \cblue{geodesic} between the current state and the target state in the \cred{Riemannian space} defined by $\mm{M}$, \ie $\delta\mv{u} = k(\mv{x},\delta\mv{x}, u, t)$.
+  By using $\mm{M}$, a feedback controller $\mv{u}$ can be established considering the closest path between the current and target states in the \cred{Riemannian space} defined by $\mm{M}$, 
 
-    \begin{block}{How to find $\mm{M}$?}
-      For interested operating domain, CCM $\mm{M}$ should be solved in advance, via LMIs or Sum-of-Squares (SOS) programming.
-    \end{block}
+  \ie path integral of  $\delta\mv{u} = k(\mv{x},\delta\mv{x}, u, t)$.
 
     \column{0.5\textwidth}     
 
   \begin{figure}
     \centering
     \includegraphics[width=0.49\textwidth]{figures/CCM.png}
-    \caption{Control Contraction Metric (CCM) \cite{Manchester:2017aa}.}
+    % \caption{Control Contraction Metric (CCM) \cite{Manchester:2017aa}.}
     \label{fig:contraction:ccm}
   \end{figure}    
 
@@ -117,14 +140,34 @@
 \end{frame}
 
 % ————————————————————————————————————————————————————————————————
+\begin{frame}{\insertsubsectionhead}{Control Contraction Metric (CCM)}
 
+  CMM can provide theoretical guarantees for the existence of stabilizing controllers, which can reshape the system dynamics to be contracting.
+
+  \vspace{2em}
+
+  However, ...
+  \begin{itemize}
+    \item Finding contraction metric $\mm{M}$ is \cred{computationally expensive} 
+    \\
+    (should be solved using SOS, LMIs, etc. using sampled data points in interested region).
+
+    \item No consideration of input saturation and not straightforward to incorporate it.
+  \end{itemize}
+
+\end{frame}
+
+% ————————————————————————————————————————————————————————————————
 \begin{frame}{\insertsubsectionhead}{CV-STEM}
 
-  \textbf{ConVex optimization-based Steady-state Tracking Error Minimization (CV-STEM)} is an alternative approach to CCM, which calculates the contraction metric $\mm{M}$ in step-wise manner \cite{Tsukamoto:2021ac}.
+  \textbf{ConVex optimization-based Steady-state Tracking Error Minimization (CV-STEM)}\paperinfo{H. Tsukamoto, \etal, “Neural stochastic contraction metrics for learning-based
+control and estimation,” IEEE Control Systems Letters, 2021}.
 
-  By defining $\delta\mv{u} = k\  \rightarrow\  \mv{u} = K(\mv{x}-\mv{x}_d), \ K = \mv{Y}\mv{M}$, the contraction metric can be obtained by solving \cred{linear matrix inequalities (LMIs)} with decision variable $\mm{W}^{-1}:=\mm{M}$ \cite{Tsukamoto:2021ac}.
+  \hfill
 
-  According to Theorem 2.4 in \cite{Tsukamoto:2021aa}, by \cred{minimizing the condition number} $\chi$ of $\mm{M}$, the \cblue{steady state error} can be reduced.
+  % By defining $\delta\mv{u} = k\  \rightarrow\  \mv{u} = -\mm{K}\mm{M}(\mv{x}-\mv{x}_d)$, the contraction metric $\mm{M}$ can be obtained by solving \cred{linear matrix inequalities (LMIs)} point-wise.
+
+  According to Theorem 2.4 in [1], by \cred{minimizing the condition number} $\chi$ of $\mm{M}$, the \cblue{steady state error} can be reduced.
   \begin{equation}
     \downarrow \chi \text{(condition number of $\mm{M}$)} \quad \rightarrow \quad \downarrow \text{steady state error}
   \end{equation}
@@ -134,15 +177,16 @@
       \mv{u} = \mv{u}_d - \mv{R}^{-1}\mv{B}^\top \mm{M}(\mv{x}-\mv{x}_d)
         ,\quad
         (
-          \mv{M} \text{ is obtained by solving LMIs which minimizes $\chi$.}
+          \mv{M} \text{ is obtained by \cred{solving LMIs which minimizes $\chi$}.}
         )
   \end{equation}
 
   Main features of CV-STEM are as follows:
   \begin{itemize}
-      \item Easy to implement (point-wise convex condition).
-      \item Due to the use of LMIs, it still should be solved in advance.
-      \item According to the objective function, typically, $\mv{M}$ is designed to be identity matrix and $\nu$ is maximized, which results in \cred{a simple state feedback controller with a large proportional gain}.
+      \item Easy to implement (step-wise convex condition and affine control law).
+      \item Due to the use of LMIs, it should be solved in advance.
+      % \item According to the objective function, typically, $\mv{M}$ is designed to be identity matrix and $\nu$ is maximized, which results in \cred{a simple state feedback controller with a large proportional gain}.
+      \item Still has no consideration of input saturation.
   \end{itemize}
 \end{frame}
 
@@ -161,6 +205,7 @@
 
   Typically, contraction theory-based control design methods does not consider input constraints, which can lead to \cred{undesirable behavior} in practical applications.
 
+  Furthermore, the existing methods compute $\mm{M}$ using matrix-space optimization problems, explicitly imposing constraints in input vector space is not straightforward.
 \end{frame}
 
 % ════════════════════════════════════════════════════════════════
@@ -170,25 +215,25 @@
 
 \begin{frame}{\insertsubsectionhead}{}
 
-  Summary of the discussion on contraction theory-based control design methods:
+  % Summary of the discussion on contraction theory-based control design methods:
+
+  % \begin{itemize}
+  %   \item CCM is a powerful tool providing the existence of stabilizing controllers.
+  %   \item CV-STEM provides a more computationally efficient approach to find contraction metric $\mm{M}$ in a point-wise manner.
+  %   \item However, both CCM and CV-STEM still \dots
+  %   \begin{itemize}
+  %     \item Computationally expensive (should be solved in advance).
+  %     \item Difficult to handle constraints, such as input saturation.
+  %   \end{itemize}
+  % \end{itemize}
+
+  % \hfill
+
+  The proposed approach \dots
 
   \begin{itemize}
-    \item CCM is a powerful tool providing the existence of stabilizing controllers.
-    \item CV-STEM provides a more computationally efficient approach to find contraction metric $\mm{M}$ in a step-wise manner.
-    \item However, both CCM and CV-STEM still \dots
-    \begin{itemize}
-      \item Computationally expensive (should be solved in advance).
-      \item Difficult to handle constraints, such as input saturation.
-    \end{itemize}
-  \end{itemize}
-
-  \hfill
-
-  The proposed approach is \dots
-
-  \begin{itemize}
-    \item Solve the contraction problem in an online manner by projecting the contraction condition into a vector space, resulting in \cred{a point-wise convex condition in vector space}.
-    \item Extend the method to the systems under \cred{input constraints}.
+    \item Transforms the \cred{matrix-space optimization problem} for $\mm{M}$ into a \cblue{vector-space optimization problem} by \textbf{projecting the contraction condition} into a vector space.
+    \item Handles the input saturation in a more direct way by \cred{incorporating the input saturation} into the optimization problem.
   \end{itemize}
     
 \end{frame}

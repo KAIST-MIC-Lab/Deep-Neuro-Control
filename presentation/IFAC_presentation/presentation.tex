@@ -35,6 +35,20 @@
 
 \newcommand*{\Cr}{C_r}
 
+
+% 각주 번호를 [1], [2], ... 형식으로 표시
+\renewcommand{\thefootnote}{[\arabic{footnote}]}
+\AtBeginEnvironment{frame}{\setcounter{footnote}{0}}
+
+% 논문 정보용 명령
+\newcommand{\paperinfo}[1]{\ifmmode\mbox{\footnote[frame]{#1}}\else\footnote[frame]{#1}\fi}
+
+% 각주 디자인
+\setbeamerfont{footnote}{size=\scriptsize}
+\setbeamercolor{footnote}{fg=gray}
+\setbeamercolor{footnote mark}{fg=gray}
+
+
 % Block options: block, alertblock, exampleblock
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

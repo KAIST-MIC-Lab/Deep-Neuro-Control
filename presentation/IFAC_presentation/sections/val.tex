@@ -66,7 +66,7 @@
     \quad
     \mv{d}(t)
     :=
-    1000 (H(t-0.1)-H(t-0.11))
+    1000 (H(t-0.2)-H(t-0.21))
     \cdot
     \mv{1}_{3\times1}
     ,
@@ -103,7 +103,7 @@
     \column{0.5\textwidth}     
 
     \begin{table}[t]
-      \renewcommand{\arraystretch}{1.3}
+      % \renewcommand{\arraystretch}{1.3}
       \caption{Controllers for comparative study.}
       \centering
       % \begin{tabular}{c m{13.5em}}
@@ -116,24 +116,30 @@
       (C$_2$) \protect\colorLine{my_cyan}{solid} 
       CV-STEM (\cite{Tsukamoto:2021ae}). \\
       \hline
-      (C$_3$) \protect\colorLine{gray}{solid} \\ 
-      Desired controller for nominal model, \ie $\mv{u}=\mv{u}_d$. \\
+      (C$_3$) \protect\colorLine{gray}{solid} 
+      $\mv{u}=\mv{u}_d$. \\
       \hline
       \end{tabular}
       \label{table:controllers}
     \end{table}
 
+    \begin{itemize}
+      \item Using contraction theory, (C$_1$) and (C$_2$) stabilized the system under the external disturbance at 0.2 s.
+      \item (C$_2$) produced excessive input, which is undesirable.
+      \item In contrast, (C$_1$) successfully handled the input saturation.
+    \end{itemize}
+
     \column{0.5\textwidth}     
 
     \begin{figure}[t]
       \centering
-      \includegraphics[width=0.99\linewidth]
+      \includegraphics[width=0.79\linewidth]
       {
-        figures/compare/main_fig1.png
+        figures/fig1.png
       }
-      \caption{
-        Trajectories tracking results and control inputs
-      }
+      % \caption{
+        % Trajectory tracking results and control inputs
+      % }
     \end{figure}
   
   \end{columns}

@@ -21,16 +21,22 @@
 
   \hfill
 
+  \onslide<2->
+  {
   The desired trajectory is supposed to be given as $\mv{x}_d(t)$ and $\mv{u}_d(t)$, which satisfies the system dynamics:
   \begin{equation}
     \ddtt\mv{x}_d = \mv{f}(\mv{x}_d,t) + \mv{B}(\mv{x}_d,t) \mv{u}_d
     ,
   \end{equation}
   without input saturation and external disturbance.
+  }
 
+  \onslide<3->
+  {
   \begin{block}{Problem Statement}
     The objective is to design a stabilizing controller $\mv{u}$ such that the error dynamics $\mv{e} = \mv{x} - \mv{x}_d$ is contracting under the input saturation and external disturbance.
   \end{block}
+  }
 
 \end{frame}
 
@@ -61,7 +67,7 @@
       )
       + \mm{B} 
       \underbrace{
-        \mysat{\mv{u}} - \mv{u}
+        \mysat(\mv{u}) - \mv{u}
       }_{=: \mv{\phi}(\mv{u})} 
       + 
       \mv{d}
@@ -79,13 +85,18 @@
    \end{aligned}
   \end{equation}
 
+  \onslide<2->
+  {
   Consider the following control law:
   \begin{equation}
     \mv{u} = \mv{u}_d - \mv{R}^{-1}\mv{B}^\top \mm{M}(\mv{x}-\mv{x}_d)
     ,
   \end{equation}
   where $\mm{M}$ is a \cred{contraction metric} which will be obtained.
+  }
 
+  \onslide<3->
+  {
   If the control law can be realized without input saturation, the error dynamics can be rewritten as follows:
   \begin{equation}
     \ddtt\mv{e} =
@@ -94,33 +105,34 @@
       - \mm{B}\mv{R}^{-1}\mv{B}^\top \mm{M}
     \right)
     \mv{e}
-    +
-    \mm{B} \mv{\phi}(\mv{u}) + \mv{d}
+    + \mv{d}
     .
   \end{equation}
-  
-  Then, the steady tracking error is defined as follows:
+  }
+
+  \onslide<4->
+  {
+  Then, the steady-state tracking error is defined as follows:
   \begin{equation}
     \lim_{t\to\infty} \norm{\mv{e}(t)} 
     \le 
-    \frac{\overline{d}}{\alpha} \sqrt{\chi}
+    \frac{\overline{d}}{\alpha} \sqrt{\cred{\chi}}
     ,
     \quad
     \left(
-      \text{
-        Theorem 2.4 in \cite{Tsukamoto:2021aa}
-        and
-        $\chi$ is cond. number of $\mm{M}$
-      }
+      \text{Theorem 2.4 in}
+      \paperinfo{H.~Tsukamoto, S.-J. Chung, and J.-J.~E. Slotine, ``Contraction theory for nonlinear stability analysis and learning-based control: A tutorial overview,'' \emph{Annual Reviews in Control}, 2021}
+      \text{and $\chi$ is cond. number of $\mm{M}$}
     \right)
   \end{equation}
+  }
 
 \end{frame}
 
 % ————————————————————————————————————————————————————————————————
 \begin{frame}{\insertsubsectionhead}{}
 
-  The LMI problem can be formulated to minimize the condition number $\chi$ of the contraction metric $\mm{M}$ as follows \cite{Tsukamoto:2021ac}:
+  The LMI problem can be formulated to minimize the condition number $\chi$ of the contraction metric $\mm{M}$ as follows:
   \begin{equation} \label{eq:opt:conv:lmi}
     \begin{matrix}
       \min_{
@@ -154,13 +166,13 @@
     \end{matrix}
   \end{equation} 
   where $\mm{M}=:\overline{\mm{W}}^{-1}$, $\overline{\mv{W}} = \nu \mv{W}$ is normalized $\mv{W}$, and $\nu$ is decision variable for magnitude of the contraction metric, and $\lambda$ is penalty parameter for $\nu$.
+
+  \begin{itemize}
+    \item Solving the LMI problem online can be computationally expensive, depending on the system dimension.
+    \item Input saturation cannot be directly incorporated.
+  \end{itemize}
   
   \hfill
-
-  However, the existing approach requires
-  \begin{itemize}
-    \item To solve the LMI problem to obtain the contraction metric for the interested operating domain in advance.
-  \end{itemize}
 
   \begin{block}{Our Approach}
     We relax the contraction condition by projecting it onto the tracking error space.

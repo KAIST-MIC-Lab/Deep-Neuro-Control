@@ -52,21 +52,9 @@
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 % Footer
-\setbeamertemplate{footline}
-{%
-\begin{beamercolorbox}[wd=\textwidth, center]{footer}%
-	\rule{0.95\paperwidth}{0.2pt}
-\end{beamercolorbox}%
-\begin{beamercolorbox}[wd=\textwidth, leftskip=0.3cm,rightskip=0.3cm, ht=0.3cm,dp=0.15cm]{footer text}%
-	\usebeamerfont{footnote}\copyright \ \insertauthor\hfill
-	% Uncomment to display navigation button
-	%\insertslidenavigationsymbol%
-	%\insertframenavigationsymbol%
-	%\insertsubsectionnavigationsymbol%
-	%\insertsectionnavigationsymbol%
-	%\insertdocnavigationsymbol%
-	%\insertbackfindforwardnavigationsymbol%	
-	\hfill\insertframenumber%
+\setbeamertemplate{footline}{%
+\begin{beamercolorbox}[wd=\textwidth, rightskip=0.3cm, ht=0.3cm,dp=0.15cm]{footer text}%
+\hfill\insertframenumber%
 \end{beamercolorbox}%
 }
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -74,9 +62,9 @@
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 % Custom footnote
 \hfuzz=\maxdimen % Remove warning hbox overfull (TODO) 
-\renewcommand\footnoterule{\color{Gray!50}\hspace*{-0.5cm}\rule{0.95\paperwidth}{0.2pt}\vspace*{0.07cm}}
+\renewcommand\footnoterule{}
 \setbeamertemplate{footnote}{
-	\begin{beamercolorbox}[wd=\textwidth, leftskip=0.3cm,rightskip=0.3cm]{footer text}%
+	\begin{beamercolorbox}[wd=\textwidth, leftskip=0.1cm,rightskip=0.1cm]{footer text}%
 	\usebeamerfont{footnote}\insertfootnotemark\insertfootnotetext
 	\end{beamercolorbox}%
 }
